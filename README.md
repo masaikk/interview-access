@@ -12,10 +12,10 @@
 
 1.  对于读书笔记要时常记录
 2.  希望2021年12月完成以下四本书的阅读笔记工作：
-      +  《百面机器学习》https://gitee.com/masaikk/read-paper
-      +  《JavaScript权威指南（第七版）》https://gitee.com/masaikk/es9js
-      +  《算法笔记》https://gitee.com/masaikk/kishiki
-      +  《Python科学计算和数据科学应用》https://gitee.com/masaikk/data-deep-mear-exercise
+      +  《百面机器学习》[file](ml.md) [paper:read-paper](https://gitee.com/masaikk/read-paper)
+      +  《JavaScript权威指南（第七版）》[file](jsDefine.md) [code: es9js](https://gitee.com/masaikk/es9js)
+      +  《算法笔记》[kishiki](https://gitee.com/masaikk/kishiki)
+      +  《Python科学计算和数据科学应用》[file](pymear.md) [code:data-deep-mear-exercise](https://gitee.com/masaikk/data-deep-mear-exercise)
 3.  添加网页上看到的杂项知识
 
 #### 架构说明
@@ -26,5 +26,4 @@
 
 #### 写给自己
 
-*不成功便成仁*
-
+![不成功便成仁](README.assets/1637505448236615.png)
