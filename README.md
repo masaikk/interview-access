@@ -3,35 +3,28 @@
 #### 介绍
 面试知识笔记，markdown书写，配合思维导图。
 
-#### 软件架构
-软件架构说明
-
 
 #### 安装教程
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+1.  git clone https://gitee.com/masaikk/interview-access.git
 
 #### 使用说明
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+1.  对于读书笔记要时常记录
+2.  希望2021年12月完成以下四本书的阅读笔记工作：
+    		+  《百面机器学习》
+    		+  《JavaScript权威指南（第七版）》
+    		+  《算法笔记》
+    		+  《Python科学计算和数据科学应用》
+3.  添加网页上看到的杂项知识
 
-#### 参与贡献
+#### 架构说明
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+	1. 建立四个markdown对应以上四个文件
+	1. 由于笔记中可能会包含代码，exercise文件夹下面放某些需要运行的代码
+	1. 包含C++，Python，nodejs代码。所以可能会包括cmake，condalist或者package.json等文件
 
+#### 写给自己
 
-#### 特技
+*不成功便成仁*
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
