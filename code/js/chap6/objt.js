@@ -24,12 +24,15 @@ let o = {
 // }
 
 
-let target = {x: 1};
-let source = {
-    y: 2,
-    z: 3
-}
-for (let key of Object.keys(source)) {
-    target[key] = source[key];
-}
-console.log(target);
+// let target = {x: 1};
+// let source = {
+//     y: 2,
+//     z: 3
+// }
+// for (let key of Object.keys(source)) {
+//     target[key] = source[key];
+// }
+// console.log(target);
+
+
+console.log(Object.assign({x: 1}, {x: 2, y: 2}, {y: 3, z: 4}));

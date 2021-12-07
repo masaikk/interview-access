@@ -101,7 +101,28 @@ console.log(target);
 
 
 
+Object.assign()方法 $\bigstar$
 
+这个方法接受两个及以上的参数。都应该是对象。
+
+p132待续
+
+```javas
+o=Object.assign({},defaults,o);
+```
+
+首先会把defaults的属性覆盖了{}，之后的o对象的属性覆盖了前面的对象。
+
+```javascript
+o = {...defaults,...o}
+```
+
+与上述的代码相类似。
+
+```javascript
+Object.assign({x: 1}, {x: 2, y: 2}, {y: 3, z: 4})
+// { x: 2, y: 3, z: 4 }
+```
 
 
 
