@@ -105,8 +105,6 @@ Object.assign()方法 $\bigstar$
 
 这个方法接受两个及以上的参数。都应该是对象。
 
-p132待续
-
 ```javas
 o=Object.assign({},defaults,o);
 ```
@@ -141,9 +139,60 @@ let p={
 console.log(p.p1+p.p2);
 ```
 
+在对象的继承{}当中使用拓展的字符...是不会的继承到父对象的继承属性的。并且后面参数的同名属性会覆盖掉前面对象参数的同名属性。
+
+覆盖的例子是：
+
+```javascript
+let o = {x: 1};
+let p = {x: 0, ...o};
+console.log(p.x); //1
+let q = {...o, x: 2};
+console.log(q.x); //2
+```
+
+不会继承父对象的继承属性的例子是：
+
+```javas
+let o = Object.create({x: 1}) // x为o对象的一个继承属性
+let p = {...o};
+console.log(p.x); // undefined
+```
 
 
 
+对象的setter，getter方法 $\bigstar$
+
+```javascript
+const serialnum = {
+    _n: 0,
+    get next() {
+        return this._n++;
+    },
+    set next(n) {
+        if (n > this._n)
+            this._n = n;
+    }
+}
+
+serialnum.next = 10;
+console.log(serialnum.next); //10
+console.log(serialnum.next); //11
+console.log(serialnum); //{ _n: 12, next: [Getter/Setter] }
+```
+
+
+
+## 第七章 数组
+
+数组的特性：
+
++ 数组实质上也是对象
++ 最大的索引值是 $2^{32}-1$
++ 数组从Array.prototype继承属性
++ 定型数组 11.2
+
+---
 
 
 
