@@ -35,4 +35,18 @@ let o = {
 // console.log(target);
 
 
-console.log(Object.assign({x: 1}, {x: 2, y: 2}, {y: 3, z: 4}));
+// console.log(Object.assign({x: 1}, {x: 2, y: 2}, {y: 3, z: 4}));
+
+
+const PROPERTY_NAME = 'p1';
+
+function computerPropertyName() {
+    return "p" + 2;
+}
+
+let p={
+    [PROPERTY_NAME]:1,
+    [computerPropertyName()]:2
+}
+
+console.log(p.p1+p.p2);

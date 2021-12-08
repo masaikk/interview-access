@@ -40,11 +40,11 @@ o.hasOwnProperty("x"); // ture
 o.hasOwnProperty("toString"); // false 因为·这个是继承的属性。
 ```
 
-如果把x设置成undefined
+如果把x设置成undefined，
 
-!== undefined 为 ture
+!== undefined 为 ture。
 
-但是"y" in o 输出为false
+但是"y" in o 输出为false。
 
 
 
@@ -58,7 +58,7 @@ let o={
     y:2,
     z:3
 };
-console.log(o.propertyIsEnumerable("toString")); //显示false，因为这个属性不可枚举，也不是自由属性
+console.log(o.propertyIsEnumerable("toString")); //显示false，因为这个属性不可枚举，也不是自有属性
 console.log('---');
 for (let p in o){
     console.log(p);
@@ -122,6 +122,23 @@ o = {...defaults,...o}
 ```javascript
 Object.assign({x: 1}, {x: 2, y: 2}, {y: 3, z: 4})
 // { x: 2, y: 3, z: 4 }
+```
+
+可以在对象的中括号里面加入字符串来当做动态的加入对象的成员，如下：
+
+```javascript
+const PROPERTY_NAME = 'p1';
+
+function computerPropertyName() {
+    return "p" + 2;
+}
+
+let p={
+    [PROPERTY_NAME]:1,
+    [computerPropertyName()]:2
+}
+
+console.log(p.p1+p.p2);
 ```
 
 
