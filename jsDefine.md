@@ -194,6 +194,34 @@ console.log(serialnum); //{ _n: 12, next: [Getter/Setter] }
 
 ---
 
+数组的迭代器方法$\bigstar$
+
++ forEach():
+
+  **传三个参数：数组元素的值，数组元素索引，数组本身**
+
+  例如，递增每个元素的值：
+
+  ```javas
+  let data = [1, 2, 3, 4, 5]
+  data.forEach(function (v, i, a) {
+      a[i] = v + 1;
+  })
+  console.log(data);//[ 2, 3, 4, 5, 6 ]
+  ```
+
++ map()：
+
+​		对于每个元素来说，都会调用传入的函数，并且将函数的返回值当做新的数组的元素。**注意这个函数需要有返回值。**如果数组是稀疏的，那么缺省的元素不会调用这个函数。
+
+```javascript
+let data = [1, 2, 3, 4, 5];
+
+console.log(data.map(x => x * x));//[1, 4, 9, 16, 25]
+```
+
+
+
 
 
 

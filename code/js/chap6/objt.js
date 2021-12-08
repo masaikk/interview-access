@@ -76,6 +76,15 @@
 // console.log(q.x); //2
 
 
-let o = Object.create({x: 1}) // x为o对象的一个继承属性
-let p = {...o};
-console.log(p.x);// undefined
+// let o = Object.create({x: 1}) // x为o对象的一个继承属性
+// let p = {...o};
+// console.log(p.x);// undefined
+
+
+let data = [1, 2, 3, 4, 5]
+// data.forEach(function (v, i, a) {
+//     a[i] = v + 1;
+// })
+// console.log(data);//[ 2, 3, 4, 5, 6 ]
+
+console.log(data.map(x => x * x));//[1, 4, 9, 16, 25]
