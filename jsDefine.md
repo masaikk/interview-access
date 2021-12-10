@@ -220,6 +220,57 @@ let data = [1, 2, 3, 4, 5];
 console.log(data.map(x => x * x));//[1, 4, 9, 16, 25]
 ```
 
++ filter():
+
+返回一个数组的，而且这个数组一定是稠密的，对于每个元素都是属于原数组的。传入的参数是一个返回布尔类型的函数。
+
+同时，可以清除undefined和null的元素。
+
+```javascript
+let data = [1, 2, 3, 4, 5, null, undefined]
+
+console.log(data.filter(x => x < 2));//[ 1, null ]
+data = data.filter(x => x !== undefined && x !== null);//去除空元素
+console.log(data);//[ 1, 2, 3, 4, 5 ]
+```
+
+这个作为参数的函数还能有两个变量，一个是值，一个是index
+
+```javascript
+let data = [1, 2, 3, 4, 5, null, undefined]
+console.log(data.filter((x, i) => i % 2 === 0));//[ 1, 3, 5, undefined ]
+```
+
++ find() & findIndex():
+
+与filter()类似，传入一个函数作为变量。但是不同之处在于这两个函数是迭代到第一个ture的元素就会停止。而且这两个函数之间的不同是在于一个是迭代元素，一个是迭代坐标的，传入的作为变量的函数的自变量分别是元素和坐标。
+
++ reduce():
+
+待续
+
+---
+
+使用flat()打平数组
+
+```javascript
+let a = [1, [2, [3, [4]]]]
+console.log(a.flat(1));//[ 1, 2, [ 3, [ 4 ] ] ]
+console.log(a.flat(2));//[ 1, 2, 3, [ 4 ] ]
+console.log(a.flat(3));//[ 1, 2, 3, 4 ]
+console.log(a.flat(4));//[ 1, 2, 3, 4 ]
+```
+
+使用flat()的变量来指定打平的层数。
+
+---
+
+
+
+
+
+
+
 
 
 
