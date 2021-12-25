@@ -298,7 +298,93 @@ sort()方法，默认字典序排列数组。
 
 ## 第八章 函数
 
+函数表达式可以定义完立即执行
 
+```	javascript
+let squared = (function (x) {
+    return x * x;
+}(10))
+console.log(squared)
+//100
+```
+
+确定是否是严格模式
+
+```javascript
+const strict = (function () {
+    return !this;
+}());
+```
+
+在ES2020中，在函数表达式的后面，括号前插入?，从而只在函数不是null和undefined时调用函数。
+
+```javascript
+f?.(x)
+//相当于
+(f !== null && f !== undefined) ? f(x) : undefined
+```
+
+对于非严格模式下的函数（不是箭头函数）调用，调用上下文（this）是全局对象。在严格模式下，调用上下文是undefined。
+
+---
+
+**this指针$\bigstar\bigstar\bigstar$**
+
+除了箭头函数，嵌套函数不会继承包含函数的this值。
+
+如果嵌套函数（不是箭头函数）被当作函数来调用，则它的this值要么是全局对象（非严格模式），要么是undefined（严格模式）。
+
+```javascript
+let o = {
+    m: function () {
+        let self = this;
+        this === o;  // true
+        f();
+
+        function f() {
+            this === o; // false , this 是 undefined
+            self === o; // true
+        }
+    }
+};
+o.m();
+```
+
+注意在嵌套函数f()的内部，this并不等于对象o，这个问题可以通过在函数之外把一个值定为this来解决。
+
+另外两个解决办法：
+
++ 将这里的f()改为箭头函数
++ 使用bind()方法
+
+```javascript
+let o = {
+    m: function () {
+        let self = this;
+        this === o;  // true
+        f();
+
+        const f = () => {
+            this === o; // true
+        }
+    }
+};
+o.m();
+
+
+let o = {
+    m: function () {
+        let self = this;
+        this === o;  // true
+        f();
+
+        const f = (function () {
+            this === o; // ture
+        }).bind(this)
+    }
+};
+o.m();
+```
 
 
 
