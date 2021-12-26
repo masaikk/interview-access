@@ -10,7 +10,7 @@
 // }());
 
 
-let o = {
+/*let o = {
     m: function () {
         let self = this;
         this === o;  // true
@@ -21,4 +21,53 @@ let o = {
         }).bind(this)
     }
 };
-o.m();
+o.m();*/
+
+
+// function max(first = -Infinity, ...rest) {
+//     let maxValue = first;
+//
+//     for (let n of rest) {
+//         if (n > maxValue) {
+//             maxValue = n;
+//         }
+//     }
+//     return maxValue;
+// }
+
+
+/*uniqueInteger.counter=0;
+
+function uniqueInteger(){
+    return uniqueInteger.counter++;
+}
+
+console.log(uniqueInteger()); //0
+console.log(uniqueInteger()); //1
+console.log(uniqueInteger); // [Function: uniqueInteger] { counter: 2 }*/
+
+function factorial(n) {
+    if (Number.isInteger(n) && n > 0) {
+        if (!(n in factorial)) {
+            factorial[n] = n * factorial(n - 1);
+
+        }
+        return factorial[n];
+    } else {
+        return NaN;
+    }
+}
+
+factorial[1]=1;
+console.log(factorial(6));//720
+console.log(factorial[5]);//120
+console.log(factorial);
+/*[Function: factorial] {
+    '1': 1,
+        '2': 2,
+        '3': 6,
+        '4': 24,
+        '5': 120,
+        '6': 720
+}*/
+

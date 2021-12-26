@@ -386,6 +386,64 @@ let o = {
 o.m();
 ```
 
+接受不同个数的参数，可以使用“剩余形参”的方法（ES6）。但是剩余形参必须要在最后面，例如
+
+```javascript
+function max(first = -Infinity, ...rest) {
+    let maxValue = first;
+
+    for (let n of rest) {
+        if (n > maxValue) {
+            maxValue = n;
+        }
+    }
+    return maxValue;
+}
+```
+
+给函数定义自己的函数属性
+
+```javascript
+uniqueInteger.counter=0;
+
+function uniqueInteger(){
+    return uniqueInteger.counter++;
+}
+
+console.log(uniqueInteger()); // 0
+console.log(uniqueInteger()); // 1
+console.log(uniqueInteger); // [Function: uniqueInteger] { counter: 2 }
+```
+
+把数据缓存
+
+```javascript
+function factorial(n) {
+    if (Number.isInteger(n) && n > 0) {
+        if (!(n in factorial)) {
+            factorial[n] = n * factorial(n - 1);
+
+        }
+        return factorial[n];
+    } else {
+        return NaN;
+    }
+}
+
+factorial[1]=1;
+console.log(factorial(6));//720
+console.log(factorial[5]);//120
+console.log(factorial);
+/*[Function: factorial] {
+    '1': 1,
+        '2': 2,
+        '3': 6,
+        '4': 24,
+        '5': 120,
+        '6': 720
+}*/
+```
+
 
 
 
