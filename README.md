@@ -17,6 +17,7 @@
       +  《算法笔记》[kishiki](https://gitee.com/masaikk/kishiki)
       +  《Python科学计算和数据科学应用》[file](pymear.md) [code:data-deep-mear-exercise](https://gitee.com/masaikk/data-deep-mear-exercise)
 3.  添加网页上看到的杂项知识
+3.  看论文链接
 
 #### 架构说明
 

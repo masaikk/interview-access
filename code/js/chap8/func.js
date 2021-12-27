@@ -46,7 +46,7 @@ console.log(uniqueInteger()); //0
 console.log(uniqueInteger()); //1
 console.log(uniqueInteger); // [Function: uniqueInteger] { counter: 2 }*/
 
-function factorial(n) {
+/*function factorial(n) {
     if (Number.isInteger(n) && n > 0) {
         if (!(n in factorial)) {
             factorial[n] = n * factorial(n - 1);
@@ -61,7 +61,7 @@ function factorial(n) {
 factorial[1]=1;
 console.log(factorial(6));//720
 console.log(factorial[5]);//120
-console.log(factorial);
+console.log(factorial);*/
 /*[Function: factorial] {
     '1': 1,
         '2': 2,
@@ -70,4 +70,14 @@ console.log(factorial);
         '5': 120,
         '6': 720
 }*/
+
+let scope = 'global';
+function checkScope(){
+    let scope = 'local';
+    function f(){
+        return scope;
+    }
+    return f;
+}
+console.log(checkScope()()); // local
 

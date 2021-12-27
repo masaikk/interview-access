@@ -444,6 +444,45 @@ console.log(factorial);
 }*/
 ```
 
+---
+
+**闭包$\bigstar\bigstar\bigstar$** P188
+
+参看代码
+
+```javascript
+let scope = 'global';
+function checkScope(){
+    let scope = 'local';
+    function f(){
+        return scope;
+    }
+    return f;
+}
+console.log(checkScope()()); // local
+```
+
+其它重点看面经 **重要$\bigstar$**
+
+---
+
+call()方法和apply()方法
+
+他们允许简介调用一个函数，就像是这个对象的函数一样。
+
+```javascript
+f.call(o);
+f.apply(o);
+```
+
+就相当于
+
+```javascript
+o.m= f;
+o.m();
+delete o.m();
+```
+
 
 
 
