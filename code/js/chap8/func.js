@@ -71,13 +71,23 @@ console.log(factorial);*/
         '6': 720
 }*/
 
-let scope = 'global';
-function checkScope(){
-    let scope = 'local';
-    function f(){
-        return scope;
-    }
-    return f;
-}
-console.log(checkScope()()); // local
+// let scope = 'global';
+// function checkScope(){
+//     let scope = 'local';
+//     function f(){
+//         return scope;
+//     }
+//     return f;
+// }
+// console.log(checkScope()()); // local
 
+function f(y) {
+    return this.x + y;
+}// 需要绑定
+
+let o = {x: 1};
+let g = f.bind(o);
+console.log(g(2));// 3
+let p = {x: 10, g, f};
+console.log(p.g(2));// g 仍然绑定到o，输出3
+console.log(p.f(2)); // 12

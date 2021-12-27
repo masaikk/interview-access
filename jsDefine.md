@@ -466,7 +466,7 @@ console.log(checkScope()()); // local
 
 ---
 
-call()方法和apply()方法
+call()方法和apply()方法$\bigstar$
 
 他们允许简介调用一个函数，就像是这个对象的函数一样。
 
@@ -483,7 +483,33 @@ o.m();
 delete o.m();
 ```
 
+他们之间的区别是apply()是接受数组的
 
+```javascript
+f.call(o,1,2);
+f.apply(o,[1,2]);
+```
+
+bind()方法$\bigstar$
+
+将一个函数绑定到对象，并且返回一个函数
+
+P194 有点难以理解，**需要反复看**，并且区分箭头函数的this指针情况。
+
+实例代码
+
+```javascript
+function f(y) {
+    return this.x + y;
+}// 需要绑定
+
+let o = {x: 1};
+let g = f.bind(o);
+console.log(g(2));// 3
+let p = {x: 10, g, f};
+console.log(p.g(2));// g 仍然绑定到o，输出3
+console.log(p.f(2)); // 12
+```
 
 
 
