@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-
 # JavaScript权威指南
 
 ---
@@ -511,7 +503,19 @@ console.log(p.g(2));// g 仍然绑定到o，输出3
 console.log(p.f(2)); // 12
 ```
 
+---
 
+## 第九章 对象
+
+原型与构造函数的关系
+
+```javascript
+let F = function () {
+};
+let p = F.prototype;
+let c = p.constructor;
+console.log(c === F);//true
+```
 
 
 
