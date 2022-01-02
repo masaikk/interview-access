@@ -99,3 +99,43 @@ print(torch.zeros(3, 2).numpy())
 
 ---
 
+C++的进程fork问题
+
+文档代码位于https://juejin.cn/post/6912612368996368392
+
+代码位于根目录下的code/cpp/other中，注意cmakelists文件
+
+**感觉cmake的知识与写法之后都应该找找机会去补补。**
+
+![image-20220102155548317](know.assets/image-20220102155548317.png)
+
+对于fork函数来说，对于父进程和子进程都分别有一次返回。
+
+使用的代码如下所示：
+
+```c++
+#include <unistd.h>
+#include <stdio.h>
+
+
+int main(){
+    // 创建进程
+    pid_t pid = fork();
+
+    // 判断当前进程是父进程 还是子进程
+    if (pid > 0){			// 进程号 > 0，即为子进程的进程号，当前为父进程
+        printf("pid: %d\n", pid);
+        printf("I am parent process, pid: %d, ppid: %d\n", getpid(), getppid());
+    }
+    else if (pid == 0){		// 进程号 == 0，表示当前为子进程
+        printf("I am child process, pid: %d, ppid: %d\n", getpid(), getppid());
+    }
+
+    for (int i = 0; i < 5; i++){
+        printf("pid: %d, i : %d\n", getpid(), i);
+        sleep(1);
+    }
+    return 0;
+}
+```
+
