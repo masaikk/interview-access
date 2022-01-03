@@ -170,3 +170,28 @@ int main(){
     }
 ```
 
+---
+
+JavaScript的严格模式
+
+---
+
+cmakelist
+
+```cmake
+set(CMAKE_CXX_FLAGS "-march=native -o3")
+set(CMAKE_BUILD_TYPE "release")
+```
+
+优化模式只有在CMAKE_BUILD_TYPE为release的时候才生效
+
+```cmake
+add_executable(interview
+        code/cpp/other/cm.cpp
+        code/cpp/other/cm.h)add_executable
+```
+
+链接编译至可执行文件。第一行是生成的二进制文件名，后面是代码文件
+
+---
+
