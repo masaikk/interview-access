@@ -647,7 +647,38 @@ console.log(stats.stddev([1, 3, 5, 7, 9]));//3.1622776601683795
 
 Node使用require方法导入其他模块，这些模块在导入之前在自己的命名空间里面是私有的，通过设置Expoets对象的属性或者完全替换module.exports对象来导出公共API。
 
-Node定义了一个始终有定义的全局对象exports，可以讲想导出的对象设定为这个全局exports对象的属性。
+Node定义了一个始终有定义的全局对象exports，可以将想导出的对象设定为这个全局exports对象的属性。
 
+如果只是想导出一个函数或者类，就直接把导出的值赋值到module.exports
 
+```javascript
+module.exports = {
+    mean, stddev
+}
+```
 
+导入对象的require返回导出的值。
+
+文件![image-20220103120434435](jsDefine.assets/image-20220103120434435.png)
+
+可以通过导入整个对象或者解构赋值的方法导入部分特定的属性
+
+```javascript
+const stats = require('./stats');
+const {stddev} = require('./stats')
+const data = [1, 3, 5, 9, 7];
+console.log(stats.mean(data));
+console.log(stddev(data));
+```
+
+解构对象的重命名
+
+```javascript
+const {stddev: ddd} = require('./stats');//解构对象的重命名
+const data = [1, 3, 5, 9, 7];
+console.log(ddd(data));//3.1622776601683795
+```
+
+---
+
+ES6中的模块自动应用严格模式。即无法使用with和arguments对象。
