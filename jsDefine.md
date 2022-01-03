@@ -604,9 +604,50 @@ let s = new Span(1, 4);
 console.log([...s]);
 ```
 
+**如果很多子类的功能极其类似，那么应该”能组合就不继承“(favor composition over inheritance)**
 
+抽象类与类层次 无法理解此存在意义，有机会再补充 P222
 
+---
 
+## 第十章 模块
+
+node的require方法不是官方承认的
+
+ES6是export与import
+
+导出函数（*无法理解*）：
+
+```javascript
+const stats = (function () {
+    const sum = (x, y) => x + y;
+    const square = x => x * x;
+
+    function mean(data) {
+        return data.reduce(sum) / data.length;
+    }
+
+    function stddev(data) {
+        let m = mean(data);
+        return Math.sqrt(
+            data.map(x => x - m).map(square).reduce(sum) / (data.length - 1)
+        );
+    }
+
+    return {mean, stddev};
+}());
+
+console.log(stats.mean([1, 3, 5, 9, 7]));//5
+console.log(stats.stddev([1, 3, 5, 7, 9]));//3.1622776601683795
+```
+
+*上面的这个立即执行的常函数是有必要的吗？*
+
+---
+
+Node使用require方法导入其他模块，这些模块在导入之前在自己的命名空间里面是私有的，通过设置Expoets对象的属性或者完全替换module.exports对象来导出公共API。
+
+Node定义了一个始终有定义的全局对象exports，可以讲想导出的对象设定为这个全局exports对象的属性。
 
 
 
