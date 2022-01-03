@@ -172,7 +172,37 @@ int main(){
 
 ---
 
-JavaScript的严格模式
+JavaScript的严格模式 [JS 必须知道的基础《严格模式 'use strict'》 - 掘金 (juejin.cn)](https://juejin.cn/post/6844904120214618120)
+
+对于变量
+
++ 不允许意外创建全局变量
+
++ 不能使用 `delete` 操作符删除声明变量
+
++ 不用使用保留字（例如 ：implements、interface、let、package、 private、protected、public、static 和 yield 标识符）作为变量
+
+对于对象
+
++ 为只读属性赋值会抛出TypeError
+
++ 对不可配置的（nonconfigurable）的属性使用 delete 操作符会抛出TypeError
+
++ 为不可扩展的（nonextensible）的对象添加属性会抛出TypeError
+
+  + ```javascript
+    Object.preventExtensions({});
+    ```
+
++ 使用对象字面量时, 属性名必须唯一
+
+this指向
+
++ 全局作用域的函数中的this不再指向全局而是undefined。
+
++ 如果使用构造函数时，如果忘了加new，this不再指向全局对象，而是undefined报错
+
+其余的看以上链接。
 
 ---
 
