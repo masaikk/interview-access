@@ -507,7 +507,9 @@ console.log(p.f(2)); // 12
 
 ## 第九章 对象
 
-原型与构造函数的关系
+原型与构造函数的关系。
+
+类从原型继承属性。
 
 ```javascript
 let F = function () {
@@ -516,6 +518,95 @@ let p = F.prototype;
 let c = p.constructor;
 console.log(c === F);//true
 ```
+
+定义一个类，注意里面的迭代器方法
+
+```javascript
+class Range {
+    constructor(from, to) {
+        this.from = from;
+        this.to = to;
+    }
+
+    //类的方法之间不需要分号，并且也不需要function关键字
+    includes(x) {
+        return this.from <= x && x <= this.to;
+    }
+
+    * [Symbol.iterator]() {
+        for (let x = Math.ceil(this.from); x <= this.to; x++) {
+            yield x;
+        }
+    }//这个生成器方法让这个类可以迭代
+
+    toString() {
+        return `${this.from}...${this.to}`;
+    }
+}
+
+let r=new Range(1,5);
+console.log(r.includes(4));//true
+console.log([...r]) //[ 1, 2, 3, 4, 5 ]
+```
+
+类里面的代码**默认严格模式**
+
+函数的声明会提升，但是类的声明不会提升。
+
+JavaScript类的静态方法：
+
+比如给上面的类加上静态方法
+
+```javascript
+static parse(s) {
+        let matches = s.match(/^\((\d+)\.\.\.(\d+)\)$/);
+        if (!matches) {
+            throw new TypeError(`cannot parse ${s}`)
+        }
+        return new Range(parseInt(matches[1]), parseInt(matches[2]));
+    }
+```
+
+必须通过构造函数才能调用它，Range.prototype.parse()也不行。
+
+```javascript
+let r=Range.parse('(1...10)' ) ;
+console.log(r.includes(4));//true
+console.log([...r]) //[1, 2, 3, 4,  5, 6, 7, 8, 9, 10]
+```
+
+为已经声明的类添加方法，应该对原型直接添加，因为类从原型继承属性。
+
+```javascript
+if (!Range.prototype.fun) {
+    Range.prototype.fun = function (s) {
+        return s;
+    }
+}
+```
+
+JavaScript类的继承实际上就是子类的原型继承了父类的原型，在ES5之前的继承方法如下所示：
+
+```javascript
+function Span(start, span) {
+    if (span >= 0) {
+        this.from = start;
+        this.to = start + span;
+    } else {
+        this.to = start;
+        this.from = start + span;
+    }
+}
+
+Span.prototype = Object.create(Range.prototype);
+Span.prototype.constructor = Span;//定义自己构造函数
+let s = new Span(1, 4);
+console.log([...s]);
+```
+
+
+
+
 
 
 
