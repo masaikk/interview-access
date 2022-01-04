@@ -7,24 +7,24 @@
 防止某个对象被第三方库意外修改，建议使用Object.create()方法 $\bigstar$
 
 ```javascript
-let o={foo:'bar'};
+let o = {foo: 'bar'};
 library.func(Object.create(o))
 ```
 
 解释Object.create()
 
 ```javascript
-let o1=Object.create(null);
+let o1 = Object.create(null);
 // 这里o1没有任何对象属性
 
-let o2=Object.create(Object.prototype)
+let o2 = Object.create(Object.prototype)
 //创建一个空对象，类似于{}, new Object()
 ```
 
 判断一个对象是否含有某个属性
 
 ```javascript
-let o = {x:1};
+let o = {x: 1};
 "x" in o; //ture
 "toString" in o; //ture
 
@@ -38,32 +38,28 @@ o.hasOwnProperty("toString"); // false 因为·这个是继承的属性。
 
 但是"y" in o 输出为false。
 
-
-
 可以使用for 和 in 循环来判断一个对象的属性情况。
 
 但是使用这种循环不会出现继承的属性。
 
 ```javascript
-let o={
-    x:1,
-    y:2,
-    z:3
+let o = {
+    x: 1,
+    y: 2,
+    z: 3
 };
 console.log(o.propertyIsEnumerable("toString")); //显示false，因为这个属性不可枚举，也不是自有属性
 console.log('---');
-for (let p in o){
+for (let p in o) {
     console.log(p);
 }
 ```
 
-
-
 ```javascript
-let o={
-    x:1,
-    y:2,
-    z:3
+let o = {
+    x: 1,
+    y: 2,
+    z: 3
 };
 
 for (let p in o) {
@@ -91,8 +87,6 @@ for (let key of Object.keys(source)) {
 console.log(target);
 ```
 
-
-
 Object.assign()方法 $\bigstar$
 
 这个方法接受两个及以上的参数。都应该是对象。
@@ -104,7 +98,7 @@ o=Object.assign({},defaults,o);
 首先会把defaults的属性覆盖了{}，之后的o对象的属性覆盖了前面的对象。
 
 ```javascript
-o = {...defaults,...o}
+o = {...defaults, ...o}
 ```
 
 与上述的代码相类似。
@@ -123,12 +117,12 @@ function computerPropertyName() {
     return "p" + 2;
 }
 
-let p={
-    [PROPERTY_NAME]:1,
-    [computerPropertyName()]:2
+let p = {
+    [PROPERTY_NAME]: 1,
+    [computerPropertyName()]: 2
 }
 
-console.log(p.p1+p.p2);
+console.log(p.p1 + p.p2);
 ```
 
 在对象的继承{}当中使用拓展的字符...是不会的继承到父对象的继承属性的。并且后面参数的同名属性会覆盖掉前面对象参数的同名属性。
@@ -151,8 +145,6 @@ let p = {...o};
 console.log(p.x); // undefined
 ```
 
-
-
 对象的setter，getter方法 $\bigstar$
 
 ```javascript
@@ -172,8 +164,6 @@ console.log(serialnum.next); //10
 console.log(serialnum.next); //11
 console.log(serialnum); //{ _n: 12, next: [Getter/Setter] }
 ```
-
-
 
 ## 第七章 数组
 
@@ -204,7 +194,7 @@ console.log(serialnum); //{ _n: 12, next: [Getter/Setter] }
 
 + map()：
 
-​		对于每个元素来说，都会调用传入的函数，并且将函数的返回值当做新的数组的元素。**注意这个函数需要有返回值。**如果数组是稀疏的，那么缺省的元素不会调用这个函数。
+​ 对于每个元素来说，都会调用传入的函数，并且将函数的返回值当做新的数组的元素。**注意这个函数需要有返回值。**如果数组是稀疏的，那么缺省的元素不会调用这个函数。
 
 ```javascript
 let data = [1, 2, 3, 4, 5];
@@ -282,8 +272,6 @@ indexOf()表示从前往后找数组的某个元素，找到了就返回坐标�
 
 lastIndexOf()表示从后往前找。
 
-
-
 sort()方法，默认字典序排列数组。
 
 ---
@@ -312,8 +300,8 @@ const strict = (function () {
 
 ```javascript
 f?.(x)
-//相当于
-(f !== null && f !== undefined) ? f(x) : undefined
+    //相当于
+    (f !== null && f !== undefined) ? f(x) : undefined
 ```
 
 对于非严格模式下的函数（不是箭头函数）调用，调用上下文（this）是全局对象。在严格模式下，调用上下文是undefined。
@@ -396,9 +384,9 @@ function max(first = -Infinity, ...rest) {
 给函数定义自己的函数属性
 
 ```javascript
-uniqueInteger.counter=0;
+uniqueInteger.counter = 0;
 
-function uniqueInteger(){
+function uniqueInteger() {
     return uniqueInteger.counter++;
 }
 
@@ -422,7 +410,7 @@ function factorial(n) {
     }
 }
 
-factorial[1]=1;
+factorial[1] = 1;
 console.log(factorial(6));//720
 console.log(factorial[5]);//120
 console.log(factorial);
@@ -444,13 +432,17 @@ console.log(factorial);
 
 ```javascript
 let scope = 'global';
-function checkScope(){
+
+function checkScope() {
     let scope = 'local';
-    function f(){
+
+    function f() {
         return scope;
     }
+
     return f;
 }
+
 console.log(checkScope()()); // local
 ```
 
@@ -470,7 +462,7 @@ f.apply(o);
 就相当于
 
 ```javascript
-o.m= f;
+o.m = f;
 o.m();
 delete o.m();
 ```
@@ -478,8 +470,8 @@ delete o.m();
 他们之间的区别是apply()是接受数组的
 
 ```javascript
-f.call(o,1,2);
-f.apply(o,[1,2]);
+f.call(o, 1, 2);
+f.apply(o, [1, 2]);
 ```
 
 bind()方法$\bigstar$
@@ -544,7 +536,7 @@ class Range {
     }
 }
 
-let r=new Range(1,5);
+let r = new Range(1, 5);
 console.log(r.includes(4));//true
 console.log([...r]) //[ 1, 2, 3, 4, 5 ]
 ```
@@ -558,19 +550,21 @@ JavaScript类的静态方法：
 比如给上面的类加上静态方法
 
 ```javascript
-static parse(s) {
-        let matches = s.match(/^\((\d+)\.\.\.(\d+)\)$/);
-        if (!matches) {
-            throw new TypeError(`cannot parse ${s}`)
-        }
-        return new Range(parseInt(matches[1]), parseInt(matches[2]));
+static
+parse(s)
+{
+    let matches = s.match(/^\((\d+)\.\.\.(\d+)\)$/);
+    if (!matches) {
+        throw new TypeError(`cannot parse ${s}`)
     }
+    return new Range(parseInt(matches[1]), parseInt(matches[2]));
+}
 ```
 
 必须通过构造函数才能调用它，Range.prototype.parse()也不行。
 
 ```javascript
-let r=Range.parse('(1...10)' ) ;
+let r = Range.parse('(1...10)');
 console.log(r.includes(4));//true
 console.log([...r]) //[1, 2, 3, 4,  5, 6, 7, 8, 9, 10]
 ```
@@ -659,7 +653,9 @@ module.exports = {
 
 导入对象的require返回导出的值。
 
-文件![image-20220103120434435](jsDefine.assets/image-20220103120434435.png)
+文件视图如下所示：
+
+![image-20220103120434435](jsDefine.assets/image-20220103120434435.png)
 
 可以通过导入整个对象或者解构赋值的方法导入部分特定的属性
 
@@ -681,4 +677,61 @@ console.log(ddd(data));//3.1622776601683795
 
 ---
 
-ES6中的模块自动应用严格模式。即无法使用with和arguments对象。
+ES6中的模块自动应用严格模式。即无法使用with和arguments对象。 其余的看链接[konw](know.md)
+
+---
+
+对于ES6标准来说，使用export关键字导出即可，或者导出一个对象
+
+```javascript
+export const PI = Math.PI;
+
+//直接导出，通过export关键字
+export class Circle {
+    constructor(r) {
+        this.r = r;
+    }
+
+    area() {
+        return PI * this.r * this.r;
+    }
+}
+
+//或者如下方式导出
+export {PI, Circle}
+```
+
+注意，export关键字只能出现在JavaScript的顶层。并且如果这个模块只导出一个对象，应该使用export default关键字。为模块的默认导出，一个模块只能有一个默认导出。
+
+```javascript
+export default class BitSet{
+    //
+}
+```
+
+导入时使用import关键字，并且模块的默认导出的值会变成当前模块中指定标识符的值。
+
+```javascript
+import {BitSet} from "./bitset";
+
+// 重命名
+
+import {BitSet as bbb} from "./bitset";
+```
+
+---
+
+## 第十一章 JavaScript标准库
+
+P243 之后再补充
+
+---
+
+## 迭代器与生成器
+
+可以使用...来展开或者拓展可迭代对象
+
+```javascript
+let charsList = [..."abcd lbwnb"];
+console.log(charsList);//[ 'a', 'b', 'c', 'd', ' ', 'l', 'b', 'w', 'n', 'b']
+```
