@@ -723,11 +723,24 @@ import {BitSet as bbb} from "./bitset";
 
 ## 第十一章 JavaScript标准库
 
-P243 之后再补充
+可以使用Set的has方法来看一个元素是否位于这个集合中
+
+```javascript
+let primes = new Set([2,3,5,7]);
+console.log(primes.has(2)); //true
+console.log(primes.has(5)); //true
+console.log(primes.has('5')); //false
+```
+
+因为Set也可以迭代，所以可以使用...把它拆开
+
+```javascript
+console.log(...primes); // 2 3 5 7
+```
 
 ---
 
-## 迭代器与生成器
+## 第十二章 迭代器与生成器
 
 可以使用...来展开或者拓展可迭代对象
 
