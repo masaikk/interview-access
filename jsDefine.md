@@ -194,7 +194,7 @@ console.log(serialnum); //{ _n: 12, next: [Getter/Setter] }
 
 + map()：
 
-​ 对于每个元素来说，都会调用传入的函数，并且将函数的返回值当做新的数组的元素。**注意这个函数需要有返回值。**如果数组是稀疏的，那么缺省的元素不会调用这个函数。
+ 对于每个元素来说，都会调用传入的函数，并且将函数的返回值当做新的数组的元素。**注意这个函数需要有返回值。**如果数组是稀疏的，那么缺省的元素不会调用这个函数。
 
 ```javascript
 let data = [1, 2, 3, 4, 5];
@@ -738,6 +738,23 @@ console.log(primes.has('5')); //false
 console.log(...primes); // 2 3 5 7
 ```
 
+Map对象提供了一个与数组类似的键值对查询到功能，但是没有数组的下标取值快。
+
+与集合一样，任何的JavaScript值都可以作为键或值，包括null，undefined和NaN，对象和数组。并且使用了全等性来比较key。
+
+```javascript
+let m = new Map();
+ob = {};
+m.set({}, 1);
+m.set({}, 2);
+m.set(ob, 3);
+console.log(m.size);//3
+console.log(m.get({}));//undefined
+console.log(m.get(ob));//3
+```
+
+
+
 ---
 
 ## 第十二章 迭代器与生成器
@@ -748,3 +765,30 @@ console.log(...primes); // 2 3 5 7
 let charsList = [..."abcd lbwnb"];
 console.log(charsList);//[ 'a', 'b', 'c', 'd', ' ', 'l', 'b', 'w', 'n', 'b']
 ```
+
+可以通过map的entries()，keys()和values()方法来迭代map的键值对，键和值。
+
+```javascript
+let m = new Map();
+ob = {};
+m.set({}, 1);
+m.set({}, 2);
+m.set(ob, 3);
+
+console.log([...m.entries()])
+//[ [ {}, 1 ], [ {}, 2 ], [ {}, 3 ] ]
+```
+
+可迭代对象指的是任何具有专用迭代器的方法，并且该方法返回迭代器对象。以下的可迭代对象iterable的简单for/of循环的迭代器方法没有惯用名称，所以使用Symbol.iterator作为名字。
+
+```javascript
+let iterable = [99];
+let iterator = iterable[Symbol.iterator]();
+for (let res = iterator.next(); !res.done; res = iterator.next()) {
+    console.log(res.value); // 99
+}
+```
+
+---
+
+实现可迭代对象
