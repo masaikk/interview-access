@@ -550,8 +550,7 @@ JavaScript类的静态方法：
 比如给上面的类加上静态方法
 
 ```javascript
-static
-parse(s)
+static parse(s)
 {
     let matches = s.match(/^\((\d+)\.\.\.(\d+)\)$/);
     if (!matches) {
@@ -791,4 +790,72 @@ for (let res = iterator.next(); !res.done; res = iterator.next()) {
 
 ---
 
-实现可迭代对象
+实现可迭代对象 $\bigstar$
+
+ 为了让类可以迭代，必须实现一个名为Symbol.iterator的方法。这个方法必须返回一个迭代器对象，该对象有一个next()方法。这个next()方法也必须返回一个迭代器对象，该对象有一个value属性或者一个布尔的done属性。
+
+P296
+
+---
+
+生成器
+
+调用生成器是返回一个生成器对象。这个生成器对象是一个迭代器。调用next方法会导致生成器函数执行到一个yield方法。它的值会成为调用迭代器next的方法。
+
+```javascript
+let o={
+    x:1,y:2,z:3,
+    *g(){
+        for(let key of Object.keys(this)){
+            yield key;
+        }
+    }
+};
+
+console.log([...o.g()])
+//[ 'x', 'y', 'z', 'g' ]
+```
+
+o.g()返回了一个生成器对象。
+
+同时也可以定义无限生成器
+
+下面的take生成器可以接受无限生成器并且按照n的次数迭代
+
+```javascript
+function* fibonacci() {
+    let x = 0, y = 1;
+    for (; ;) {
+        yield y;
+        [x, y] = [y, x + y];
+    }
+}
+
+function * take(n,iterable){
+    let it=iterable[Symbol.iterator]();
+    while (n-->0){//n是循环的次数
+        let next=it.next();
+        if(next.done)
+            return;
+        else
+            yield next.value;
+
+    }
+}
+
+console.log([...take(5, fibonacci())]);
+//[ 1, 1, 2, 3, 5 ]
+```
+
+生成器知识，详见P302。
+
+---
+
+## 第十三章 异步JavaScript
+
+
+
+
+
+
+
