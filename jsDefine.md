@@ -853,9 +853,57 @@ console.log([...take(5, fibonacci())]);
 
 ## 第十三章 异步JavaScript
 
+promise这里解释的不太好，自己看面经
 
+---
 
+**await**
 
+await promise 会一直等待到promise被执行，返回一个兑现值或者正常值。通常不会把这await放在promise变量前，而是放在返回promise的语句前。
 
+```javascript
+let response = await fetch(URL);
+```
 
+await并不是将程序阻塞或者在promise得到解决前什么事也不做，代码仍然是异步的。
+
+因此，就必须只能在声明为async的函数内部使用await关键字。这里也表示这个函数返回一个promise。
+
+---
+
+异步迭代 
+
+无法理解意义P333
+
+本章知识感觉有点脱离框架无法使用，在Vue3网课里面再做补充学习。
+
+---
+
+## 第十四章 元编程
+
+介绍JavaScript特性的章节，日常开发用处不大，等回来再学。
+
+P340
+
+---
+
+## 第十五章 浏览器中的JavaScript
+
+按需加载模块
+
+```javascript
+function importScript(url) {
+    return new Promise((resolve, reject) => {
+        let s = document.createElement('script');
+        s.onload = () => {
+            resolve();
+        }
+        s.onerror = (e) => {
+            reject(e);
+        }
+        s.src = url;
+        document.head.append(s);
+    })
+}
+```
 
