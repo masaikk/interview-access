@@ -225,3 +225,12 @@ add_executable(interview
 
 ---
 
+WGAN
+
+- 判别器最后一层去掉sigmoid
+- 生成器和判别器的loss不取log
+- 每次更新判别器的参数之后把它们的绝对值截断到不超过一个固定常数c
+- 不要用基于动量的优化算法（包括momentum和Adam），推荐RMSProp，SGD也行
+
+---
+
