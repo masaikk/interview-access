@@ -234,3 +234,61 @@ WGAN
 
 ---
 
+webpack $\bigstar$
+
+这里位于Vue3视频的第六集。是cli的基础，在此记录代码，相当于对于之前学习的复习。
+
+代码仓库位于 [wbpk: webpack studying (gitee.com)](https://gitee.com/masaikk/wbpk)
+
+webpack 的基本配置的入口是位于当前目录下面src文件夹下面的index.js
+
+默认的输出文件是在dist文件下面的。
+
+注意：如果是使用webpack.config.js来配置文件的话，对于输出的文件，需要使用绝对路径。这也建议搭配node的path库来使用。例如：
+
+```javascript
+const path = require('path')
+module.exports = {
+   // 入口文件
+    entry: './src/index.js',
+    // 输出文件
+    output: {
+        filename: 'build/bundle.js',
+        path: path.resolve(__dirname, 'dist')
+    }, 
+}
+```
+
+注意，出现报错*Uncaught TypeError: Cannot read properties of null (reading 'appendChild')*这里表示body节点还没创建出来就引用了这个js文件。应该让它在body节点中被包含。
+
+创建一个实例的js文件，生成一个节点并且加入到body中。如下：
+
+```javascript
+const eleDiv=document.createElement('div');
+eleDiv.className='cls';
+eleDiv.innerHTML="Webpack";
+
+document.body.appendChild(eleDiv);
+```
+
+在index.js文件中，可以通过这样的代码引入：
+
+```javascript
+import './out'
+```
+
+然后，实际上引入由webpack打包的代码的写法应该这样表示，应该写在body节点中间：
+
+```javascript
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+<script src="./build/bundle.js"></script>
+</body>
+```
+
+能在页面中显示
+
+![image-20220123193846735](C:/Users/masaikk/Desktop/interview-access/know.assets/image-20220123193846735.png)
