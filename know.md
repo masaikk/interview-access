@@ -291,4 +291,25 @@ import './out'
 
 能在页面中显示
 
-![image-20220123193846735](C:/Users/masaikk/Desktop/interview-access/know.assets/image-20220123193846735.png)
+![image-20220123193846735](C:/Users/masaikk/Desktop/interview-access/image-20220123193846735.png)
+
+在对于loader执行的顺序时，是对use数组从后到前进行使用，例如对于css或者less的loader的代码为
+
+```javascript
+{
+test: /\.css$/,
+use: ['style-loader', 'css-loader']
+},
+{
+test: /\.less$/,
+use: ['style-loader', 'css-loader', 'less-loader']
+},
+```
+
+在webpack.config.js的文件里面可以指定webpack的运行模式，区别是在于输出的代码是否有压缩，设置如下：
+
+```javascript
+    // mode: "development"
+    mode: "production"
+```
+
