@@ -313,3 +313,50 @@ use: ['style-loader', 'css-loader', 'less-loader']
     mode: "production"
 ```
 
+对于某个loader的opinions的设置，也可以单独写出config.js文件进行表示。比如说postcss-loader插件，可以把现代的css代码转化为浏览器可以使用的css代码。其中，postcss.config.js的代码如下所示
+
+```javascript
+module.exports ={
+    plugins:[
+        require("postcss-preset-env")
+    ]
+}
+```
+
+这里就相当于webpack.config.js中的
+
+```javascript
+            {
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader',{
+                    loader: "postcss-loader",
+                    options: {
+                        postcssOpinions:{
+                            plugins:[
+                                require("postcss-preset-env")
+                            ]
+                        }
+                    }
+                }]
+            },
+```
+
+而打包如下的css代码的时候，就需要此插件
+
+```javascript
+.cls{
+    color: red;
+    font-weight: 700;
+    font-size: 30px;
+    background: #12345678;
+    /*8位的颜色需要用postcss-loader的插件进行打包*/
+
+    user-select: none;
+    /*这里需要webpack打包*/
+}
+```
+
+最终打包的结果是
+
+![image-20220124130137160](C:/Users/masaikk/Desktop/interview-access/know.assets/image-20220124130137160.png)
+
