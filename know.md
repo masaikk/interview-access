@@ -1,5 +1,7 @@
 # 杂项知识
 
+### pytorch的unsqueeze和squeeze方法
+
 pytorch的unsqueeze和squeeze方法，分别对张量进行升维和降维，链接如：
 
 https://zhuanlan.zhihu.com/p/86763381
@@ -99,7 +101,7 @@ print(torch.zeros(3, 2).numpy())
 
 ---
 
-C++的进程fork问题
+### C++的进程fork问题
 
 文档代码位于https://juejin.cn/post/6912612368996368392
 
@@ -172,7 +174,9 @@ int main(){
 
 ---
 
-JavaScript的严格模式 [JS 必须知道的基础《严格模式 'use strict'》 - 掘金 (juejin.cn)](https://juejin.cn/post/6844904120214618120)
+### JavaScript的严格模式
+
+来自于 [JS 必须知道的基础《严格模式 'use strict'》 - 掘金 (juejin.cn)](https://juejin.cn/post/6844904120214618120)
 
 对于变量
 
@@ -206,7 +210,7 @@ this指向
 
 ---
 
-cmakelist
+### cmakelist
 
 ```cmake
 set(CMAKE_CXX_FLAGS "-march=native -o3")
@@ -225,7 +229,7 @@ add_executable(interview
 
 ---
 
-WGAN
+### WGAN
 
 - 判别器最后一层去掉sigmoid
 - 生成器和判别器的loss不取log
@@ -234,7 +238,9 @@ WGAN
 
 ---
 
-webpack $\bigstar$
+### webpack $\bigstar$
+
+#### webpack.config.js
 
 这里位于Vue3视频的第六集。是cli的基础，在此记录代码，相当于对于之前学习的复习。
 
@@ -279,7 +285,7 @@ import './out'
 
 然后，实际上引入由webpack打包的代码的写法应该这样表示，应该写在body节点中间：
 
-```javascript
+```html
 <head>
     <meta charset="UTF-8">
     <title>index</title>
@@ -359,4 +365,56 @@ module.exports ={
 最终打包的结果是
 
 ![image-20220124130137160](C:/Users/masaikk/Desktop/interview-access/know.assets/image-20220124130137160.png)
+
+#### file-loader
+
+使用这个插件对于静态的图片文件进行打包。*但是webpack5已经不建议用这个插件了。*
+
+对于某个图片节点下的src的背景图片的插入，在webpack的打包中，不应该使用路径导入，而是应该使用import导入。
+
+webpack.config.js的配置如下
+
+![image-20220124182720955](C:/Users/masaikk/Desktop/interview-access/know.assets/image-20220124182720955.png)
+
+应该使用如下的代码使用图片：
+
+```javascript
+import m200 from './m200.gif';
+
+const imgNode = document.createElement('img');
+imgNode.src=m200;
+
+
+document.body.appendChild(eleDiv);
+```
+
+可以通过占位符之类的配置将打包的图片文件之类的输出表示不为哈希值。
+
+占位符可以查看[file-loader | webpack](https://v4.webpack.js.org/loaders/file-loader/#placeholders)
+
+比如使用这样的占位符可以输出到dist与原文件夹相同的文件夹下面，且保存原名和原后缀名以及加上了六位哈希值
+
+```javascript
+{
+                test: /\.(png|jpg|gif)$/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            name:'[folder]/[name]_[hash:6].[ext]'
+                        },
+                    },
+                ],
+            },
+```
+
+文件结构如下
+
+![image-20220124183616811](C:/Users/masaikk/Desktop/interview-access/know.assets/image-20220124183616811.png)
+
+![image-20220124183638616](C:/Users/masaikk/Desktop/interview-access/know.assets/image-20220124183638616.png)
+
+*关于占位符的其他内容就看文档，此外webpack不推荐file-loader了。*
+
+
 
