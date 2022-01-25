@@ -297,7 +297,7 @@ import './out'
 
 能在页面中显示
 
-![image-20220123193846735](C:/Users/masaikk/Desktop/interview-access/image-20220123193846735.png)
+![image-20220123193846735](image-20220123193846735.png)
 
 在对于loader执行的顺序时，是对use数组从后到前进行使用，例如对于css或者less的loader的代码为
 
@@ -364,7 +364,7 @@ module.exports ={
 
 最终打包的结果是
 
-![image-20220124130137160](C:/Users/masaikk/Desktop/interview-access/know.assets/image-20220124130137160.png)
+![image-20220124130137160](know.assets/image-20220124130137160.png)
 
 #### file-loader
 
@@ -374,7 +374,7 @@ module.exports ={
 
 webpack.config.js的配置如下
 
-![image-20220124182720955](C:/Users/masaikk/Desktop/interview-access/know.assets/image-20220124182720955.png)
+![image-20220124182720955](know.assets/image-20220124182720955.png)
 
 应该使用如下的代码使用图片：
 
@@ -410,11 +410,47 @@ document.body.appendChild(eleDiv);
 
 文件结构如下
 
-![image-20220124183616811](C:/Users/masaikk/Desktop/interview-access/know.assets/image-20220124183616811.png)
+![image-20220124183616811](know.assets/image-20220124183616811.png)
 
-![image-20220124183638616](C:/Users/masaikk/Desktop/interview-access/know.assets/image-20220124183638616.png)
+![image-20220124183638616](know.assets/image-20220124183638616.png)
 
 *关于占位符的其他内容就看文档，此外webpack不推荐file-loader了。*
 
+### webpack打包模式
 
+设置为development而且设置devtool为map模型，就能进行debug。
 
+代码如下
+
+```javascript
+    mode: "development",
+    devtool: "source-map",
+```
+
+打包出来多了一个js.map文件
+
+![image-20220125224515828](know.assets/image-20220125224515828.png)
+
+### webpack的plugin
+
+大部分都是第三方开发，用的使用查文档。
+
+介绍CleanWebpackPlugin，用于自动清理上一次webpack打包之后的文件。
+
+导入时也是用对象解析的方式
+
+```javascript
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+```
+
+使用时新建一个对象
+
+```javascript
+    plugins: [
+        // new HtmlWebpackPlugin({
+        //     template: "./src/index.html",
+        //     allChunks: true
+        // })
+        new CleanWebpackPlugin(),
+    ],
+```
