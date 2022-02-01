@@ -82,5 +82,79 @@ person.constructor === Person.prototype.constructor
 
 [JavaScript深入之继承的多种方式和优缺点 · Issue #16 · mqyqingfeng/Blog (github.com)](https://github.com/mqyqingfeng/Blog/issues/16)
 
-继承分为原型链继承和经典继承，下面将讨论优缺点
+*感觉这里是ES5留下的糟粕，还应该关注一下webpack babel转义ES6之后具体用的哪种方式。*
 
+继承分为原型链继承，经典（使用构造函数）继承，组合继承，原型式继承，寄生式继承，寄生组合式继承六种。下面将讨论优缺点
+
+原型链继承为：
+
+```javascript
+function Parent () {
+    this.name = 'kevin';
+}
+
+Parent.prototype.getName = function () {
+    console.log(this.name);
+}
+
+function Child () {
+
+}
+
+Child.prototype = new Parent();
+
+var child1 = new Child();
+
+console.log(child1.getName()) // kevin
+```
+
+这里带来了两个缺点：
+
++ 父对象的属性对于每个子对象来说都是共用的（相当于静态属性）。
++ 在创建 Child 的实例时，不能向Parent传参。
+
+以下是使用构造函数继承的方法
+
+```javascript
+function Parent () {
+    this.names = ['kevin', 'daisy'];
+}
+
+function Child () {
+    Parent.call(this);
+}
+
+var child1 = new Child();
+
+child1.names.push('yayu');
+
+console.log(child1.names); // ["kevin", "daisy", "yayu"]
+
+var child2 = new Child();
+
+console.log(child2.names); // ["kevin", "daisy"]
+```
+
+这里的优点在于父对象的每个属性在不同的子对象里面有各自的。并且也可以向父对象传参了。
+
+```javascript
+function Parent (name) {
+    this.name = name;
+}
+
+function Child (name) {
+    Parent.call(this, name);
+}
+
+var child1 = new Child('kevin');
+
+console.log(child1.name); // kevin
+
+var child2 = new Child('daisy');
+
+console.log(child2.name); // daisy
+```
+
+*这里的call()方法观看之前js权威指南的笔记。*
+
+这种继承方法的缺点是，方法都在构造函数中定义，每次创建实例都会创建一遍方法。
