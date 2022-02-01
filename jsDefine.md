@@ -452,7 +452,7 @@ console.log(checkScope()()); // local
 
 call()方法和apply()方法$\bigstar$
 
-他们允许简介调用一个函数，就像是这个对象的函数一样。
+他们允许简单调用一个函数，就像是这个对象的函数一样。
 
 ```javascript
 f.call(o);
