@@ -32,6 +32,7 @@ npm install ts-node tslib @types/node --save
 
    ```javascript
    const path=require('path');
+   const HtmlWebpackPlugin = require('html-webpack-plugin');
    
    module.exports ={
        entry: "./src/main.ts",
@@ -40,7 +41,10 @@ npm install ts-node tslib @types/node --save
            filename: "bundle.js",
        },
        resolve: {
-           extensions: [".ts"]
+           extensions: [".ts",'.js']
+       },
+       devServer: {
+   
        },
        module: {
            rules: [
@@ -49,7 +53,13 @@ npm install ts-node tslib @types/node --save
                    loader: "ts-loader"
                }
            ]
-       }
+       },
+       plugins: [
+           new HtmlWebpackPlugin({
+               template: "index.html"
+           })
+       ],
+       mode: "development"
    }
    ```
 
@@ -62,3 +72,37 @@ npm install ts-node tslib @types/node --save
    ```
 
    创建tsconfig.json文件
+
+4. 如果感觉频繁刷新繁琐，可以使用webpack-dev-server并且使用webpack serve命令。
+
+   ```json
+   {
+     "name": "test_webpack_ts",
+     "version": "1.0.0",
+     "description": "",
+     "main": "index.js",
+     "scripts": {
+       "test": "echo \"Error: no test specified\" && exit 1",
+       "build": "webpack",
+       "serve": "webpack serve"
+     },
+     "keywords": [
+       "ts"
+     ],
+     "author": "masaikk",
+     "license": "ISC",
+     "devDependencies": {
+       "ts-loader": "^9.2.6",
+       "typescript": "^4.5.5",
+       "webpack": "^5.68.0",
+       "webpack-cli": "^4.9.2",
+       "webpack-dev-server": "^4.7.4"
+     }
+   }
+   ```
+
+   文件的目录可以参考
+
+   ![image-20220203174758188](ts.assets/image-20220203174758188.png)
+
+   
