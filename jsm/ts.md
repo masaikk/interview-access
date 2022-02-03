@@ -41,7 +41,7 @@ npm install ts-node tslib @types/node --save
            filename: "bundle.js",
        },
        resolve: {
-           extensions: [".ts",'.js']
+           extensions: [".ts",".js",".cjs",".json"]
        },
        devServer: {
    
@@ -61,6 +61,7 @@ npm install ts-node tslib @types/node --save
        ],
        mode: "development"
    }
+   
    ```
 
    
@@ -104,5 +105,19 @@ npm install ts-node tslib @types/node --save
    文件的目录可以参考
 
    ![image-20220203174758188](ts.assets/image-20220203174758188.png)
+
+   ---
+
+   ### 类型的名称
+
+   number/string对应的是typescript中的数字和字符串类型。
+
+   String对应着JavaScript的字符串包装类。
+
+   Number对应着JavaScript的数值包装类。
+
+   **注意区分**
+
+   ---
 
    
