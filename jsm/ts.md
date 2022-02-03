@@ -10,11 +10,15 @@
 export {}
 ```
 
+---
+
 ### 使用ts-node安装typescript运行环境
 
 ```shell
 npm install ts-node tslib @types/node --save
 ```
+
+---
 
 ### 使用webpack安装typescript运行环境
 
@@ -106,7 +110,9 @@ npm install ts-node tslib @types/node --save
 
    ![image-20220203174758188](ts.assets/image-20220203174758188.png)
 
-   ---
+
+
+---
 
    ### 类型的名称
 
@@ -118,7 +124,7 @@ npm install ts-node tslib @types/node --save
 
    **注意区分**
 
-   ---
+---
 
    ### unknown与any类型的区别
 
@@ -128,7 +134,7 @@ npm install ts-node tslib @types/node --save
 
    建议多使用unknown。
 
-   ---
+---
 
    ### never类型
 
@@ -156,7 +162,7 @@ npm install ts-node tslib @types/node --save
 
    类似与以上代码，如果使用了别的类型的参数，就会报错。
 
-   ---
+---
 
    ### tuple类型
 
@@ -198,4 +204,25 @@ npm install ts-node tslib @types/node --save
    const [flag, setFlag] = useState(true);
    ```
 
-   
+---
+
+### 函数的类型
+
+函数的返回值类型一般会因为可以自动推导而不写。
+
+对于forEach方法的匿名函数来说，参数类型可以不写。
+
+以上const tu: [T, (newState: T) => void] = [currentState, changeState];的(newState: T) => void是一个函数类型。
+
+---
+
+### 对象类型
+
+举例
+
+```ty
+function useObject(obj:{x:number,y:number,z?:number}):number{
+    return obj.x+obj.y
+}
+```
+
