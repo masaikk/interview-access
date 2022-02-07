@@ -226,3 +226,73 @@ function useObject(obj:{x:number,y:number,z?:number}):number{
 }
 ```
 
+---
+
+### 断言
+
+as关键字用于子对象实例强制像父对象转化。（类似于多态）
+
+```typescript
+class Person {
+}
+
+class Student extends Person {
+    study() {
+
+    };
+}
+
+function doSomething(p: Person) {
+    (p as Student).study();
+}
+```
+
+实际上可以脱离上诉问题局限，直接转化类型。类似于：
+
+```typescript
+const mess: string = "lbwnb";
+const num: number = (mess as unknown) as number;
+```
+
+**非空类型断言**
+
+适用于某个方法的可选参数（因为可能造成undefined），使用关键字``!``。这里可以确保一定不是undefined
+
+```typescript
+function printMessLength(mess: string) {
+    console.log(mess!.length);
+}
+printMessLength(mess);
+```
+
+*参考JS权威指南的笔记。*
+
+---
+
+### !!和??
+
+``!!``一元，用于把数据转化成Boolean值
+
+``??``二元，用于空值合并操作符，当操作符左值是null或者undefined的时候，返回右值，否则就返回左值。
+
+```typescript
+let message: string | null = '??';
+const constant = message ?? "other";
+// const constant = message ? message : "other";
+```
+
+---
+
+### 函数类型
+
+*不同于C++，函数类型的形参的名字在定义的时候不能省略。*
+
+```ty
+type addFunctionType = (number1: number, number2: number) => number;
+
+const addFunc: addFunctionType = (num1: number, num2: number) => {
+    return num1 + num2;
+};
+```
+
+如上诉代码所示，addFunctionType中的number1和number2的名字不能被省略。
