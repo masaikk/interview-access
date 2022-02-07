@@ -2,6 +2,8 @@
 
 这里是Vue3网课的TS部分的笔记。代码仓库位于[tms: Typescript学习 (gitee.com)](https://gitee.com/masaikk/tms)。
 
+---
+
 ### 作用域问题
 
 对于同一目录下面的ts文件，编译器视为同一作用域，这就意味着不同文件中取名相同的变量会冲突。这就需要标定某个文件为块级作用域。应该在文件中写上代码
@@ -295,4 +297,43 @@ const addFunc: addFunctionType = (num1: number, num2: number) => {
 };
 ```
 
-如上诉代码所示，addFunctionType中的number1和number2的名字不能被省略。
+如上的代码所示，addFunctionType中的number1和number2的名字不能被省略。
+
+---
+
+### 类的基本定义，继承和抽象类
+
+暂时跳过，感觉以后需要再回来看。P29
+
+---
+
+### 接口
+
+类似于
+
+```typescript
+interface IInfoType {
+    readonly name: string
+    age: number
+    friend?: {
+        name: string
+    }
+}
+
+const info: IInfoType = {
+    name: "why",
+    age: 18,
+    friend: {
+        name: "kobe"
+    }
+}
+
+console.log(info.friend?.name)
+console.log(info.name)
+// info.name = "123"
+info.age = 20
+```
+
+---
+
+从P30开始
