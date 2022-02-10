@@ -51,3 +51,135 @@ P19 P20 P21
 ### vue-router
 
 router-link的replace属性代表着url是否会被压栈。默认没这个属性就不会压栈。
+
+#### 懒加载
+
+类似于如下代码
+
+```javascript
+    {
+        path: '/about',
+        name: 'About',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    },
+```
+
+这样的话可以讲打包后的js文件分开，并且在打包的时候也可以指定打包后的js文件的名字，例如
+
+```javascript
+component: () => import(/* webpackChunkName: "type-chunk" */'../views/Type.vue')
+```
+
+打包后的文件如下
+
+![image-20220210174219899](vue.assets/image-20220210174219899.png)
+
+#### 路由中的name属性
+
+可以通过名字来跳转
+
+#### 路由中的meta属性
+
+传入一个对象来承载自定义数据
+
+#### 动态路由匹配
+
+类似Django的urls，使用匹配的方式来设置动态路由
+
+```javascript
+    {
+        path: '/user/:uid',
+        name: 'user',
+        component: () => import(/* webpackChunkName: "user-chunk" */'../views/User.vue')
+    }
+```
+
+相应的，在App.vue文件里面的view-linker也要修改``<router-link to="/user/10">我</router-link>``
+
+可以在vue文件里面通过``this.$route``来访问
+
+![image-20220210182143760](vue.assets/image-20220210182143760.png)
+
+或者使用vue-router4以上提供的hook函数
+
+```javascript
+import { useRoute } from 'vue-router'
+
+  setup(){
+    const route = useRoute();
+    console.log(route.params.uid);
+  },
+```
+
+#### NotFound
+
+如果路由没有匹配到，显示的页面
+
+```javascript
+    {
+        path: "/:pathMatch(.*)*",
+        component: ()=>import(/* webpackChunkName: "PageNotFound"*/'../views/NotFound.vue')
+    }
+```
+
+注意要放在urls的最下面
+
+而且能通过代码``$route.params.pathMatch``拿到。
+
+#### 路由嵌套
+
+等于向路由列表里面添加children属性
+
+```javascript
+{
+        path: '/father',
+        name: 'father',
+        component: ()=>import(/* webpackChunkName: "father-chunk" */'../views/Father.vue'),
+        children:[
+            {
+                path: 'son1',
+                component:()=>import(/* webpackChunkName: "son1-ch"*/'../views/FatherSon1.vue')
+
+            },
+            {
+                path: 'son2',
+                component:()=>import(/* webpackChunkName: "son2-ch"*/'../views/FatherSon2.vue')
+
+            },
+        ]
+    },
+```
+
+**并且注意，子路由不需要加上``\``**
+
+#### 用代码跳转路由
+
+注意\$router和\$route区别
+
+```javascript
+  methods:{
+    jumpToFather(){
+      this.$router.push('/father')
+    }
+  }
+```
+
+也提供了在setup()里面使用的hook
+
+先``import {useRouter} from 'vue-router';``
+
+```javascript
+setup(){
+    const router = useRouter();
+    const jumpToFatherInSetupFunc=()=>{
+      router.push('/father')
+    }
+    return {
+      jumpToFatherInSetupFunc
+    }
+  }
+```
+
