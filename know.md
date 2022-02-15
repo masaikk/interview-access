@@ -459,5 +459,115 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 ---
 
+### tensor.clone()
+
+返回[tensor](https://so.csdn.net/so/search?q=tensor&spm=1001.2101.3001.7020)的拷贝，返回的新tensor和原来的tensor具有同样的大小和数据类型.。
+
+**原tensor的requires_grad=True**
+
+clone()返回的tensor是中间节点，梯度会流向原tensor，即返回的tensor的梯度会叠加在原tensor上
+
+```python
+>>> import torch
+>>> a = torch.tensor(1.0, requires_grad=True)
+>>> b = a.clone()
+>>> id(a), id(b)  # a和b不是同一个对象
+(140191154302240, 140191145593424)
+>>> a.data_ptr(), b.data_ptr()  # 也不指向同一块内存地址
+(94724518544960, 94724519185792)
+>>> a.requires_grad, b.requires_grad  # 但b的requires_grad属性和a的一样，同样是True
+(True, True)
+>>> c = a * 2
+>>> c.backward()
+>>> a.grad
+tensor(2.)
+>>> d = b * 3
+>>> d.backward()
+>>> b.grad  # b的梯度值为None，因为是中间节点，梯度值不会被保存
+>>> a.grad  # b的梯度叠加在a上
+tensor(5.)
+```
+
+**原tensor的requires_grad=False**
+
+```python
+>>> import torch
+>>> a = torch.tensor(1.0)
+>>> b = a.clone()
+>>> id(a), id(b)  # a和b不是同一个对象
+(140191169099168, 140191154762208)
+>>> a.data_ptr(), b.data_ptr()  # 也不指向同一块内存地址
+(94724519502912, 94724519533952)
+>>> a.requires_grad, b.requires_grad  # 但b的requires_grad属性和a的一样，同样是False
+(False, False)
+>>> b.requires_grad_()
+>>> c = b * 2
+>>> c.backward()
+>>> b.grad
+tensor(2.)
+>>> a.grad  # None
+```
+
+---
+
+### torch.nn/torch.functional
+
+[pytorch中nn.functional()学习总结_fly_Xiaoma的博客-CSDN博客_torch.nn.function](https://blog.csdn.net/weixin_38664232/article/details/94662534?spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-1.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-1.pc_relevant_default&utm_relevant_index=2)
+
+nn.functional是一个很常用的模块，nn中的大多数layer在functional中都有一个与之对应的函数。nn.functional中的函数与nn.Module()的区别是：
+
+nn.Module实现的层（layer）是一个特殊的类，都是由class Layer(nn.Module)定义，会自动提取可学习的参数
+nn.functional中的函数更像是纯函数,由def functional(input）定义
+
+注意：
+
+如果模型有可学习的参数时，最好使用nn.Module；否则既可以使用nn.functional也可以使用nn.Module，二者在性能上没有太大差异，具体的使用方式取决于个人喜好。由于激活函数（ReLu、sigmoid、Tanh）、池化（MaxPool）等层没有可学习的参数，可以使用对应的functional函数，而卷积、全连接等有可学习参数的网络建议使用nn.Module。
+
+注意：
+
+虽然dropout没有可学习参数，但建议还是使用nn.Dropout而不是nn.functional.dropout，因为dropout在训练和测试两个阶段的行为有所差别，使用nn.Module对象能够通过model.eval操作加以区分。
+
+```py
+from torch.nn import functional as F
+class Net(nn.Module):
+    def __init(self):
+    nn.Module(self).__init__()
+    self.conv1=nn.Conv2d(3,6,5)
+    slf.conv2=nn.Conv2d(6,16,5)
+    self.fc1=nn.Linear(16*5*5,120)    #16--上一层输出为16通道，两个5为上一层的卷积核的宽和高
+                                        #所以这一层的输入大小为：16*5*5
+    self.fc2=nn.Linear(120,84)
+    self.fc3=nn.Linear(84,10)
+ 
+    def forward(self,x):    #对父类方法的重载
+        x=F.pool(F.relu(self.conv1(x)),2)
+        x=F.pool(F.relu(self.conv2(x)),2)
+        x=x.view(-1,16*5*5)
+        x=x.relu(self.fc1(x))
+        x=x.relu(self.fc2(x))
+        x=self.fc3(x)
+ 
+        return x
+```
+
+在代码中，不具备可学习参数的层（激活层、池化层），将它们用函数代替，这样可以不用放置在构造函数__init__中。有可学习的模块，也可以用functional代替，只不过实现起来比较繁琐，需要手动定义参数parameter，如前面实现自定义的全连接层，就可以将weight和bias两个参数单独拿出来，在构造函数中初始化为parameter。
+
+```python
+class MyLinear(nn.Module):
+    def __init__(self):
+    super(MyLinear,self).__init__():
+    self.weight=nn.Parameter(t.randn(3,4))
+    self.bias=nn.Parameter(t.zeros(3))
+    
+    def forward(self):
+        return F.linear(input,weight,bias)
+```
+
+---
+
+
+
+
+
 
 
