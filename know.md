@@ -565,7 +565,21 @@ class MyLinear(nn.Module):
 
 ---
 
+### parcel
 
+```json
+  "scripts": {
+    "watch": "cross-env NODE_ENV=development parcel index.html --no-hmr --open",
+    "build": "cross-env NODE_ENV=production parcel build index.html --no-minify --public-url ./",
+    "link-local": "yalc link"
+  },
+```
+
+在看JavaScript深度学习的代码的时候，看到了parcel的打包工具。和webpack相比，不需要webpack.config.json。而且打包得更快。但是，webpack有更好的插件社区。以后单独使用js或者ts的时候，可以考虑使用这个工具。
+
+![image-20220216234418156](know.assets/image-20220216234418156.png)
+
+---
 
 
 
