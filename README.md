@@ -7,12 +7,12 @@
 #### 安装教程
 
 1.  git clone https://gitee.com/masaikk/interview-access.git
-1.  用任何一个看markdown的软件打开。
+1.  用任何一个看markdown的软件打开其中的markdown文件。
 
 #### 使用说明
 
 1.  对于读书笔记要时常记录。
-2.  主要包括以下四本书的阅读笔记工作：
+2.  主要包括以下五本书的阅读笔记工作：
       +  《百面机器学习》《百面深度学习》[file](ml.md) 
       +  《JavaScript权威指南（第七版）》[file](jsDefine.md) [code: es9js](https://gitee.com/masaikk/es9js)
       +  《算法笔记》[kishiki](https://gitee.com/masaikk/kishiki)
@@ -24,7 +24,7 @@
 
 #### 架构说明
 
-1.  根目录的四个markdown对应以上四个文件。其他的放在各自的文件夹里面。
+1.  根目录的四个markdown对应以上五本书。其他的放在各自的文件夹里面。
 2.  由于笔记中可能会包含代码，code文件夹下面放某些需要运行的代码。主要包括js和cpp代码。
 3.  包含C++，Python，nodejs代码。所以可能会包括cmake，condalist或者package.json等文件。
 
