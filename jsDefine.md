@@ -907,3 +907,75 @@ function importScript(url) {
 }
 ```
 
+---
+
+## 第十六章 Node中的JavaScript
+
+Node支持4种流
+
++ 可读流(readable)
+
+  例如``fs.createReadStream()``
+
++ 可写流(writable)
+
+  例如``fs.createWriteStream()``
+
++ 双工流(duplex)
+
+  把可读流和可写流合为一个对象。例如``net.connect()``
+
++ 转换流(transform)
+
+  也是可读的和可写的。但是与双工流的不同在于写入转换流的数据在同一个流会变成可读的。例如``zlib.createGzip()``
+
+实现一个函数通过管道将数据从一个流到另一个流
+
+```javascript
+function pipe(readable, writable, callback) {
+    function handleError(err) {
+        readable.close();
+        writable.close();
+        callback(err);
+    }
+
+    readable.on('error', handleError).pipe(writable).on('error', handleError).on('finish', callback)
+}
+```
+
+在Node12及之后，可读流是异步迭代器。
+
+读取文件的同步或者异步操作
+
+```javascript
+const fs = require('fs');
+let buffer = fs.readFileSync('test.data.txt');//同步操作，返回一个缓冲区
+let text = fs.readFileSync('data.csv', 'utf8');//同步操作，返回一个字符串
+
+//异步操作
+fs.readFile('test.data', (err, buffer) => {
+    if (err) {
+        // 在此处理错误
+    } else {
+        // 在这里进行正常的操作
+    }
+});
+
+//异步操作，返回一个promise
+fs.promises.readFile('data.csv', 'utf8').then().catch();
+```
+
+使用``fs.statSync()``操作文件的元数据。
+
+```javascript
+const fs = require('fs')
+
+//console.log(__filename);
+// /home/b8313/Desktop/interview-access/code/js/chap16/meta.js
+
+let stat = fs.statSync(__filename);
+
+console.log(stat.mode.toString(8));
+console.log(stat.size);
+```
+
