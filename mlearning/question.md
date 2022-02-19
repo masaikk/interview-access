@@ -18,5 +18,9 @@
 
    来自[NLP面试复盘 | 阿里/腾讯/头条/paypal/快手_abcdefg90876的博客-CSDN博客](https://blog.csdn.net/abcdefg90876/article/details/107398761)
 
-4. 
+4. 为什么GCN中需要正则化？
+
+   如果不正则化，那么特征大的节点在卷积之后越来越大，小的就会越来越小。会引起梯度爆炸。
+
+5. 
 

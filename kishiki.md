@@ -2,9 +2,13 @@
 
 ## 基本STL
 
-参考[STL教程：C++ STL快速入门（非常详细） (biancheng.net)](http://c.biancheng.net/stl/)
+### 参考链接
 
-参考[代码随想录 (programmercarl.com)](https://programmercarl.com/)
++ 参考[STL教程：C++ STL快速入门（非常详细） (biancheng.net)](http://c.biancheng.net/stl/)
+
++ 参考[代码随想录](https://programmercarl.com/)
+
++ 参考[自己的STL代码笔记](https://gitee.com/masaikk/ct)
 
 ### vector
 
