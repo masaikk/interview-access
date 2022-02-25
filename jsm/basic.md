@@ -49,4 +49,61 @@ http 协议的默认端口为 80，https 的默认端口为 443。
 参考[掘金](https://juejin.cn/post/6992743999756845087)
 
 + TCP是面向连接的，UDP是无连接的。
-+ 
++ TCP仅仅支持单播，UDP支持多播。
++ TCP是可靠的，UDP是不可靠的。
++ UDP的头部开销比TCP的更小，数据传输速率更高，实时性更好。
+
+---
+
+### Cookie、sessionStorage、localStorage 的区别
+
++ cookie数据大小不能超过4k；sessionStorage和localStorage的存储比cookie大得多，可以达到5M以上。
++ cookie设置的过期时间之前一直有效；localStorage永久存储，浏览器关闭后数据不丢失除非主动删除数据；sessionStorage数据在当前浏览器窗口关闭后自动删除。
++ cookie的数据会自动的传递到服务器；sessionStorage和localStorage数据保存在本地。
+
+---
+
+### JS中类型检测的三种方法
+
+1. ``typeof``
+
+   ```javascript
+   console.log(typeof 1);               // number
+   console.log(typeof true);            // boolean
+   console.log(typeof 'mc');            // string
+   console.log(typeof Symbol)           // function
+   console.log(typeof function(){});    // function
+   console.log(typeof console.log());   // function
+   console.log(typeof []);              // object 
+   console.log(typeof {});              // object
+   console.log(typeof null);            // object
+   console.log(typeof undefined);       // undefined
+   ```
+
+2. ``instanceof``
+
+   ```javascript
+   console.log(1 instanceof Number);                    // false
+   console.log(true instanceof Boolean);                // false 
+   console.log('str' instanceof String);                // false  
+   console.log([] instanceof Array);                    // true
+   console.log(function(){} instanceof Function);       // true
+   console.log({} instanceof Object);                   // true
+   ```
+
+3. ``Object.prototype.toString.call()``
+
+   ```javascript
+   var toString = Object.prototype.toString;
+   console.log(toString.call(1));                      //[object Number]
+   console.log(toString.call(true));                   //[object Boolean]
+   console.log(toString.call('mc'));                   //[object String]
+   console.log(toString.call([]));                     //[object Array]
+   console.log(toString.call({}));                     //[object Object]
+   console.log(toString.call(function(){}));           //[object Function]
+   console.log(toString.call(undefined));              //[object Undefined]
+   console.log(toString.call(null));                   //[object Null]
+   ```
+
+---
+
