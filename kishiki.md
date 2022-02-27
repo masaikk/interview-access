@@ -297,3 +297,133 @@ public:
 };
 ```
 
+https://leetcode-cn.com/problems/merge-two-sorted-lists/
+
+将两个升序链表合并为一个新的 升序 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
+
+示例 1：
+
+
+输入：l1 = [1,2,4], l2 = [1,3,4]
+输出：[1,1,2,3,4,4]
+示例 2：
+
+输入：l1 = [], l2 = []
+输出：[]
+示例 3：
+
+输入：l1 = [], l2 = [0]
+输出：[0]
+
+
+提示：
+
+两个链表的节点数目范围是 [0, 50]
+-100 <= Node.val <= 100
+l1 和 l2 均按 非递减顺序 排列
+
+```c++
+class Solution {
+public:
+    ListNode *mergeTwoLists(ListNode *list1, ListNode *list2) {
+        if (list1 == nullptr)
+            return list2;
+        if (list2 == nullptr)
+            return list1;
+        ListNode *myList = nullptr;
+        ListNode *headIndexNode = myList;
+        while (list1 != nullptr && list2 != nullptr) {
+            if (list1->val < list2->val) {
+                if (headIndexNode == nullptr) {
+                    myList = new ListNode(list1->val);
+                    headIndexNode = myList;
+                } else {
+                    headIndexNode->next = new ListNode(list1->val);
+                    headIndexNode = headIndexNode->next;
+                }
+                list1 = list1->next;
+            } else {
+                if (headIndexNode == nullptr) {
+                    myList = new ListNode(list2->val);
+                    headIndexNode = myList;
+                } else {
+                    headIndexNode->next = new ListNode(list2->val);
+                    headIndexNode = headIndexNode->next;
+                }
+                list2 = list2->next;
+            }
+        }
+        if (list1 == nullptr)
+            headIndexNode->next = list2;
+        if (list2 == nullptr)
+            headIndexNode->next = list1;
+        return myList;
+    }
+};
+```
+
+可以考虑递归的方式
+
+```c++
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* mergeTwoLists(ListNode* list1, ListNode* list2, int depth) {
+        // If null then retuan another list
+        string s(depth, ' ');
+        cout << s;
+        printList(list1, list2);
+        cout << endl;
+        if (!list1) {
+            return list2;
+        } else if(!list2) {
+            return list1;
+        } else if(list1->val < list2->val) { // Recursion Condition
+            list1->next = mergeTwoLists(list1->next, list2, depth+1);
+            string s(depth, ' ');
+            cout << s;
+            printList(list1, list2);
+            cout << endl;
+            return list1;
+        } else {
+            list2->next = mergeTwoLists(list1, list2->next, depth+1);
+            string s(depth, ' ');
+            cout << s;
+            printList(list1, list2);
+            cout << endl;
+            return list2;
+        }
+    }
+    
+    void printList(ListNode* list1, ListNode* list2) {
+        cout << "[";
+        while (list1) {
+            cout << list1->val << " ";
+            list1 = list1->next;
+        }
+        cout << "] [";
+        while (list2) {
+            cout << list2->val << " ";
+            list2 = list2->next;
+        }
+        cout << "]";
+    }
+};
+
+/作者：loyios
+链接：https://leetcode-cn.com/problems/merge-two-sorted-lists/solution/shi-yong-di-gui-by-loyelee-tacu/
+来源：力扣（LeetCode）
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+```
+
+
+
