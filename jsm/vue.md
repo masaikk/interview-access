@@ -1,3 +1,5 @@
+
+
 # Vue3
 
 学习vue3及其相关组件的笔记。代码位于[myvue: vue前端学习 (gitee.com)](https://gitee.com/masaikk/myvue)的vue3分支。
@@ -183,6 +185,35 @@ setup(){
   }
 ```
 
+### 动态添加路由
+
+添加顶级路由，可以使用router对象的``addRoute``方法。
+
+```javascript
+router.addRoute({
+    path:"/o1",
+    name:"otherPage1",
+    component:()=>import('../views/OtherPages1.vue')
+})
+```
+
+添加二级路由，也可以使用上述方法，不过不同之处在于需要添加父路由的name属性作为传参。
+
+而且需要注意，子路由的匹配规则不需要第一个``/``
+
+代码如下所示：
+
+```javascript
+//添加二级路由
+router.addRoute('father',{
+    path:"o1",
+    name:"otherPage1",
+    component:()=>import('../views/OtherPages1.vue')
+})
+```
+
 ---
 
-P23
+### VueX
+
+p23

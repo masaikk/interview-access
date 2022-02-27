@@ -65,7 +65,7 @@ http 协议的默认端口为 80，https 的默认端口为 443。
 
 ### JS中类型检测的三种方法
 
-1. ``typeof``
+1. ``typeof``关键字
 
    ```javascript
    console.log(typeof 1);               // number
@@ -80,7 +80,7 @@ http 协议的默认端口为 80，https 的默认端口为 443。
    console.log(typeof undefined);       // undefined
    ```
 
-2. ``instanceof``
+2. ``instanceof``关键字
 
    ```javascript
    console.log(1 instanceof Number);                    // false
@@ -91,7 +91,7 @@ http 协议的默认端口为 80，https 的默认端口为 443。
    console.log({} instanceof Object);                   // true
    ```
 
-3. ``Object.prototype.toString.call()``
+3. ``Object.prototype.toString.call()``方法
 
    ```javascript
    var toString = Object.prototype.toString;
@@ -104,6 +104,29 @@ http 协议的默认端口为 80，https 的默认端口为 443。
    console.log(toString.call(undefined));              //[object Undefined]
    console.log(toString.call(null));                   //[object Null]
    ```
+
+---
+
+### this的指向问题
+
++ 作为普通函数执行时，`this`指向`window`。
+
++ 当函数作为对象的方法被调用时，`this`就会指向`该对象`。
+
++ 构造器调用，`this`指向`返回的这个对象`。
+
++ 箭头函数 箭头函数的`this`绑定看的是`this所在函数定义在哪个对象下`，就绑定哪个对象。如果有嵌套的情况，则this绑定到最近的一层对象上。
+
++ 基于Function.prototype上的 `apply 、 call 和 bind `调用模式，这三个方法都可以显示的指定调用函数的 this 指向。`apply`接收参数的是数组，`call`接受参数列表，`` bind`方法通过传入一个对象，返回一个` this `绑定了传入对象的新函数。这个函数的 `this`指向除了使用`new `时会被改变，其他情况下都不会改变。若为空默认是指向全局对象window。
+
+---
+
+### new运算符的实现机制
+
+1.  首先创建了一个新的`空对象`。
+2.  `设置原型`，将对象的原型设置为函数的`prototype`对象。
+3. 让函数的`this`指向这个对象，执行构造函数的代码（为这个新对象添加属性）。
+4. 判断函数的返回值类型，如果是值类型，返回创建的对象。如果是引用类型，就返回这个引用类型的对象。
 
 ---
 
