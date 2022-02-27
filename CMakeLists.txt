@@ -7,8 +7,9 @@ set(CMAKE_BUILD_TYPE "debug")
 
 include_directories(code/cpp)
 include_directories(code/cpp/other)
+include_directories(code/cpp/other/top100)
 
 add_executable(interview
-        code/cpp/other/cm.cpp
-        code/cpp/other/cm.h)
+        code/cpp/other/top100/20-easy/Solution.h
+        code/cpp/other/top100/20-easy/Solution.cpp)
 

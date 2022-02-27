@@ -190,5 +190,110 @@ public:
 };
 ```
 
+https://leetcode-cn.com/problems/valid-parentheses/
 
+给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串 s ，判断字符串是否有效。
+
+有效字符串需满足：
+
+左括号必须用相同类型的右括号闭合。
+左括号必须以正确的顺序闭合。
+
+
+示例 1：
+
+输入：s = "()"
+输出：true
+示例 2：
+
+输入：s = "()[]{}"
+输出：true
+示例 3：
+
+输入：s = "(]"
+输出：false
+示例 4：
+
+输入：s = "([)]"
+输出：false
+示例 5：
+
+输入：s = "{[]}"
+输出：true
+
+
+提示：
+
+1 <= s.length <= 104
+s 仅由括号 '()[]{}' 组成
+
+```c++
+const char LEFT1 = '(';
+const char LEFT2 = '[';
+const char LEFT3 = '{';
+const char RIGHT1 = ')';
+const char RIGHT2 = ']';
+const char RIGHT3 = '}';
+
+class Solution {
+public:
+    stack<int> punches = {};
+
+    bool isValid(string s) {
+        const int LENGTH = s.length();
+        punches.push(0);
+        if (LENGTH % 2 != 0) {
+            return false;
+        }
+        for (int i = 0; i <= LENGTH; i++) {
+            switch (s[i]) {
+                case LEFT1: {
+                    punches.push(1);
+                    break;
+                }
+                case LEFT2: {
+                    punches.push(2);
+                    break;
+                }
+                case LEFT3: {
+                    punches.push(3);
+                    break;
+                }
+                case RIGHT1: {
+                    if (punches.top() == 1) {
+                        punches.pop();
+                    } else {
+                        return false;
+                    }
+                    break;
+                }
+                case RIGHT2: {
+                    if (punches.top() == 2) {
+                        punches.pop();
+                    } else {
+                        return false;
+                    }
+                    break;
+                }
+                case RIGHT3: {
+                    if (punches.top() == 3) {
+                        punches.pop();
+                    } else {
+                        return false;
+                    }
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+        }
+        if (punches.size() == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+};
+```
 
