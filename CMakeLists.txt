@@ -13,5 +13,5 @@ include_directories(code/cpp/other/top100/21-easy)
 add_executable(interview
         code/cpp/other/top100/21-easy/Solution.h
         code/cpp/other/top100/21-easy/ListNode.h
-        code/cpp/other/top100/21-easy/Solution.cpp)
+        code/cpp/other/top100/21-easy/Solution.cpp code/cpp/other/top100/53-easy/Solution.h)
 
