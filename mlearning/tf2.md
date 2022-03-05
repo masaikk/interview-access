@@ -122,3 +122,49 @@ print("test accuracy: %f" % sparse_categorical_accuracy.result())
 
 ---
 
+### tensorflow设置
+
+tensorflow默认使用全部的gpu，可以使用此代码来查看当前设备的gpu
+
+```python
+    gpus = tf.config.list_physical_devices(device_type='GPU')
+    cpus = tf.config.list_physical_devices(device_type='CPU')
+```
+
+同时，也可以将一个GPU划分为多个虚拟的GPU
+
+```python
+    gpus = tf.config.list_physical_devices(device_type='GPU')
+    tf.config.experimental.set_virtual_device_configuration(
+        gpus[0],
+        [
+            tf.config.experimental.VirtualDeviceConfiguration(memory_limit=2048),
+            tf.config.experimental.VirtualDeviceConfiguration(memory_limit=2048)
+        ]
+    )
+    my_gpus=tf.config.experimental.list_logical_devices(device_type='GPU')
+    print(my_gpus)
+```
+
+tensorflow_datasets使用了tensorflow官方的数据集
+
+数据下载到``${USER}\tensorflow_datasets``
+
+通过设置策略来应对一机多卡的情况
+
+```python
+	strategy = tf.distribute.MirroredStrategy(devices=[my_gpus[0],my_gpus[1]])
+
+    with strategy.scope():
+        model = tf.keras.applications.MobileNetV2(weights=None, classes=2)
+        model.compile(
+            optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
+            loss=tf.keras.losses.sparse_categorical_crossentropy,
+            metrics=[tf.keras.metrics.sparse_categorical_accuracy]
+        )
+
+    model.fit(dataset, epochs=num_epochs)
+
+```
+
+但是目前还不支持多个虚拟GPU。
