@@ -190,9 +190,7 @@ public:
 };
 ```
 
-https://leetcode-cn.com/problems/valid-parentheses/
-
-给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串 s ，判断字符串是否有效。
+[力扣 (leetcode-cn.com)](https://leetcode-cn.com/problems/valid-parentheses/)给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串 s ，判断字符串是否有效。
 
 有效字符串需满足：
 
@@ -297,7 +295,7 @@ public:
 };
 ```
 
-https://leetcode-cn.com/problems/merge-two-sorted-lists/
+[Loading Question... - 力扣（LeetCode） (leetcode-cn.com)](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
 
 将两个升序链表合并为一个新的 升序 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
 
@@ -425,7 +423,7 @@ public:
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 ```
 
-https://leetcode-cn.com/problems/maximum-subarray/
+[Loading Question... - 力扣（LeetCode） (leetcode-cn.com)](https://leetcode-cn.com/problems/maximum-subarray/)
 
 给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
 
@@ -474,5 +472,54 @@ public:
 };
 ```
 
+[70. 爬楼梯 - 力扣（LeetCode） (leetcode-cn.com)](https://leetcode-cn.com/problems/climbing-stairs/)
+
+假设你正在爬楼梯。需要 n 阶你才能到达楼顶。
+
+每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？
+
+ 
+
+示例 1：
+
+输入：n = 2
+输出：2
+解释：有两种方法可以爬到楼顶。
+1. 1 阶 + 1 阶
+2. 2 阶
+示例 2：
+
+输入：n = 3
+输出：3
+解释：有三种方法可以爬到楼顶。
+1. 1 阶 + 1 阶 + 1 阶
+2. 1 阶 + 2 阶
+3. 2 阶 + 1 阶
 
 
+提示：
+
+1 <= n <= 45
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/climbing-stairs
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+```c++
+class Solution {
+public:
+    int climbStairs(int n) {
+        vector<int>stepArray={};
+        stepArray.push_back(1);
+        stepArray.push_back(1);
+        int i=2;
+        while(i<=n){
+            stepArray.push_back(stepArray[i-2]+stepArray[i-1]);
+            i++;
+        }
+        return stepArray[n];
+    }
+};
+```
+
+**注意递归法不能用，会超时。**
