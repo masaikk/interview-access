@@ -130,3 +130,7 @@ http 协议的默认端口为 80，https 的默认端口为 443。
 
 ---
 
+### Promise
+
+从``http://119.23.182.180:10001/form/getImg/``这里获取response。也可以给``http://119.23.182.180:10001/form/getImg/``传递一个get请求包括一个名叫message的参数。
+
