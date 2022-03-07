@@ -36,9 +36,21 @@ P10讲到了，很快，但是目前社区支持不够。
 
 ---
 
+### Vue生命周期
+
+![img](vue.assets/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3poYW5ndmFsdWU=,size_16,color_FFFFFF,t_70.png)
+
+https://segmentfault.com/a/1190000011381906
+
+---
+
 ### Vue3父子组件传递值
 
 这里不想看网课，暂时通过看博客复习这个。看不懂再回来P11
+
+参考如下博客：
+
+https://juejin.cn/post/6965062549771386887
 
 ---
 
@@ -46,7 +58,7 @@ P10讲到了，很快，但是目前社区支持不够。
 
 P19 P20 P21
 
-*讲是讲得不错，可是我已经没有时间了。*
+*讲是讲得不错，可是我已经没有时间了。但是之后一定要回来看完。*
 
 ---
 
@@ -216,4 +228,78 @@ router.addRoute('father',{
 
 ### VueX
 
-p23
+p24
+
+注意不能用在component里面操作state，而是应该在mutations里面注册函数，用于修改state。
+
+```javascript
+import { createStore } from 'vuex'
+
+export default createStore({
+  state: {
+    counter:0,
+  },
+  mutations: {
+      increment(state){
+          state.counter++;
+      },
+      decrement(state){
+          state.counter--;
+      }
+  },
+  actions: {
+  },
+  modules: {
+  }
+})
+```
+
+注意，在component中需要使用commit来注册mutations$\bigstar$
+
+```javascript
+  methods: {
+    incre() {
+      this.$store.commit('increment');
+    },
+    decre() {
+      this.$store.commit('decrement');
+    }
+  }
+```
+
+最终component中使用state的代码为
+
+```javascript
+<p>This counter is {{ this.$store.state.counter }}</p>
+```
+
+整个component的代码为
+
+```javascript
+<template>
+  <div>
+    <p>This counter is {{ this.$store.state.counter }}</p>
+    <div>
+      <button @click="incre">increment</button>
+      <button @click="decre">decrement</button>
+
+    </div>
+  </div>
+
+</template>
+
+<script>
+export default {
+  name: "CounterComp",
+  methods: {
+    incre() {
+      this.$store.commit('increment');
+    },
+    decre() {
+      this.$store.commit('decrement');
+    }
+  }
+}
+</script>
+```
+
