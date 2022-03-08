@@ -228,7 +228,9 @@ router.addRoute('father',{
 
 ### VueX
 
-p24
+p25
+
+#### 基础知识
 
 注意不能用在component里面操作state，而是应该在mutations里面注册函数，用于修改state。
 
@@ -313,8 +315,55 @@ export default {
   },
 ```
 
+#### setup里面使用store
 
+使用vuex提供的``useState``hook，配合``computed``的hook。
 
-**单一状态树**
+```javascript
+  setup() {
+    const store = useStore();
+    const sCounter = computed(() => store.state.counter);
+    return {
+      sCounter
+    }
+  },
+```
+
+#### VueX的getters
+
+对于getters的方法来说，对于每个函数都要传入state参数，然后方法中使用state获取状态。
+
+```javascript
+    getters: {
+        totalPrice:(state)=> {
+            let totalPrice = 0;
+            for (const book of state.books) {
+                totalPrice += book.price * book.number;
+            }
+            return totalPrice;
+        }
+    }
+```
+
+具体在使用的时候使用``this.$store.getters.name``来使用getters的值。
+
+```javascript
+  computed: {
+    totalPrice() {
+      return this.$store.getters.totalPrice;
+    }
+  }
+```
+
+代码位于demo2/src/components/UseStoreUtils.vue
+
+或者传入两个参数``(state,getters)``用于调用其他的getters方法
+
+#### 单一状态树
 
 VueX推荐只使用一个``$store`` 
+
+
+
+---
+
