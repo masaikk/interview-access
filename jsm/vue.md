@@ -303,3 +303,18 @@ export default {
 </script>
 ```
 
+也可以将获取store的逻辑写道computed里面
+
+```javascript
+  computed:{
+    sCounterNumber(){
+      return this.$store.state.counter;
+    }
+  },
+```
+
+
+
+**单一状态树**
+
+VueX推荐只使用一个``$store`` 

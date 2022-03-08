@@ -585,3 +585,31 @@ class MyLinear(nn.Module):
 
 
 
+---
+
+JavaScript通过match配合拓展运算符来匹配正则表达式的各部分
+
+```javascript
+function getNumberParts(number) {
+    const rnumber = /(\d+)\.(\d+)/;
+    const matches = number.match(rnumber);
+    if (matches === null) {
+        return null;
+    }
+
+    const [, ...captures] = number.match(rnumber);
+    return captures;
+}
+
+(() => {
+    console.log(getNumberParts('1234.56'));
+    //[ '1234', '56' ]
+})()
+```
+
+注意其中``const [, ...captures] = number.match(rnumber);``这行的代码。
+
+源代码位于[此](code/js/other/reFetch/main.js)
+
+---
+
