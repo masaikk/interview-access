@@ -334,6 +334,32 @@ console.log(info.name)
 info.age = 20
 ```
 
+使用接口是可以多重接口的，使用implements关键字。但是继承只能单继承。
+
+或者使用组合类型来表示。
+
+*定义两个同名的interface，最后在使用的时候，是显示这两个interface合并之后的interface。（而不是覆盖掉）*
+
 ---
 
-从P30开始
+### 泛型
+
+类似于C++的泛型
+
+```typescript
+function sum<Type>(num1:Type,num2:Type):Type{
+    // @ts-ignore
+    return num1 + num2;
+}
+```
+
+但是这样的话就出现了问题，就是任意的Type有些属性是没有的。这就需要约束泛型的类型，使用``extends``关键字。
+
+```typescript
+function sum<Type extends number|string>(num1:Type,num2:Type):Type{
+    // @ts-ignore
+    return num1 + num2;
+}
+```
+
+泛型接口
