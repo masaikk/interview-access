@@ -523,3 +523,31 @@ public:
 ```
 
 **注意递归法不能用，会超时。**
+
+[94. 二叉树的中序遍历 - 力扣（LeetCode） (leetcode-cn.com)](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
+
+给定一个二叉树的根节点 `root` ，返回它的 **中序** 遍历。
+
+ 这里给出一个非递归形式的遍历方法，注意条件判断语句。
+
+```c++
+class Solution {
+public:
+    vector<int> inorderTraversal(TreeNode* root) {
+        vector<int> res;
+        stack<TreeNode*> stk;
+        while (root != nullptr || !stk.empty()) {
+            while (root != nullptr) {
+                stk.push(root);
+                root = root->left;
+            }
+            root = stk.top();
+            stk.pop();
+            res.push_back(root->val);
+            root = root->right;
+        }
+        return res;
+    }
+};
+```
+
