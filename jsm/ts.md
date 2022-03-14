@@ -363,3 +363,35 @@ function sum<Type extends number|string>(num1:Type,num2:Type):Type{
 ```
 
 泛型接口
+
+---
+
+### 类型声明
+
+有些第三方库是不包括类型声明的，这意味着要去社区找d.ts的文件。[TypeScript: Search for typed packages (typescriptlang.org)](https://www.typescriptlang.org/dt/search?search=)
+
+也可以自定义声明文件，使用``declare``关键字，例如：
+
+```typescript
+declare module 'masaikk' {
+    export function join(a: string, b: string): void
+}
+
+```
+
+也可以声明函数并且在index中的script使用
+
+```html
+  <script>
+    function fun(){
+      console.log('fun');
+    }
+  </script>
+```
+
+```typescript
+declare function fun(): void
+```
+
+使用以上代码声明。
+
