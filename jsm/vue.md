@@ -1,5 +1,3 @@
-
-
 # Vue3
 
 学习vue3及其相关组件的笔记。代码位于[myvue: vue前端学习 (gitee.com)](https://gitee.com/masaikk/myvue)的vue3分支。
@@ -51,6 +49,8 @@ https://segmentfault.com/a/1190000011381906
 参考如下博客：
 
 https://juejin.cn/post/6965062549771386887
+
+父传子是使用ref的方法，子传父使用``$emit``的方法。
 
 ---
 
@@ -362,8 +362,6 @@ export default {
 #### 单一状态树
 
 VueX推荐只使用一个``$store`` 
-
-
 
 ---
 
