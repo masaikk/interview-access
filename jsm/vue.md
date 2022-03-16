@@ -38,7 +38,11 @@ P10讲到了，很快，但是目前社区支持不够。
 
 ![img](vue.assets/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3poYW5ndmFsdWU=,size_16,color_FFFFFF,t_70.png)
 
-https://segmentfault.com/a/1190000011381906
+[参考链接](https://segmentfault.com/a/1190000011381906)
+
+
+
+
 
 ---
 
