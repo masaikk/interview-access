@@ -58,6 +58,14 @@ https://juejin.cn/post/6965062549771386887
 
 ---
 
+### Composition API
+
+P15 重要
+
+#### Mixin
+
+---
+
 ### Vue源码部分解读
 
 P19 P20 P21
@@ -231,8 +239,6 @@ router.addRoute('father',{
 ---
 
 ### VueX
-
-p25
 
 #### 基础知识
 
