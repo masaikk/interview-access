@@ -68,4 +68,120 @@
 
     并且在组件中使用computed的使用，就计算一次渲染多次。
 
-11. 
+11. 实现深拷贝的方法？
+
+    *出自飞书*
+
+    1. 使用``JSON.parse(JSON.stringify());``但是对于子对象就很难使用了
+
+    2. 使用判断和递归的方法，判断拷贝的对象是否是数组或者Object
+
+       ```javascript
+       module.exports = function clone(target) {
+           if (typeof target === 'object') {
+               let cloneTarget = Array.isArray(target) ? [] : {};
+               for (const key in target) {
+                   cloneTarget[key] = clone(target[key]);
+               }
+               return cloneTarget;
+           } else {
+               return target;
+           }
+       };
+       ```
+
+       但是这样解决不了循环引用的问题，例如如下对象
+
+       ```javascript
+       const target = {
+           field1: 1,
+           field2: undefined,
+           field3: {
+               child: 'child'
+           },
+           field4: [2, 4, 8]
+       };
+       target.target = target;
+       ```
+
+    3. 使用map来解决上述问题
+
+       ```javascript
+       function clone(target, map = new Map()) {
+           if (typeof target === 'object') {
+               let cloneTarget = Array.isArray(target) ? [] : {};
+               if (map.get(target)) {
+                   return target;
+               }
+               map.set(target, cloneTarget);
+               for (const key in target) {
+                   cloneTarget[key] = clone(target[key], map);
+               }
+               return cloneTarget;
+           } else {
+               return target;
+           }
+       };
+       ```
+
+12. 如何实现add(1)(2)(3)
+
+    *出自飞书*
+
+    考虑函数柯里化：函数柯里化（curry）是函数式编程里面的概念。curry的概念很简单：只传递给函数一部分参数来调用它，让它返回一个函数去处理剩下的参数。
+
+    ```javascript
+    const add = x => y => z => x + y + z;
+    console.log(add(1)(2)(3));
+    ```
+
+    但是如果想要实现
+
+    ```javascript
+    add(1, 2, 3);
+    add(1, 2)(3);
+    add(1)(2, 3);
+    ```
+
+    这就需要考虑判断参数个数，可以拓展参数
+
+    ```javascript
+    const curry = (fn, ...args) => 
+        // 函数的参数个数可以直接通过函数数的.length属性来访问
+        args.length >= fn.length // 这个判断很关键！！！
+        // 传入的参数大于等于原始函数fn的参数个数，则直接执行该函数
+        ? fn(...args)
+        /**
+         * 传入的参数小于原始函数fn的参数个数时
+         * 则继续对当前函数进行柯里化，返回一个接受所有参数（当前参数和剩余参数） 的函数
+        */
+        : (..._args) => curry(fn, ...args, ..._args);
+    
+    function add1(x, y, z) {
+        return x + y + z;
+    }
+    const add = curry(add1);
+    console.log(add(1, 2, 3));
+    console.log(add(1)(2)(3));
+    console.log(add(1, 2)(3));
+    console.log(add(1)(2, 3));
+    ```
+
+13. JS实现大数相加
+
+    *出自飞书*
+
+    [JS 实现两个大数相加？ - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/72179476)
+
+14. 实现数组的flat操作
+
+    *出自飞书*
+
+    [面试官连环追问：数组拍平（扁平化） flat 方法实现 - SegmentFault 思否](https://segmentfault.com/a/1190000021366004)
+
+    - **第一个要解决的就是遍历数组的每一个元素；**
+    - **第二个要解决的就是判断元素是否是数组；**
+    - **第三个要解决的就是将数组的元素展开一层**
+
+    
+
