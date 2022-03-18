@@ -722,6 +722,16 @@ import {BitSet as bbb} from "./bitset";
 
 ## 第十一章 JavaScript标准库
 
+#### Set
+
+通过``new Set()``的方式创建。
+
+```javascript
+let s = new Set([1, 2, 3, 4]);
+let t = new Set([1, s]);
+console.log(t);//Set(2) { 1, Set(4) { 1, 2, 3, 4 } }
+```
+
 可以使用Set的has方法来看一个元素是否位于这个集合中
 
 ```javascript
@@ -737,7 +747,21 @@ console.log(primes.has('5')); //false
 console.log(...primes); // 2 3 5 7
 ```
 
+#### Map
+
 Map对象提供了一个与数组类似的键值对查询到功能，但是没有数组的下标取值快。
+
+将对象转化为Map，可以使用``Object.entries()``这个方法
+
+```javascript
+let o = {
+    x: 1,
+    y: 2
+}
+
+let m = new Map(Object.entries(o))
+console.log(m);//Map(2) { 'x' => 1, 'y' => 2 }
+```
 
 与集合一样，任何的JavaScript值都可以作为键或值，包括null，undefined和NaN，对象和数组。并且使用了全等性来比较key。
 
@@ -752,7 +776,49 @@ console.log(m.get({}));//undefined
 console.log(m.get(ob));//3
 ```
 
+Map结合``...``操作符
 
+```javascript
+let m = new Map(Object.entries(o))
+console.log(m);//Map(2) { 'x' => 1, 'y' => 2 }
+
+console.log([...m.keys()]);//[ 'x', 'y' ]
+console.log([...m.values()]);//[ 1, 2 ]
+console.log([...m.entries()]);//[ [ 'x', 1 ], [ 'y', 2 ] ]
+console.log([...m]);//[ [ 'x', 1 ], [ 'y', 2 ] ]
+```
+
+forEach操作，注意是``(value,key)=>{}``
+
+#### 正则表达式
+
+##### 匹配字符
+
+``/[abc]/``匹配abc中任意一个字符。
+
+``/[^abc]/``匹配任意一个非abc中的字符。
+
+``/\w/``匹配任何一个ASCII单词字符，即``/[a-zA-Z0-9_]/``
+
+``/\W/``匹配任何一个ASCII非单词字符，即``/[^a-zA-Z0-9_]/``
+
+``/\d/``匹配任何一个数字字符，即``/[0-9]/``
+
+``/\D/``匹配任何一个数字字符，即``/^[0-9]/``
+
+##### 匹配个数
+
+``{n,m}``匹配前项出现了n次但是不超过m次。
+
+``{n,}``匹配前项出现了n次及以上。
+
+``/?/``相当于``/{0,1}/``
+
+``/+/``匹配一次及以上，相当于``/{1,}/``
+
+``/*/``匹配0次及以上，相当于``/{0,}/``
+
+P265
 
 ---
 
