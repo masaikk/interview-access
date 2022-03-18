@@ -328,7 +328,7 @@ console.log(foo());
 
 ---
 
-函数的立即调用
+### 函数的立即调用
 
 ```javascript
 //向下面这样定义的函数可以通过在函数名后加一对括号进行调用，像这样`foo()`，
@@ -448,3 +448,6 @@ Promise 必须为以下三种状态之一：等待态（Pending）、执行态�
 2. 立即执行 Promise 中传入的 fn 函数，将Promise 内部 resolve、reject 函数作为参数传递给 fn ，按事件机制时机处理
 3. 执行 then(..) 注册回调处理数组（then 方法可被同一个 promise 调用多次）
 4. Promise里的关键是要保证，then方法传入的参数 onFulfilled 和 onRejected，必须在then方法被调用的那一轮事件循环之后的新执行栈中执行。
+
+---
+
