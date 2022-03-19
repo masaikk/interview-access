@@ -68,9 +68,17 @@ P15 重要
 
 ### Vue源码部分解读
 
+#### Vue网课部分
+
 P19 P20 P21
 
 *讲是讲得不错，可是我已经没有时间了。但是之后一定要回来看完。*
+
+#### Vue博客
+
+[Introduction · 深入剖析Vue源码 (penblog.cn)](https://book.penblog.cn/)
+
+
 
 ---
 
