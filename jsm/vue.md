@@ -123,6 +123,24 @@ setup因为比beforeCreated()函数还前，所以没有this对象。
 
 ![image-20220321194308853](vue.assets/image-20220321194308853.png)
 
+另一个参数context，它包括三个属性：
+
++ attrs：所有非prop的attribute
++ slots：父组件的插槽
++ emit：$emit
+
+或者直接使用解构写法来获取着三个属性
+
+```javascript
+  setup(props, {attrs, slots, emit}) {
+    console.log(attrs);
+    console.log(slots);
+    console.log(emit);
+  },
+```
+
+![image-20220321204335552](vue.assets/image-20220321204335552.png)
+
 
 
 ---
