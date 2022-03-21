@@ -460,3 +460,32 @@ Promise 必须为以下三种状态之一：等待态（Pending）、执行态�
 
 ---
 
+### 盒子模型
+
+![图1.盒模型示意图](feishu.assets/1460000013069519.png)
+
+区分IE模式与标准模式
+
+IE模式为**width=content+padding**
+
+标准模式为**width=content**
+
+通过css3新增的属性 `box-sizing: content-box | border-box`分别设置盒模型为标准模型（`content-box`）和IE模型（`border-box`）。
+
+当两个垂直外边距相遇时，他们将形成一个外边距，合并后的外边距高度等于两个发生合并的外边距的高度中的较大者。
+
+BFC：块级格式化上下文
+
+**BFC的原理（渲染规则）**
+
+1. BFC元素垂直方向的边距会发生重叠。属于不同BFC外边距不会发生重叠
+2. BFC的区域不会与浮动元素的布局重叠。
+3. BFC元素是一个独立的容器，外面的元素不会影响里面的元素。里面的元素也不会影响外面的元素。
+4. 计算BFC高度的时候，浮动元素也会参与计算(清除浮动)
+
+**如何创建BFC**
+
+1. overflow不为visible;
+2. float的值不为none；
+3. position的值不为static或relative；
+4. display属性为inline-blocks,table,table-cell,table-caption,flex,inline-flex;

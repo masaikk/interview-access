@@ -54,13 +54,69 @@ P10讲到了，很快，但是目前社区支持不够。
 
 https://juejin.cn/post/6965062549771386887
 
-父传子是使用ref的方法，子传父使用``$emit``的方法。
+父传子是使用props的方法，子传父使用``$emit``的方法。
+
+示例子组件向父组件传递信息：
+
+```javascript
+//子组件
+  methods:{
+    sendEmitToFather(){
+      console.log('sending...');
+      this.$emit('son-mege','Hello from son')
+    }
+  }
+
+```
+
+父组件中在节点上绑定消息，传入函数
+
+```javascript
+<template>
+  <div>
+    <p>
+      {{ mess }} in father page
+    </p>
+    <div>
+<!--      <use-props :son-data=this.mess @son-mege="getMessageFromSon"></use-props>-->
+    </div>
+
+  </div>
+</template>
+
+<script>
+import useProps from "@/components/compisi/useProps";
+
+export default {
+  name: "CompPage",
+  components: {UseProps},
+  data() {
+    return {
+      mess: 'from composition page'
+    }
+  },
+  composition: {
+    useProps
+  },
+  methods:{
+    getMessageFromSon(data){
+      console.log(data);
+    }
+  }
+}
+</script>
+
+<style scoped>
+
+</style>
+
+```
 
 ---
 
 ### props
 
-这里也是父向子传递数据的方式之一。
+这里是父向子传递数据的方式之一。
 
 首先在自组件中声明props，如下所示：
 
