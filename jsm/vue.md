@@ -58,11 +58,72 @@ https://juejin.cn/post/6965062549771386887
 
 ---
 
+### props
+
+这里也是父向子传递数据的方式之一。
+
+首先在自组件中声明props，如下所示：
+
+```javascript
+export default {
+  name: "useProps",
+  props: {
+    sonData: {
+      type: String,
+      required: true,
+    }
+  },
+  data() {
+    return {
+      mess: "use data props"
+    }
+  }
+}
+```
+
+其中，props可以是数组也可以是对象。
+
+然后在父组件中使用子组件中传入props参数，如下所示：
+
+```javascript
+    <div>
+      <use-props :son-data=this.mess></use-props>
+    </div>
+```
+
+完整代码为``demo2/src/views/CompPage.vue``
+
+---
+
 ### Composition API
 
 P15 重要
 
 #### Mixin
+
+复用的代码，如果Mixin与组件中出现命名冲突
+
+#### options API 的弊端
+
+某一个功能的各个逻辑会拆分到各个属性中。如果这个组件变得更大，那么拆分的会越来越散，难以阅读。
+
+#### setup函数
+
+传入props与context参数。对应着父传子的props。
+
+setup因为比beforeCreated()函数还前，所以没有this对象。
+
+在setup中记录props为一个proxy对象
+
+```javascript
+  setup(props, context) {
+    console.log(props);
+  },
+```
+
+![image-20220321194308853](vue.assets/image-20220321194308853.png)
+
+
 
 ---
 
