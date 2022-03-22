@@ -197,6 +197,50 @@ setup因为比beforeCreated()函数还前，所以没有this对象。
 
 ![image-20220321204335552](vue.assets/image-20220321204335552.png)
 
+#### setup的返回
+
+返回一个对象，也可以在组件中使用，比如
+
+```javascript
+  setup(props, {attrs, slots, emit}) {
+    console.log(attrs);
+    console.log(slots);
+    console.log(emit);
+    return {
+      messSetup: "message form setup function"
+    }
+  },
+```
+
+以上参考代码位于``demo2/src/components/compisi/useProps.vue``
+
+#### 响应式
+
+使用reactive获取响应式对象，（这样的话数据如果有变化也能渲染到DOM里面）
+
+此处代码位于``demo2/src/components/compisi/useSetup.vue``
+
+例如:
+
+```javascript
+  setup(props, context) {
+
+    const state=reactive({
+      counter:100,
+      tittle: "counter",
+    })
+
+    const increment = () => {
+      state.counter++;
+    }
+
+    return {
+      state,
+      increment
+    }
+  }
+```
+
 
 
 ---
