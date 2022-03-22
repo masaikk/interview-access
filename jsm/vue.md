@@ -78,7 +78,7 @@ https://juejin.cn/post/6965062549771386887
       {{ mess }} in father page
     </p>
     <div>
-<!--      <use-props :son-data=this.mess @son-mege="getMessageFromSon"></use-props>-->
+      <use-props :son-data=this.mess @son-mege="getMessageFromSon"></use-props>
     </div>
 
   </div>
@@ -87,9 +87,10 @@ https://juejin.cn/post/6965062549771386887
 <script>
 import useProps from "@/components/compisi/useProps";
 
+
 export default {
   name: "CompPage",
-  components: {UseProps},
+  components: {useProps},
   data() {
     return {
       mess: 'from composition page'
@@ -105,12 +106,11 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>
-
 ```
+
+自动传入data数据，打印的情况如下所示
+
+![image-20220322102009438](vue.assets/image-20220322102009438.png)
 
 ---
 
