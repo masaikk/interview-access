@@ -241,6 +241,33 @@ setup因为比beforeCreated()函数还前，所以没有this对象。
   }
 ```
 
+reactive的参数只能是对象或者数组。基本数据类型需要用``ref``。
+
+ref对象在template中被使用的时候，可以省略``.value``属性，称之为“自动解包”。在setup函数中，没有这个功能，必须要使用``.value``属性。例如：
+
+```javascript
+    let refCounter=ref(200);
+
+    const state=reactive({
+      counter:100,
+      tittle: "counter",
+    })
+
+    const increment = () => {
+      state.counter++;
+      refCounter.value++;
+      console.log(refCounter.value);
+    }
+```
+
+使用``readonly``关键字得到一个原生对象的只读代理，即一个set方法被劫持的Proxy对象。例如：
+
+```javascript
+    const readOnlyInfo=readonly({
+      tittle:"a setup counter"
+    })
+```
+
 
 
 ---
