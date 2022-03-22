@@ -602,3 +602,275 @@ node中的``process.nextTick()``是在同步代码执行之后立即执行的，
 
 ---
 
+### 圣杯布局和双飞翼布局
+
+![image-20220322134023577](feishu.assets/image-20220322134023577.png)
+
+圣杯布局的代码
+
+```html
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>圣杯布局</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    .header,
+    .footer {
+      height: 100px;
+      line-height: 100px;
+      background-color: green;
+      text-align: center;
+      font-size: 30px;
+      font-weight: bolder;
+    }
+
+    .footer {
+      background-color: goldenrod;
+    }
+
+    .container {
+      padding: 0 220px 0 200px;
+      overflow: hidden;
+    }
+
+    .left,
+    .middle,
+    .right {
+      position: relative;
+      float: left;
+      min-height: 130px;
+      word-break: break-all;
+    }
+
+    .left {
+      margin-left: -100%;
+      left: -200px;
+      width: 200px;
+      background-color: red;
+    }
+
+    .right {
+      margin-left: -220px;
+      right: -220px;
+      width: 220px;
+      background-color: green;
+    }
+
+    .middle {
+      width: 100%;
+      background-color: blue;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">header</div>
+  <div class="container">
+    <div class="middle">
+      <h4>middle</h4>
+      <p>
+        middlemiddlemiddlemiddlemiddlemiddlemiddlemiddle
+        middlemiddlemiddlemiddlemiddlemiddlemiddlemiddle
+        middlemiddlemiddlemiddlemiddlemiddlemiddlemiddle
+        middlemiddlemiddlemiddlemiddlemiddlemiddlemiddle
+        middlemiddlemiddlemiddlemiddlemiddlemiddlemiddle
+        middlemiddlemiddlemiddlemiddle
+      </p>
+    </div>
+    <div class="left">
+      <h4>left</h4>
+      <p>
+        leftleftleftleftleftleftleftleftleftleftleftleft
+        leftleftleftleftleftleftleftleftleftleftleftleft
+        leftleftleftleftleftleftleftleftleftleftleftleft
+      </p>
+    </div>
+    <div class="right">
+      <h4>right</h4>
+      <p>
+        rightrightrightrightrightrightrightrightrightright
+        rightrightrightrightrightrightrightrightrightright
+        rightrightrightrightrightrightright
+      </p>
+    </div>
+  </div>
+  <div class="footer">footer</div>
+</body>
+
+</html>
+```
+
+双飞翼布局
+
+```html
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>双飞翼布局</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    .header,
+    .footer {
+      height: 100px;
+      line-height: 100px;
+      background-color: green;
+      text-align: center;
+      font-size: 30px;
+      font-weight: bolder;
+    }
+
+    .footer {
+      background-color: goldenrod;
+    }
+
+    .container {
+      overflow: hidden;
+    }
+
+    .left,
+    .middle,
+    .right {
+      float: left;
+      min-height: 130px;
+      word-break: break-all;
+    }
+
+    .left {
+      margin-left: -100%;
+      width: 200px;
+      background-color: red;
+    }
+
+    .right {
+      margin-left: -220px;
+      width: 220px;
+      background-color: green;
+    }
+
+    .middle {
+      width: 100%;
+      height: 100%;
+      background-color: blue;
+    }
+
+    .inner {
+      margin: 0 220px 0 200px;
+      min-height: 130px;
+      background: blue;
+      word-break: break-all;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">header</div>
+  <div class="container">
+    <div class="middle">
+      <div class="inner">
+        <h4>middle</h4>
+        <p>
+          middlemiddlemiddlemiddlemiddlemiddlemiddlemiddle
+          middlemiddlemiddlemiddlemiddlemiddlemiddlemiddle
+          middlemiddlemiddlemiddlemiddlemiddlemiddlemiddle
+          middlemiddlemiddlemiddlemiddlemiddlemiddlemiddle
+          middlemiddlemiddlemiddlemiddlemiddlemiddlemiddle
+          middlemiddlemiddlemiddlemiddle
+        </p>
+      </div>
+    </div>
+    <div class="left">
+      <h4>left</h4>
+      <p>
+        leftleftleftleftleftleftleftleftleftleftleftleft
+        leftleftleftleftleftleftleftleftleftleftleftleft
+        leftleftleftleftleftleftleftleftleftleftleftleft
+      </p>
+    </div>
+    <div class="right">
+      <h4>right</h4>
+      <p>
+        rightrightrightrightrightrightrightrightrightright
+        rightrightrightrightrightrightrightrightrightright
+        rightrightrightrightrightrightright
+      </p>
+    </div>
+  </div>
+  <div class="footer">footer</div>
+</body>
+
+</html>
+
+```
+
+---
+
+### CSS3性能优化
+
+1. 合并css文件，如果页面加载10个css文件,每个文件1k，那么也要比只加载一个100k的css文件慢。
+2. 减少css嵌套，最好不要嵌套三层以上。
+3. 不要在ID选择器前面进行嵌套，ID本来就是唯一的而且权限值大，嵌套完全是浪费性能。
+4. 建立公共样式类，把相同样式提取出来作为公共类使用。
+5. 减少通配符*或者类似[hidden="true"]这类选择器的使用，挨个查找所有...这性能能好吗？
+6. 巧妙运用css的继承机制，如果父节点定义了，子节点就无需定义。
+7. 拆分出公共css文件，对于比较大的项目可以将大部分页面的公共结构样式提取出来放到单独css文件里，这样一次下载 后就放到缓存里，当然这种做法会增加请求，具体做法应以实际情况而定。
+8. 不用css表达式，表达式只是让你的代码显得更加酷炫，但是对性能的浪费可能是超乎你想象的。
+9. 少用css rest，可能会觉得重置样式是规范，但是其实其中有很多操作是不必要不友好的，有需求有兴趣，可以选择normolize.css。
+10. cssSprite，合成所有icon图片，用宽高加上background-position的背景图方式显现icon图，这样很实用，减少了http请求。
+11. 善后工作，css压缩(在线压缩工具 YUI Compressor)
+12. GZIP压缩，是一种流行的文件压缩算法。
+
+css选择器的匹配是从右向左进行的，这一策略导致来不同种类的选择器之间的性能也存在差异。相比于 #markdown-content-h3,显然使用 #markdown.content h3时，浏览器生成渲染树所要花费的时间更多。因为后者需要先找到DOM中的所有h3元素，再过滤掉祖先元素不是.content的，最后过滤掉.content不是#markdown的。
+
+ 1. 保持简单，不要使用嵌套过多过于复杂的选择器
+ 2. 通配符和属性选择器效率最低，需要匹配的元素最多，尽量避免使用。
+ 3. 不要使用类选择器和ID选择器修饰元素标签，如：h3#markdown-content，这一多此一举，还会降低效率
+ 4. 不要为了追求速度而放弃可读性和可维护性
+
+---
+
+### CSS层叠上下文
+
+[深入理解CSS中的层叠上下文和层叠顺序 « 张鑫旭-鑫空间-鑫生活 (zhangxinxu.com)](https://www.zhangxinxu.com/wordpress/2016/01/understand-css-stacking-context-order-z-index/)
+
+![层叠顺序元素的标注说明](feishu.assets/2016-01-07_235108.png)
+
+普通元素的层叠水平优先由层叠上下文决定，因此，层叠水平的比较只有在当前层叠上下文元素中才有意义。
+
+1. **谁大谁上：**当具有明显的层叠水平标示的时候，如识别的z-indx值，在同一个层叠上下文领域，层叠水平值大的那一个覆盖小的那一个。通俗讲就是官大的压死官小的。
+2. **后来居上：**当元素的层叠水平一致、层叠顺序相同的时候，在DOM流中处于后面的元素会覆盖前面的元素。
+
+---
+
+### div居中和浮动
+
+[（史上最全）div居中的几种方法 - 掘金 (juejin.cn)](https://juejin.cn/post/6844903821529841671)
+
+[带你彻底了解CSS浮动（文字整理版） - SegmentFault 思否](https://segmentfault.com/a/1190000012739764)
+
+---
+
+### 跨域
+
+[前端跨域整理 - 掘金 (juejin.cn)](https://juejin.cn/post/6844903448903696398)
+
+---
+
+
+
