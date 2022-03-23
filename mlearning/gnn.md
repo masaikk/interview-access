@@ -95,7 +95,7 @@ Heterogeneous  Graph Attention Networks
 
 ![image-20220323162847409](gnn.assets/image-20220323162847409.png)
 
-先考虑节点级别的embedding，类似于GAT，先求得某个节点对于它邻居的节点的e，再通过exp正则化来得到attention系数。
+先考虑节点级别的embedding，类似于GAT，先求得某个节点对于它邻居的节点的e，再通过softmax来得到attention系数。
 
 ![image-20220323163329355](gnn.assets/image-20220323163329355.png)
 
@@ -107,3 +107,20 @@ $$z^{\Phi_0}_{i}$$表示在$$\Phi_0$$这种Meta-Path下面节点1对于它全部
 
 这里可以看出$$Z_{\Phi_0}$$表示在$$\Phi_0$$这种Meta-Path下面全部的节点的embedding的组合。
 
+![image-20220323194534572](gnn.assets/image-20220323194534572.png)
+
+对于$$Z_{\Phi_0}$$中全部的值进行线性运算在乘以一个可以学习的参数$$q^T$$得到诺干个标量，$$W_{\Phi_0}$$就是对这些标量的平均。
+
+![image-20220323195012225](gnn.assets/image-20220323195012225.png)
+
+再对于$$W_{\Phi_0}$$进行softmax操作得到attention系数$$\beta_{\Phi}$$，再对于同一个节点i来说，将全部的Meta-Path的$$\beta_{\Phi}$$乘以自身的节点特征，最终得到该节点的语义级别的embedding。
+
+![image-20220323200204337](gnn.assets/image-20220323200204337.png)
+
+![image-20220323200247937](gnn.assets/image-20220323200247937.png)
+
+---
+
+### GTN
+
+Graph Transformer Network
