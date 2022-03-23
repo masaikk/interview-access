@@ -870,7 +870,24 @@ css选择器的匹配是从右向左进行的，这一策略导致来不同种�
 
 [前端跨域整理 - 掘金 (juejin.cn)](https://juejin.cn/post/6844903448903696398)
 
++ jsonp：通过添加script节点的方式来请求数据，但是不安全，只有get方法
++ cors：对于请求添加头部信息
++ Nginx反向代理：添加同源下的跳板，顺便修改cookies，也能维护同源问题。
+
 ---
 
+### 块级元素与行内元素
 
+块级元素会独占一行，其宽度自动填满其父元素宽度
+行内元素不会独占一行，相邻的行内元素会排列在同一行里，知道一行排不下，才会换行，其宽度随元素的内容而变化
+
+块级元素可以设置 width, height属性，【注意：块级元素即使设置了宽度，仍然是独占一行的】
+行内元素设置width, height无效;
+
+块级元素可以设置margin 和 padding.
+行内元素的水平方向的padding-left,padding-right,margin-left,margin-right 都产生边距效果，但是竖直方向的padding-top,padding-bottom,margin-top,margin-bottom都不会产生边距效果。（水平方向有效，竖直方向无效）
+
+行内元素设置width无效，height无效(可以设置line-height)，margin上下无效，padding上下无效.
+
+---
 
