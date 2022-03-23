@@ -63,3 +63,47 @@ GraphSAGE_minibatch
 
 ---
 
+### RecGNN与ConvGNN的区别
+
+![image-20220323155839268](gnn.assets/image-20220323155839268.png)
+
+RecGNN与ConvGNN的区别在于前者每轮用的参数都是相同的，而卷积每轮的参数都是不同的。
+
+---
+
+### GAE
+
+Graph Auto-Encoder
+
+学习参数Z，编码图，再通过反向操作还原图，将原来的图和得到的还原图之间作比较得到loss。
+
+![image-20220323160645400](gnn.assets/image-20220323160645400.png)
+
+VGAE类似的，形如VAE
+
+![image-20220323160744975](gnn.assets/image-20220323160744975.png)
+
+---
+
+### HGAN
+
+Heterogeneous  Graph Attention Networks
+
+![image-20220323162132447](gnn.assets/image-20220323162132447.png)
+
+通过某个规定的Meta-Path可以将异构图转化为同构图，例如固定“蓝-黄-蓝”为Meta-Path，那么同一个Meta-Path两端的色节点就可以变成邻居，进而转化为此Meta-Path下的同构图:
+
+![image-20220323162847409](gnn.assets/image-20220323162847409.png)
+
+先考虑节点级别的embedding，类似于GAT，先求得某个节点对于它邻居的节点的e，再通过exp正则化来得到attention系数。
+
+![image-20220323163329355](gnn.assets/image-20220323163329355.png)
+
+$$z^{\Phi_0}_{i}$$表示在$$\Phi_0$$这种Meta-Path下面节点1对于它全部邻居的attention系数相加之后作为节点自身的embedding。
+
+再计算语义级别的attention表示：
+
+![image-20220323164847150](gnn.assets/image-20220323164847150.png)
+
+这里可以看出$$Z_{\Phi_0}$$表示在$$\Phi_0$$这种Meta-Path下面全部的节点的embedding的组合。
+
