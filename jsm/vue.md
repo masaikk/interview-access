@@ -1,4 +1,4 @@
-# Vue3
+Vue3
 
 学习vue3及其相关组件的笔记。代码位于[myvue: vue前端学习 (gitee.com)](https://gitee.com/masaikk/myvue)的vue3分支。
 
@@ -267,6 +267,67 @@ ref对象在template中被使用的时候，可以省略``.value``属性，称�
       tittle:"a setup counter"
     })
 ```
+
+#### 相关语法
+
+![image-20220326131348626](vue.assets/image-20220326131348626.png)
+
+#### toRef和toRefs
+
+都是收一个响应式对象的。
+
+使用toRefs将响应式对象解包成数个ref，使用如下语法
+
+```javascript
+let { defaultMessage, defaultAudioURL } = toRefs(props);
+```
+
+使用toRef是将reactive对象中的某件键转化为ref对象。
+
+#### watchEffect和watch的区别
+
+``watchEffect``会首先执行一次，然后记录下来里面有多少个可响应对象，最后然后里面的可响应对象有变化，就出现执行。默认的``watchEffect``会在挂载之前就运行，或者可以使用传入参数``{flush:"post"}``来让它挂载之后再运行。
+
+``watch``不会一开始就执行，记录某一个可响应对象的变化后执行。
+
+#### 通过ref来获取dom
+
+设置节点的ref属性，然后使用ref来获取，结合上述的watchEffect。要注意的是，这个对象必须要在挂载之后才能运行，使用钩子函数``onMounted``，或者监听变化：
+
+```javascript
+    <h2 ref="title">
+      哈哈哈
+    </h2>
+
+
+setup(){
+    const title=ref(null)
+    watchEffect(()=>{
+      console.log(title.value);
+    })
+}
+```
+
+代码位于``demo2/src/components/compisi/useSetup2.vue``
+
+获取audio节点
+
+定义如下``<audio controls src="http://119.23.182.180/azur/t1.mp3" ref="audioNode"></audio>``
+
+使用flush设置为``post``的``watchEffect``，如下所示：
+
+```javascript
+    const audioNode=ref(null)
+    watchEffect(()=>{
+      console.log(audioNode.value.src);
+      audioNode.value.src="http://119.23.182.180/azur/t2.mp3"
+      audioNode.value.play()
+    },{
+      flush:"post"
+    })
+```
+
+p17
 
 
 
