@@ -198,3 +198,27 @@ document.getElementById('btn').onclick = debounce(function () {
 
 ---
 
+针对视图的长宽
+
+```html
+    <style>
+        .inner {
+            width: 1vmin;
+            height: 1vmin;
+            background: blue;
+        }
+    </style>
+```
+
+根据CSS3规范，视口单位主要包括以下4个：
+
+1. vw：相对于视口的宽度， 视口被均分为 100 单位的vw，1vw等于视口宽度的1%。
+
+2. vh：相对于视口的宽度， 视口被均分为 100 单位的vh，1vh等于视口高度的1%。
+
+3. vmin：选取vw和vh中最小的那个。
+
+4. vmax：选取vw和vh中最大的那个。
+
+---
+
