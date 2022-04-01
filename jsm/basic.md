@@ -132,9 +132,225 @@ http 协议的默认端口为 80，https 的默认端口为 443。
 
 ### Promise
 
-从``http://119.23.182.180:10001/form/getImg/``这里获取response。也可以给``http://119.23.182.180:10001/form/getImg/``传递一个get请求包括一个名叫message的参数。
+promise传入一个函数作为参数，这个函数包含两个参数，分别是``resolve``和``reject``，而且它们本身也是函数。示例异步代码：
 
-待补充
+```javascript
+setTimeout(()=>{
+    console.log('setTime out 1000 ms');
+},1000)
+```
+
+包裹后为：
+
+```javascript
+new Promise((resolve, reject) => {
+    setTimeout(()=>{
+        console.log('setTime out 1000 ms');
+    },1000)
+})
+```
+
+可以将之间的log函数写成``resolve()``，这样的话执行到了这里就直接执行then函数。类似于：
+
+```javascript
+new Promise((resolve, reject) => {
+    setTimeout(()=>{
+        resolve()
+    },1000)
+}).then(()=>{
+    console.log('then ');
+})
+```
+
+then函数使用一个函数作为其参数进行使用。promise里面的``resolve()``中使用的参数作为then函数作为参数的函数中的参数进行使用，例如
+
+```javascript
+new Promise((resolve, reject) => {
+    setTimeout(()=>{
+        resolve('111argu')
+    },1000)
+}).then((s)=>{
+    console.log('then ');
+    console.log(s)
+})
+```
+
+可以化简如下链式的调用情况
+
+```javascript
+setTimeout(() => {
+    console.log('第一层');
+    console.log('第一层');
+    console.log('第一层');
+    console.log('第一层');
+    setTimeout(() => {
+        console.log('第二层');
+        console.log('第二层');
+        console.log('第二层');
+        console.log('第二层');
+        setTimeout(() => {
+            console.log('第三层');
+            console.log('第三层');
+            console.log('第三层');
+            console.log('第三层');
+        }, 1000)
+    }, 1000)
+}, 1000)
+```
+
+可以在then函数中返回设置新的promise对象。
+
+```java
+new Promise((resolve, reject) => {
+    setTimeout(() => {
+        resolve()
+    }, 1000)
+}).then(() => {
+    console.log('第一层');
+    console.log('第一层');
+    console.log('第一层');
+    console.log('第一层');
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve()
+        }, 1000)
+    })
+}).then(() => {
+    console.log('第二层');
+    console.log('第二层');
+    console.log('第二层');
+    console.log('第二层');
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve()
+        }, 1000)
+    })
+}).then(() => {
+    console.log('第三层');
+    console.log('第三层');
+    console.log('第三层');
+    console.log('第三层');
+})
+```
+
+then()函数还能接收两个参数，实际上是then()和catch()两个参数的简写。
+
+**promise的三种状态**
+
++ pending：等待状态，比如正在进行网络请求
++ fulfill：满足状态，主动回调了resolve()时就是这个状态，会回调then()
++ reject：拒绝状态，主动回调了reject()时就是这个状态，会回调catch()
+
+形如以上的三层链式调用的代码（代码位于code/js/other/promise/化简链式.js），如果第二第三层中没有异步操作的话，还可以有简写形式。
+
+使用``return Promise.resolve(res)``的方法。
+
+例如以下的代码
+
+```javascript
+new Promise((resolve, reject) => {
+    setTimeout(() => {
+        resolve()
+    }, 1000)
+}).then(() => {
+    console.log('第一层');
+    console.log('第一层');
+    console.log('第一层');
+    console.log('第一层');
+    return new Promise((resolve, reject) => {
+        resolve()
+    })
+}).then(() => {
+    console.log('第二层');
+    console.log('第二层');
+    console.log('第二层');
+    console.log('第二层');
+    return new Promise((resolve, reject) => {
+        resolve()
+    })
+}).then(() => {
+    console.log('第三层');
+    console.log('第三层');
+    console.log('第三层');
+    console.log('第三层');
+})
+```
+
+可以化简为：
+
+```javascript
+new Promise((resolve, reject) => {
+    setTimeout(() => {
+        resolve()
+    }, 1000)
+}).then(() => {
+    console.log('第一层');
+    console.log('第一层');
+    console.log('第一层');
+    console.log('第一层');
+    return Promise.resolve()
+}).then(() => {
+    console.log('第二层');
+    console.log('第二层');
+    console.log('第二层');
+    console.log('第二层');
+    return Promise.resolve()
+}).then(() => {
+    console.log('第三层');
+    console.log('第三层');
+    console.log('第三层');
+    console.log('第三层');
+})
+```
+
+甚至以上代码的``return Promise.resolve()``都可以直接省略.
+
+代码位于``code/js/other/promise/化简非异步链式.js``
+
+**异常的问题**
+
+在链式的调用的过程中可以使用``throw``的语法糖来直接调用链式的某一次的catch函数。之后的链式结构都不会继续执行。
+
+```javascript
+new Promise((resolve, reject) => {
+    setTimeout(() => {
+        resolve()
+    }, 1000)
+}).then(() => {
+    console.log('第一层');
+    console.log('第一层');
+    console.log('第一层');
+    console.log('第一层');
+	return //这里如果调用resolve()无参数的话可以直接省略d
+}).then(() => {
+    console.log('第二层');
+    console.log('第二层');
+    console.log('第二层');
+    throw "x出现错误，调用catch"
+    console.log('第二层');
+
+}).then(() => {
+    console.log('第三层');
+    console.log('第三层');
+    console.log('第三层');
+    console.log('第三层');
+}).catch((err)=>{
+    console.log(err);
+})
+
+/*
+第一层
+第一层
+第一层
+第一层
+第二层
+第二层
+第二层
+x出现错误，调用catch
+*/
+```
+
+
 
 ---
 

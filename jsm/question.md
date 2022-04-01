@@ -200,4 +200,50 @@
     + link没有兼容问题，@import在低版本的浏览器中不支持
     + link是DOM元素，支持使用JavaScript控制DOM和样式，@import不支持。
 
-16. 
+16. 拍平二维数值？
+
+    使用apply函数
+
+    ```javascript
+    function flat(a){
+        return Array.prototype.concat.apply([],a)
+    }
+    ```
+
+17. 拍平多维数组？
+
+    使用递归的，使用``Array.prototype.isArray``方法来判断数组，进行递归
+
+    ```javascript
+    Array.prototype.flat2 =function(){
+      let reslut=[]
+      for(let i=0;i<this.length;i++){
+          if(Array.isArray(this[i])){
+              reslut=reslut.concat(this[i].flat2())
+          }else{
+              reslut.push(this[i])
+          }
+      } 
+      return reslut
+    }
+    let arr=[1,[2,[3,[4],[5],[6]]]]
+    arr.flat2()
+    ```
+
+    使用生成器迭代法
+
+    ```javascript
+        function *flat(arr) {
+           for (const item of arr) {
+               if (Array.isArray(item)) {
+                   yield *flat(item);
+               } else {
+                   yield item;
+               }
+           }
+       }
+       const result = [...flat([1,2,[3,[4]]])]
+       console.log(result) //  [1, 2, 3, 4]
+    ```
+
+    
