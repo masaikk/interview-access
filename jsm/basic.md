@@ -350,7 +350,29 @@ x出现错误，调用catch
 */
 ```
 
-
+** 顺序 **
+先执行promise里面的的同步代码，然后再执行then里面的异步代码，可以使用事件循环来解释。
+```javascript
+new Promise((resolve, reject) => {
+    setTimeout(()=>{
+        resolve('111argu');
+        console.log('after resolve');
+        reject('reject')
+    },1000)
+}).then((s)=>{
+    console.log('then ');
+    console.log(s)
+}).catch((e)=>{
+    console.log(e);
+}).finally(()=>{
+    console.log('finally');
+})
+```
+以上代码输出
+after resolve
+then 
+111argu
+finally
 
 ---
 
