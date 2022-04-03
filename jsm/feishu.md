@@ -384,6 +384,23 @@ Foo instanceof Function // true
 
 Foo 函数的 `prototype` 属性是 `Foo.prototype`，而 Foo 的 `__proto__` 属性是 `Function.prototype`，由图可知，Foo 的原型链上并没有 `Foo.prototype` ，因此 `Foo instanceof Foo` 也就返回 false 。
 
+手写代码
+
+```javascript
+function instanceOf(left, right) {
+    let leftValue = left.__proto__;
+    let rightValue = right.prototype;
+    while(leftValue ){ 
+        if(leftValue === rightValue ){
+        return true
+        }else{
+          leftValue = leftValue.__proto__
+        }         
+   }
+   return false   
+}
+```
+
 ---
 
 ### bind

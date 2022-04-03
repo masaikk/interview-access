@@ -1,5 +1,7 @@
 # JavaScript权威指南
 
+[jsDefine.md · masaikk/interviewAccess - Gitee.com](https://gitee.com/masaikk/interview-access/blob/master/jsDefine.md)
+
 ---
 
 ## 第六章 **对象**
