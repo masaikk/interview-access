@@ -124,3 +124,11 @@ $$z^{\Phi_0}_{i}$$表示在$$\Phi_0$$这种Meta-Path下面节点1对于它全部
 ### GTN
 
 Graph Transformer Network
+
+![image-20220403225323115](gnn.assets/image-20220403225323115.png)
+
+---
+
+### Edge embedding in Heterogeneous  Graph
+
+如果使用同构图中的embedding方式，比如说随机游走，可能会导致同种节点出现的次数过大。
