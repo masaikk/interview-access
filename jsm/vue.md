@@ -1,6 +1,6 @@
-Vue3
+# Vue3
 
-学习vue3及其相关组件的笔记。代码位于[myvue: vue前端学习 (gitee.com)](https://gitee.com/masaikk/myvue)的vue3分支。
+学习vue3及其相关组件的笔记。代码位于[myvue: vue前端学习 (gitee.com)](https://gitee.com/masaikk/myvue)的vue3分支。笔记源文件位于[jsm/vue.md · masaikk/interviewAccess - 码云 - 开源中国 (gitee.com)](https://gitee.com/masaikk/interview-access/blob/master/jsm/vue.md)
 
 ---
 
@@ -14,7 +14,7 @@ Vue3
 
 ```json
 {
-      "bin": {
+    "bin": {
     "vue-cli-service": "bin/vue-cli-service.js"
   },
 }
@@ -353,6 +353,53 @@ P19 P20 P21
 
 router-link的replace属性代表着url是否会被压栈。默认没这个属性就不会压栈。
 
+#### 导入vue-router
+
+使用如以下代码安装依赖 
+
+``npm install vue-router@next``
+
+在导入声明的时候可以使用``import type { RouteRecordRaw } from "vue-router";``的形式来声明导入的是type。
+
+参考代码：
+
+```typescript
+import { createRouter, createWebHashHistory } from "vue-router";
+import type { RouteRecordRaw } from "vue-router";
+
+const routes: RouteRecordRaw[] = [
+  {
+    path: "/",
+    redirect: "/login",
+  },
+  {
+    path: "/login",
+    component: () => import(""),
+  },
+];
+
+const router = createRouter({
+  routes: [],
+  history: createWebHashHistory(),
+});
+
+export default router;
+```
+
+然后在main.ts中进行注册：
+
+```typescript
+import { createApp } from "vue";
+import App from "./App.vue";
+import router from "./router";
+
+const app = createApp(App);
+app.use(router);
+app.mount("#app");
+```
+
+最后在App.vue中引入``<router-view></router-view>``
+
 #### 懒加载
 
 类似于如下代码
@@ -514,6 +561,42 @@ router.addRoute('father',{
 ---
 
 ### VueX
+
+#### 导入
+
+使用``npm install vuex@next --save``安装
+
+创建store/index.ts
+
+```typescript
+import { createStore } from "vuex";
+
+const store = createStore({
+  state: () => {
+    return {
+      name: "masaikk",
+    };
+  },
+});
+
+export default store;
+```
+
+然后在main.ts中进行注册
+
+```typescript
+import { createApp } from "vue";
+import App from "./App.vue";
+import router from "./router";
+import store from "./store";
+
+const app = createApp(App);
+app.use(router);
+app.use(store);
+app.mount("#app");
+```
+
+使用时``<p>{{ $store.state.name }}</p>``
 
 #### 基础知识
 
