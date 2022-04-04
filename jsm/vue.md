@@ -735,4 +735,106 @@ VueX推荐只使用一个``$store``
 
 ### Axios封装
 
-p33
+先尝试在main.ts中使用封装的AXIOS实例。
+
+思考的步骤如下所示：
+
+1. 创建自己的request类，封装好axios实例，构造函数和request函数。
+2. 查看axios的声明文件，分析给定的类型声明，比如``AxiosRequestConfig``和``AxiosInstance``等。
+3. 封装好自己的静态配置到另一个ts文件中，再导出配置文件。
+4. 在自己的类的声明文件中导入之前的配置文件，new这个class对象，使用构造函数初始化自己的axios实例，导出这个对象。
+5. 在main.ts中导入这个对象，测试。
+
+下面是代码说明：
+
+创建好自己的静态配置类：
+
+```typescript
+let BASE_URL = "";
+const TIME_OUT = 10000;
+
+if (process.env.NODE_ENV === "development") {
+  BASE_URL = "http://119.23.182.180:10001/form/";
+} else {
+  BASE_URL = "http://119.23.182.180:10001/form/";
+}
+
+export { BASE_URL, TIME_OUT };
+
+```
+
+这里就可以区分生产环境和开发环境。
+
+然后，可以声明自己封装的对象并且导出，这里简单声明了一个request方法
+
+```typescript
+import axios, { AxiosResponse } from "axios";
+import type { AxiosInstance, AxiosRequestConfig } from "axios";
+
+class MasaikkRequest {
+  instance: AxiosInstance;
+
+  constructor(config?: AxiosRequestConfig) {
+    this.instance = axios.create(config);
+  }
+
+  request(config: AxiosRequestConfig): void {
+    this.instance.request(config).then((response: AxiosResponse) => {
+      console.log(response);
+    });
+  }
+}
+
+export default MasaikkRequest;
+
+```
+
+以上的类型都需要去axios的声明文件中找，位置``demo3/node_modules/axios/index.d.ts``
+
+创建自己的服务类，导入之前的静态配置和自己的类的声明，进行创建对象并且将这个对象导出以便于别的文件进行使用
+
+```typescript
+import MasaikkRequest from "./request";
+
+import { BASE_URL, TIME_OUT } from "./request/config";
+
+const masaikkRequest = new MasaikkRequest({
+  baseURL: BASE_URL,
+  timeout: TIME_OUT,
+});
+
+export default masaikkRequest;
+
+```
+
+这里导出的``masaikkRequest``对象就是自己已经实例化的对象，别的文件导入了之后就可以直接调用它的request方法。
+
+然后在main.ts中测试导入的情况：
+
+```typescript
+import { createApp } from "vue";
+import App from "./App.vue";
+import router from "./router";
+import store from "./store";
+import masaikkRequest from "./service";
+
+const app = createApp(App);
+app.use(router);
+app.use(store);
+app.mount("#app");
+
+masaikkRequest.request({
+  url: "getAudioPath/",
+  method: "GET",
+});
+
+```
+
+运行整个项目，可以看到导入成功，控制台中有打印res的信息：
+
+![image-20220404122452525](vue.assets/image-20220404122452525.png)
+
+p33 拦截器
+
+---
+
