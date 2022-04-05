@@ -160,3 +160,91 @@ align-content属性参考如下，注意此时只能在换行才有效，单行�
 
 #### flex子元素属性
 
+子元素的flex属性表示子元素可以分到多少份，从**剩余空间**之间划分。
+
+比如如下代码，中间第二块div划分到全部的剩余空间
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>useFlex</title>
+    <style type="text/css">
+        section{
+            display: flex;
+            width: 60%;
+            height: 150px;
+            background-color: pink;
+            margin: 0 auto;
+        }
+        section > div{
+            border: 1px black dotted;
+            text-align: center;
+        }
+
+        section div:nth-child(1){
+            width: 100px;
+            height: 150px;
+            background-color: red;
+        }
+        section div:nth-child(2){
+            flex:1;
+            background-color: white;
+        }
+        section div:nth-child(3){
+            width: 100px;
+            height: 150px;
+            background-color: blue;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <section id="roo">
+        <div class="inn">1</div>
+        <div class="inn">2</div>
+        <div class="inn">3</div>
+    </section>
+
+</div>
+</body>
+</html>
+
+```
+
+![image-20220405143600722](css.assets/image-20220405143600722.png)
+
+而且左右两侧的宽度是固定的，但是中间这块的宽度是可以压缩的，为圣杯布局。
+
+![image-20220405143651435](css.assets/image-20220405143651435.png)
+
+将flex盒子里的子元素全部设置flex到1，就可以实现均匀分布
+
+```html
+    <p>
+        <span>1</span>
+        <span>2</span>
+        <span>3</span>
+    </p>
+```
+
+```css
+        p{
+            display: flex;
+            width: 60%;
+            height: 150px;
+            background-color: pink;
+            margin: 100px auto;
+        }
+
+        p > span{
+            flex: 1;
+            text-align: center;
+            border: 1px black dotted;
+        }
+```
+
+显示的效果：
+
+![image-20220405144400455](css.assets/image-20220405144400455.png)
