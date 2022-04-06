@@ -258,3 +258,53 @@ align-content属性参考如下，注意此时只能在换行才有效，单行�
 ```
 
 ![image-20220405221935741](css.assets/image-20220405221935741.png)
+
+---
+
+## 居中的若干种方法
+
+![文章结构](css.assets/169913195af002dbtplv-t2oaga2asx-zoom-in-crop-mark1304000.awebp)
+
+### 水平居中-行内元素
+
+```css
+.son {
+    margin: 0 auto;
+}
+```
+
+示例代码
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>brock</title>
+    <style>
+        .father {
+            width: 80%;
+            height: 1000px;
+            background-color: pink;
+        }
+
+        .son {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            text-align: center;
+            background-color: gray;
+        }
+    </style>
+</head>
+<body>
+<div class="father">
+    <div class="son">aaa</div>
+</div>
+
+</body>
+</html>
+```
+
+![image-20220406231646357](css.assets/image-20220406231646357.png)
+
