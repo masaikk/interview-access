@@ -265,7 +265,9 @@ align-content属性参考如下，注意此时只能在换行才有效，单行�
 
 ![文章结构](css.assets/169913195af002dbtplv-t2oaga2asx-zoom-in-crop-mark1304000.awebp)
 
-### 水平居中-行内元素
+### 水平居中
+
+#### 块级元素一般居中
 
 ```css
 .son {
@@ -308,3 +310,105 @@ align-content属性参考如下，注意此时只能在换行才有效，单行�
 
 ![image-20220406231646357](css.assets/image-20220406231646357.png)
 
+代码位于``center/brock/1.html``
+
+#### 块级元素子元素含float
+
+```css
+.parent{
+    width:fit-content;
+    margin:0 auto;
+}
+
+.son {
+    float: left;
+}
+```
+
+示例代码
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>brock</title>
+    <style>
+        .father {
+            /*width: 80%;*/
+            height: 1000px;
+            background-color: pink;
+            width:fit-content;
+            margin:0 auto;
+        }
+
+        .son {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            text-align: center;
+            background-color: gray;
+            float: left;
+        }
+    </style>
+</head>
+<body>
+<div class="father">
+    <div class="son">aaa</div>
+</div>
+
+</body>
+</html>
+```
+
+![image-20220406235026282](css.assets/image-20220406235026282.png)
+
+代码位于``center/brock/2.html``
+
+#### flex
+
+```css
+.parent {
+    display: flex;
+    justify-content: center;
+}
+
+```
+
+示例代码
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>brock</title>
+    <style>
+        .father {
+            width: 80%;
+            height: 1000px;
+            background-color: pink;
+            display: flex;
+            justify-content: center;
+        }
+
+        .son {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            text-align: center;
+            background-color: gray;
+            /*float: left;*/
+        }
+    </style>
+</head>
+<body>
+<div class="father">
+    <div class="son">aaa</div>
+</div>
+
+</body>
+</html>
+```
+
+![image-20220406235535103](css.assets/image-20220406235535103.png)
