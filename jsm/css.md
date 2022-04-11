@@ -533,7 +533,7 @@ align-content属性参考如下，注意此时只能在换行才有效，单行�
 <body>
 <span class="father">
     <span class="son">aaa</span>
-<span/>
+    </span>span>
 </body>
 </html>
 ```
@@ -541,3 +541,67 @@ align-content属性参考如下，注意此时只能在换行才有效，单行�
 ![image-20220411130602212](css.assets/image-20220411130602212.png)
 
 代码位于``center/vertical/1.html``
+
+#### 适应IE7的块级元素
+
+这里使用了伪类
+
+```css
+.parent::after, .son{
+    display:inline-block;
+    vertical-align:middle;
+}
+.parent::after{
+    content:'';
+    height:100%;
+}
+
+```
+
+示例代码
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>brock</title>
+    <style>
+        .father {
+            width: 80%;
+            height: 1000px;
+            background-color: pink;
+        }
+
+        .son {
+            width: 200px;
+            height: 200px;
+            text-align: center;
+            background-color: gray;
+        }
+
+        .father::after, .son{
+            display:inline-block;
+            vertical-align:middle;
+        }
+        .father::after{
+            content:'';
+            height:100%;
+        }
+
+
+
+    </style>
+</head>
+<body>
+<div class="father">
+    <div class="son">aaa</div>
+</div>
+
+</body>
+</html>
+```
+
+![image-20220411132549836](css.assets/image-20220411132549836.png)
+
+代码位于``center/vertical/2.html``。
