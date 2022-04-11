@@ -175,7 +175,9 @@ tensorflow_datasets使用了tensorflow官方的数据集
 
 使用了typescript和"@tensorflow/tfjs-node": "^3.15.0"，代码位于``ts-node/src/index.ts``，使用prettier作为代码格式化工具。使用nodemon作为监听的包。
 
-参考package.json文件如下
+参考API[TensorFlow.js API](https://js.tensorflow.org/api/latest/?hl=zh-cn)
+
+参考package.json文件如下：
 
 ```json
 {
@@ -273,6 +275,49 @@ async function run() {
 }
 
 run();
+```
+
+可以使用对象数组的map方法来遍历，*不过这里我碰到了一些问题，必须要把map对象设置为any。*疑似代码：
+
+```typescript
+import * as tf from "@tensorflow/tfjs-node";
+import type { Sequential, Tensor2D, Tensor } from "@tensorflow/tfjs-node";
+import { houseScaleData, data } from "./testapis";
+
+async function run() {
+  const data10 = houseScaleData.take(10);
+  const data10Objs = await data10.toArray();
+
+  const points: any[] = data10Objs.map((record: any) => {
+    // console.log(record);
+    let sqft_living: Number = record.sqft_living;
+    let price: Number = record.price;
+
+    // console.log(typeof record);
+    return Object({
+      x: sqft_living,
+      y: price,
+    });
+  });
+
+  const featureValues = points.map((p) => p.x);
+  const featureTensor: Tensor2D = tf.tensor2d(featureValues, [
+    featureValues.length,
+    1,
+  ]);
+
+  const labelValues = points.map((p) => p.y);
+  const labelTensor: Tensor2D = tf.tensor2d(labelValues, [
+    labelValues.length,
+    1,
+  ]);
+
+  featureTensor.print();
+  labelTensor.print();
+}
+
+run();
+
 ```
 
 
