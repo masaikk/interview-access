@@ -186,7 +186,8 @@ tensorflow_datasets使用了tensorflow官方的数据集
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "tsc --watch",
-    "start": "nodemon ./dist"
+    "start": "nodemon ./dist",
+    "http-server": "http-server ."
   },
   "keywords": [
     "tfjs"
@@ -196,6 +197,7 @@ tensorflow_datasets使用了tensorflow官方的数据集
   "dependencies": {
     "@tensorflow/tfjs-node": "^3.15.0",
     "@types/node": "^17.0.23",
+    "http-server": "^14.1.0",
     "nodemon": "^2.0.15",
     "typescript": "^4.6.3"
   },
@@ -203,7 +205,6 @@ tensorflow_datasets使用了tensorflow官方的数据集
     "prettier": "^2.6.2"
   }
 }
-
 ```
 
 ---
@@ -235,4 +236,44 @@ const c: Tensor = tf.add(a, b);
 
 c.print(verbose);
 ```
+
+---
+
+### 使用数据集
+
+使用dataset来导入csv文件，要注意的是读取操作是返回promise。
+
+可以使用http-server来当本地的数据服务器。
+
+导入使用如下代码
+
+```typescript
+import * as tf from "@tensorflow/tfjs-node";
+import { CSVDataset } from "@tensorflow/tfjs-data/dist/datasets/csv_dataset";
+
+const houseScaleData: CSVDataset = tf.data.csv(
+  "http://127.0.0.1:8080/src/testapis/dataset/kc_house_data.csv"
+);
+const data = houseScaleData.take(10);
+// 获取前十行
+
+export { houseScaleData, data };
+```
+
+注意index.ts中的异步函数操作
+
+```typescript
+import * as tf from "@tensorflow/tfjs-node";
+import type { Sequential, Tensor2D, Tensor } from "@tensorflow/tfjs-node";
+import { houseScaleData, data } from "./testapis";
+
+async function run() {
+  const data10 = await houseScaleData.take(10).toArray();
+  console.log(data10);
+}
+
+run();
+```
+
+
 
