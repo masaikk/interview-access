@@ -290,8 +290,8 @@ async function run() {
 
   const points: any[] = data10Objs.map((record: any) => {
     // console.log(record);
-    let sqft_living: Number = record.sqft_living;
-    let price: Number = record.price;
+    let sqft_living: number = record.sqft_living;
+    let price: number = record.price;
 
     // console.log(typeof record);
     return Object({
@@ -299,6 +299,52 @@ async function run() {
       y: price,
     });
   });
+
+  const featureValues = points.map((p) => p.x);
+  const featureTensor: Tensor2D = tf.tensor2d(featureValues, [
+    featureValues.length,
+    1,
+  ]);
+
+  const labelValues = points.map((p) => p.y);
+  const labelTensor: Tensor2D = tf.tensor2d(labelValues, [
+    labelValues.length,
+    1,
+  ]);
+
+  featureTensor.print();
+  labelTensor.print();
+}
+
+run();
+
+```
+
+加上point接口的定义，注意``number``与``Number``区别：
+
+```typescript
+import * as tf from "@tensorflow/tfjs-node";
+import type { Sequential, Tensor2D, Tensor } from "@tensorflow/tfjs-node";
+import { houseScaleData, data } from "./testapis";
+
+interface point {
+  x: number;
+  y: number;
+}
+
+async function run() {
+  const data10 = houseScaleData.take(10);
+
+  const points: point[] = (await houseScaleData.toArray()).map(
+    (record: any) => {
+      let sqft_living: number = record.sqft_living;
+      let price: number = record.price;
+      return Object({
+        x: sqft_living,
+        y: price,
+      });
+    }
+  );
 
   const featureValues = points.map((p) => p.x);
   const featureTensor: Tensor2D = tf.tensor2d(featureValues, [
