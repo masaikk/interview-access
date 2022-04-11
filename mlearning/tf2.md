@@ -366,5 +366,30 @@ run();
 
 ```
 
+### 正则化
 
+在``ts-node/src/testapis/utils/TensorUtils.ts``中定义正则化函数``normalise``并导出。
+
+```typescript
+import type { Tensor } from "@tensorflow/tfjs-node";
+
+function normalise(tensor: Tensor): Tensor {
+  const min: Tensor = tensor.min();
+  const max: Tensor = tensor.max();
+  const normalisedTensor: Tensor = tensor.sub(min).div(max.sub(min));
+  return normalisedTensor;
+}
+
+export { normalise };
+```
+
+定义``denormalise``函数并导出
+
+```typescript
+function denormalise(tensor: Tensor, min: Tensor, max: Tensor): Tensor {
+  const denomalisedTensor: Tensor = tensor.mul(max.sub(min)).add(min);
+  return denomalisedTensor;
+}
+
+```
 
