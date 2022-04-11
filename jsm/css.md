@@ -412,3 +412,132 @@ align-content属性参考如下，注意此时只能在换行才有效，单行�
 ```
 
 ![image-20220406235535103](css.assets/image-20220406235535103.png)
+
+代码位于``center/brock/3.html``
+
+#### transform
+
+```css
+.son {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+```
+
+示例代码：
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>brock</title>
+    <style>
+        .father {
+            width: 80%;
+            height: 1000px;
+            background-color: pink;
+
+        }
+
+        .son {
+            width: 200px;
+            height: 200px;
+            text-align: center;
+            background-color: gray;
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%, 0);
+        }
+    </style>
+</head>
+<body>
+<div class="father">
+    <div class="son">aaa</div>
+</div>
+</body>
+</html>
+```
+
+![image-20220411122141551](css.assets/image-20220411122141551.png)
+
+*此种情况看起来是在body里进行居中。*
+
+因为``left: 50%;``表示在整个页面从左到右50%开始排列。``transform: translate(-50%, 0);``表示自身在水平方向向左移动自己的50%。
+
+示例代码``center/brock/4.html``。
+
+如下代码也有同样效果
+
+```css
+.son {
+    position: absolute;
+    width: 宽度;
+    left: 50%;
+    margin-left: -0.5*宽度
+}
+```
+
+示例代码``center/brock/5.html``。
+
+```css
+.son {
+    position: absolute;
+    width: 宽度;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+}
+```
+
+示例代码``center/brock/6.html``。
+
+### 垂直居中
+
+#### 行内元素
+
+```css
+.parent {
+    height: 高度;
+}
+
+.son {
+    line-height: 高度;
+}
+
+```
+
+两个高度相同
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>brock</title>
+    <style>
+        .father {
+            width: 80%;
+            height: 500px;
+            background-color: pink;
+        }
+        .son {
+            width: 200px;
+            line-height: 500px;
+            text-align: center;
+            background-color: gray;
+        }
+    </style>
+</head>
+<body>
+<span class="father">
+    <span class="son">aaa</span>
+<span/>
+</body>
+</html>
+```
+
+![image-20220411130602212](css.assets/image-20220411130602212.png)
+
+代码位于``center/vertical/1.html``

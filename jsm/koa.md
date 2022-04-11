@@ -24,3 +24,5 @@ app.use(async (ctx: any) => {
 
 可以得到输出``{"url":"/?a=1&b=2","query":{"a":"1","b":"2"},"querystring":{"a":"1","b":"2"}}``.
 
+ 
+
