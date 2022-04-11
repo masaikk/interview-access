@@ -395,3 +395,7 @@ declare function fun(): void
 
 使用以上代码声明。
 
+---
+
+### import & export
+

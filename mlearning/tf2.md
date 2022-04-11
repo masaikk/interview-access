@@ -168,3 +168,71 @@ tensorflow_datasets使用了tensorflow官方的数据集
 ```
 
 但是目前还不支持多个虚拟GPU。
+
+---
+
+## TensorFlowJS
+
+使用了typescript和"@tensorflow/tfjs-node": "^3.15.0"，代码位于``ts-node/src/index.ts``，使用prettier作为代码格式化工具。使用nodemon作为监听的包。
+
+参考package.json文件如下
+
+```json
+{
+  "name": "ts-node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "tsc --watch",
+    "start": "nodemon ./dist"
+  },
+  "keywords": [
+    "tfjs"
+  ],
+  "author": "masaikk",
+  "license": "ISC",
+  "dependencies": {
+    "@tensorflow/tfjs-node": "^3.15.0",
+    "@types/node": "^17.0.23",
+    "nodemon": "^2.0.15",
+    "typescript": "^4.6.3"
+  },
+  "devDependencies": {
+    "prettier": "^2.6.2"
+  }
+}
+
+```
+
+---
+
+简要的示例代码检查npm是否安装成功
+
+```typescript
+import * as tf from "@tensorflow/tfjs-node";
+import type { Sequential, Tensor2D, Tensor } from "@tensorflow/tfjs-node";
+import { model } from "./testapis";
+
+let verbose: boolean = false;
+
+// Create a rank-2 tensor (matrix) matrix tensor from a multidimensional array.
+const a: Tensor = tf.tensor([
+  [1, 2],
+  [3, 4],
+]);
+console.log("shape:", a.shape);
+// a.print();
+
+// Or you can create a tensor from a flat array and specify a shape.
+const shape = [2, 2];
+const b: Tensor = tf.tensor([1, 2, 3, 101], shape);
+console.log("shape:", b.shape);
+// b.print();
+
+const c: Tensor = tf.add(a, b);
+
+c.print(verbose);
+```
+
