@@ -390,6 +390,108 @@ function denormalise(tensor: Tensor, min: Tensor, max: Tensor): Tensor {
   const denomalisedTensor: Tensor = tensor.mul(max.sub(min)).add(min);
   return denomalisedTensor;
 }
+```
+
+### 切分数据集
+
+使用``tf.split``方法。需要注意的是这里需要考虑切分的原始数据是否可以划分完否则会报错。
+
+示例代码
+
+```typescript
+  const [trainNormalisedFeatureTensor, testNormalisedFeatureTensor]: Tensor[] =
+    tf.split(normalisedFeature.tensor, 2, 0);
+```
+
+这里表示切成两份并且从第零维开始切分。
+
+### 创建模型
+
+以线性回归为例，使用``const model: Sequential = tf.sequential();``
+
+示例代码
+
+```typescript
+import * as tf from "@tensorflow/tfjs-node";
+import type { Sequential } from "@tensorflow/tfjs-node";
+
+function createModel(): Sequential {
+  const model: Sequential = tf.sequential();
+  model.add(
+    tf.layers.dense({
+      units: 1,
+      useBias: true,
+      activation: "linear",
+      inputDim: 1,
+    })
+  );
+
+  return model;
+}
+
+export { createModel };
 
 ```
 
+参考``ts-node/src/testapis/models/LinearModel.ts``
+
+参看model的基本信息
+
+```typescript
+const model: Sequential = createModel();
+  model.summary();
+```
+
+```shell
+__________________________________________________________________________________________
+Layer (type)                Input Shape               Output shape              Param #   
+==========================================================================================
+dense_Dense1 (Dense)        [[null,1]]                [null,1]                  2         
+==========================================================================================
+Total params: 2
+Trainable params: 2
+Non-trainable params: 0
+__________________________________________________________________________________________
+```
+
+考虑对于model添加compile选项以规定训练的方法：
+
+```typescript
+  const optim: tf.SGDOptimizer = tf.train.sgd(0.1);
+
+  model.compile({
+    loss: "meanSquaredError",
+    optimizer: optim,
+  });
+```
+
+### 训练模型
+
+使用``model.fit()``方法，比如：
+
+```typescript
+async function trainModel(
+  model: Sequential,
+  trainingFeatureTensor: Tensor,
+  trainingLabelTensor: Tensor
+): Promise<void> {
+  model.fit(trainingFeatureTensor, trainingLabelTensor);
+}
+```
+
+这里的fit可以添加更多的选择，比如说epoch和回调函数
+
+```typescript
+model.fit(trainingFeatureTensor, trainingLabelTensor, {
+    epochs: 20,
+    callbacks: {
+      onEpochEnd: (epoch: number, log: Logs | undefined) => {
+        console.log(`Epoch ${epoch} with loss: ${(log as Logs).loss}`);
+      },
+    },
+  });
+```
+
+注意``model.fit()``方法是异步的。所以以上定义的``trainModel()``方法也是异步的。
+
+参考代码``ts-node/src/testapis/models/modelHandler.ts``
