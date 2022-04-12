@@ -467,6 +467,8 @@ ________________________________________________________________________________
 
 ### 训练模型
 
+#### 训练
+
 使用``model.fit()``方法，比如：
 
 ```typescript
@@ -479,7 +481,7 @@ async function trainModel(
 }
 ```
 
-这里的fit可以添加更多的选择，比如说epoch和回调函数
+这里的fit方法可以添加更多的选择，比如说epoch和回调函数。
 
 ```typescript
 model.fit(trainingFeatureTensor, trainingLabelTensor, {
@@ -494,4 +496,64 @@ model.fit(trainingFeatureTensor, trainingLabelTensor, {
 
 注意``model.fit()``方法是异步的。所以以上定义的``trainModel()``方法也是异步的。
 
-参考代码``ts-node/src/testapis/models/modelHandler.ts``
+参考代码位于``ts-node/src/testapis/models/modelHandler.ts``。
+
+#### 返回值
+
+参考返回的对象``tf.History``
+
+```typescript
+export declare class History extends BaseCallback {
+    epoch: number[];
+    history: {
+        [key: string]: Array<number | Tensor>;
+    };
+    onTrainBegin(logs?: UnresolvedLogs): Promise<void>;
+    onEpochEnd(epoch: number, logs?: UnresolvedLogs): Promise<void>;
+    /**
+     * Await the values of all losses and metrics.
+     */
+    syncData(): Promise<void>;
+}
+```
+
+#### 验证
+
+添加验证集的比例
+
+```typescript
+async function trainModel(
+  model: Sequential,
+  trainingFeatureTensor: Tensor,
+  trainingLabelTensor: Tensor
+): Promise<History> {
+  return model.fit(trainingFeatureTensor, trainingLabelTensor, {
+    batchSize: 32,
+    epochs: 20,
+    validationSplit: 0.2,
+    callbacks: {
+      onEpochEnd: (epoch: number, log: Logs | undefined) => {
+        console.log(`Epoch ${epoch} with loss: ${(log as Logs).loss}`);
+      },
+    },
+  });
+}
+```
+
+### 测试模型
+
+#### 评估
+
+使用``model.evaluate()``方法进行评估。
+
+```typescript
+  const lossTensor: tf.Scalar | tf.Scalar[] = model.evaluate(
+    testNormalisedFeatureTensor,
+    testNormalisedLabelTensor
+  );
+  const loss: Uint8Array | Int32Array | Float32Array = (
+    lossTensor as tf.Scalar
+  ).dataSync();
+  console.log("testing loss: " + loss);
+```
+
