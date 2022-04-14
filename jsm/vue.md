@@ -151,6 +151,135 @@ export default {
 
 ---
 
+### provide和inject
+
+*用于非父子组件之间的共享数据。*
+
+如果有一些嵌套的深层组件，使用props一直往下传递无疑是很麻烦的。所以这种情况下可以使用provide和inject。有如下特性：
+
++ 无论层级结构有多深，父组件都可以作为其所有子组件的依赖提供者。
++ 父组件使用provide来提供数据。
++ 子组件使用inject来使用数据。
++ 可以看成是long range props
+
+以下是代码演示。
+
+例子是创建了三个组件，按顺序是provide,home和homeson，展示如下：
+
+![image-20220414105315185](vue.assets/image-20220414105315185.png)
+
+可以在爷组件provide里面写下provide属性，表示提供这个数据。爷组件不需要管这个数据有没有用上。
+
+```vue
+<script>
+import home from "@/components/useProvide/home";
+export default {
+  name: "provide",
+  components: {
+    home,
+  },
+  provide: {
+    pp1: "some data",
+    pp2: "other data",
+  },
+};
+</script>
+```
+
+在孙节点homeson里面进行接收，使用inject
+
+```vue
+<template>
+  <div>
+    <div>home-son</div>
+    <div>inject value: {{ pp1 }}-{{ pp2 }}</div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "homeson",
+  inject: ["pp1", "pp2"],
+};
+</script>
+
+<style scoped></style>
+
+```
+
+即可正常展示
+
+![image-20220414110419756](vue.assets/image-20220414110419756.png)
+
+
+
+实际开发情况里面，provide里面的数据不能像上述例子里面一样写死。而是放在data里面。
+
+并且如果使用上方``provide:{}``的写法，里面的this是``undefined``。所以更推荐``provide(){return{}}``写法，这里的this就有指向。即可使用this来引用data里面的数据。
+
+```vue
+<template>
+  <div>
+    <div>
+      <p>provide</p>
+    </div>
+    <div>
+      <home></home>
+    </div>
+  </div>
+</template>
+
+<script>
+import home from "@/components/useProvide/home";
+
+export default {
+  name: "provide",
+  components: {
+    home,
+  },
+  provide() {
+    return {
+      pp1: "some data",
+      pp2: "other data",
+      da: this.dataV,
+    };
+  },
+  data() {
+    return {
+      dataV: "data from data",
+    };
+  },
+};
+</script>
+
+<style scoped></style>
+
+```
+
+参考代码``demo2/src/views/provide.vue``
+
+如果想要响应的话，使用``computed``
+
+```javascript
+  provide() {
+    return {
+      pp1: "some data",
+      pp2: "other data",
+      da: computed(() => this.dataV),
+    };
+  },
+```
+
+---
+
+### slot
+
+
+
+
+
+---
+
 ### Composition API
 
 P15 重要
