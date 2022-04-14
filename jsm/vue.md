@@ -461,6 +461,8 @@ export default {
 
 代码位于``demo2/src/components/compisi/useSlot2.vue``
 
+同时，子组件里面的slot的name属性也可以结合子组件的props属性，都通过父组件的传入的值进行渲染。更具有普适性。
+
 ---
 
 ### Composition API
@@ -647,11 +649,19 @@ p17
 
 ### Vue源码部分解读
 
+P18 P19 P20 P21
+
 #### Vue网课部分
 
-P19 P20 P21
+##### 虚拟DOM渲染
 
-*讲是讲得不错，可是我已经没有时间了。但是之后一定要回来看完。*
+虚拟DOM渲染的时候更加方便，可以用diff算法来判断对比VNode（是一个JavaScript对象）之间的不同。*结合重绘和重排知识点。*
+
+渲染过程如下：
+
+![image-20220414172608641](vue.assets/image-20220414172608641.png)
+
+
 
 #### Vue博客
 
