@@ -272,11 +272,194 @@ export default {
 
 ---
 
-### slot
+### Slot
 
+可以使用默认插槽，例如
 
+```vue
+<template>
+  <div id="son">
+    <div>显示插槽的组件</div>
+    <div>
+      <slot>
+        <i>这里是默认插槽元素</i>
+      </slot>
+    </div>
+  </div>
+</template>
 
+<script>
+export default {
+  name: "useSlot1",
+};
+</script>
 
+<style scoped>
+#son {
+  border: #2c3e50 dashed 1px;
+  background-color: aliceblue;
+}
+</style>
+
+```
+
+在父节点中展示即可
+
+```vue
+<template>
+  <div>
+    <div>使用插槽的父组件</div>
+    <div>
+      <use-slot1></use-slot1>
+    </div>
+  </div>
+</template>
+
+<script>
+import useSlot1 from "@/components/compisi/useSlot1";
+export default {
+  name: "slotHolder",
+  components: {
+    useSlot1,
+  },
+};
+</script>
+
+<style scoped></style>
+
+```
+
+显示的效果：
+
+![image-20220414141619842](vue.assets/image-20220414141619842.png)
+
+#### 普通插槽
+
+如果传入插槽，就不显示默认插槽内容
+
+```html
+    <div>
+      <use-slot1>
+        <el-button>不使用默认插槽而是使用DOM</el-button>
+      </use-slot1>
+    </div>
+```
+
+![image-20220414141947059](vue.assets/image-20220414141947059.png)
+
+#### 具名插槽
+
+参考代码``demo2/src/components/compisi/useSlot2.vue``，使用flex将样式展示为如下形式：
+
+![image-20220414154546894](vue.assets/image-20220414154546894.png)
+
+初始代码
+
+```vue
+<template>
+  <div id="use-slot2">
+    <div class="left">
+      <slot></slot>
+    </div>
+    <div class="center">
+      <slot></slot>
+    </div>
+    <div class="right">
+      <slot></slot>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "useSlot2",
+};
+</script>
+
+<style scoped>
+#use-slot2 {
+  display: flex;
+  width: 400px;
+}
+
+#use-slot2 > div {
+  height: 50px;
+  margin-top: 40px;
+  border: #2c3e50 dotted 0.5px;
+}
+
+.left,
+.right {
+  width: 80px;
+  background-color: aliceblue;
+}
+
+.center {
+  flex: 1;
+}
+</style>
+
+```
+
+我们希望在插槽处传入三个slot然后分别渲染到以上的三块部分。
+
+直接使用的话
+
+```vue
+    <div id="slot2holder">
+      <use-slot2>
+        <el-button>左边的内容</el-button>
+        <el-button>中间的内容</el-button>
+        <el-button>右边的内容</el-button>
+      </use-slot2>
+    </div>
+```
+
+会显示：
+
+![image-20220414155219975](vue.assets/image-20220414155219975.png)
+
+所以如果不指定名字的话，每个插槽都会分配到各个``<slot\>``中，所以需要使用具名插槽。
+
+应该使用``<template>``标签以及``v-slot``属性。
+
+在父组件中应该这样使用
+
+```vue
+    <div id="slot2holder">
+      <use-slot2>
+        <template v-slot:left><el-button>左边按钮</el-button></template>
+        <template v-slot:center><el-button>中间按钮</el-button></template>
+        <template v-slot:right><el-button>右边按钮</el-button></template>
+      </use-slot2>
+    </div>
+```
+
+使用``v-slot``来指定各个插槽的名字。
+
+在子组件中使用的时候需要通过``<slot>``的``name``属性来指定具体要渲染的插槽模板。例如：
+
+```vue
+<template>
+  <div id="use-slot2">
+    <div class="left">
+      <slot name="left"></slot>
+    </div>
+    <div class="center">
+      <slot name="center"></slot>
+    </div>
+    <div class="right">
+      <slot name="right"></slot>
+    </div>
+  </div>
+</template>
+```
+
+展示的效果如下：
+
+![image-20220414155926427](vue.assets/image-20220414155926427.png)
+
+代码位于``demo2/src/components/compisi/useSlot2.vue``
 
 ---
 
