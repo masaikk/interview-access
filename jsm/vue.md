@@ -671,6 +671,10 @@ P18 P19 P20 P21
 + 可响应式系统模块
 + 应用程序入口模块
 
+将vue文件里面的``template``标签渲染为调用h函数的，是使用了vue的编译插件，这里不讨论。
+
+**h函数的实现**
+
 思考Vue里面的h函数，主要传入了三个参数，第一个是标签名称，第二个是props比如说各个属性，第三个是内容或者是数组表示子节点，里面也包含h函数渲染出来的VNode。如下所示：
 
 ```javascript
@@ -697,11 +701,56 @@ const h = (tag, props, children) => {
 
 ![image-20220415114259993](vue.assets/image-20220415114259993.png)
 
+**mount函数的实现**
+
+用于将刚才的VNode转化成真实的DOM节点然后挂载到DOM上面。例如``mount(vnode, document.querySelector('#app'));``
+
+还需要将vnode对象也保存一个DOM节点。参考代码如下所示：
+
+```javascript
+const mount = (vnode, container) => {
+  // 1,创建真实的DOM元素
+  const el = (vnode.el = document.createElement(vnode.tag));
+
+  // 2,处理props
+  if (vnode.props) {
+    for (const key in vnode.props) {
+      const value = vnode.props[key];
+
+      //这里判断一些onclick之类的绑定的事件
+      if (key.startsWith("on")) {
+        // 绑定原生事件
+        el.addEventListener(key.slice(2).toLowerCase(), value);
+      } else {
+        el.setAttribute(key, value);
+      }
+    }
+  }
+
+  // 3,处理children
+  if (vnode.children) {
+    // 如果只是一个字符串类型
+    if (typeof vnode.children === "string") {
+      el.textContent = vnode.children;
+    } else {
+      // 数组情况
+      vnode.children.forEach((item) => {
+        mount(item, el);
+        //将每个数组里面的元素挂载到el里面
+      });
+    }
+  }
+
+  // 4,挂载到container上面;
+  container.appendChild(el);
+};
+```
+
+在此上，处理创建节点、遍历处理props、处理children（如有就递归调用mount）和挂载整个真实DOM节点。
+
 #### Vue博客
 
 [Introduction · 深入剖析Vue源码 (penblog.cn)](https://book.penblog.cn/)
-
-
 
 ---
 
