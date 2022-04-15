@@ -748,6 +748,141 @@ const mount = (vnode, container) => {
 
 在此上，处理创建节点、遍历处理props、处理children（如有就递归调用mount）和挂载整个真实DOM节点。
 
+**patch函数的实现**
+
+用于比较新的vnode和旧的vnode，得出它们之间的不同。
+
+传入两个vnode对象，分别代表旧vnode和新vnode。
+
+首先比较tag，如果tag都不一样那么直接替换。
+
+```javascript
+if (n1.tag !== n2.tag) {
+    //如果连标签都不同的话那么就直接替换。
+    const n1ElParent = n1.el.parentElement;
+    // 通过n1的el属性拿到整个DOM节点，再根据它拿到父节点准备去移除它。
+
+    n1ElParent.removeChild(n1.el);
+    mount(n2, n1ElParent);
+    //删除n1，挂载n2
+  } else {
+  }
+```
+
+如果类型相同的话，应该先去取出n1的DOM对象然后在n2中的el进行保存。
+
+```javascript
+// 1,保存n1的el属性
+    const el = (n2.el = n1.el);
+```
+
+然后处理props，分别是添加新的props和移除旧的vnode中应该被remove的props
+
+```javascript
+    // 2,处理props
+    // 如果props是undefined，就返回一个空对象
+    const oldProps = n1.props || {};
+    const newProps = n2.props || {};
+
+    // 2.1把新的props添加到el中
+    for (const key in newProps) {
+      const oldValue = oldProps[key];
+      const newValue = newProps[key];
+      if (newValue !== oldValue) {
+        //如果不同，就用新的把旧的盖掉
+        //这里判断一些onclick之类的绑定的事件
+        if (key.startsWith("on")) {
+          // 绑定原生事件
+          el.addEventListener(key.slice(2).toLowerCase(), newValue);
+        } else {
+          el.setAttribute(key, newValue);
+        }
+      }
+    }
+    //2.2 把旧的props删掉
+    for (const key in oldProps) {
+      if (!(key in newProps)) {
+        //这里判断一些onclick之类的绑定的事件
+        if (key.startsWith("on")) {
+          // 删除原生事件
+          el.removeEventListener(key.slice(2).toLowerCase());
+        } else {
+          el.removeAttribute(key);
+        }
+      }
+    }
+```
+
+之后是处理children，这里要关心children是否是字符串或者数组的情况。
+
+下面表示的是除了新的children和旧的children都是数组的情况。
+
+```javascript
+
+    // 3，处理children
+    const oldChildren = n1.children || [];
+    const newChildren = n2.children || [];
+
+    if (typeof newChildren === "string") {
+      //如果新的child是字符串
+      if (typeof oldChildren === "string") {
+        if (newChildren !== oldChildren) {
+          el.textContent = newChildren;
+          //如果新旧子节点都是字符串而且不相等的话，就直接使用textContent属性换
+        } else {
+          el.innerHTML = newChildren;
+          //否则就直接把整个新的字符串来赋值
+        }
+      }
+    } else {
+      //如果新的child不是字符串，而是数组
+      if (typeof oldChildren === "string") {
+        el.innerHTML = "";
+        newChildren.forEach((item) => {
+          mount(item, el);
+          //挂载新的children
+        });
+      } else {
+        // 如果旧的child不是字符串而是数组
+        //这里结合diff算法和vue中结合key的优化
+        //代码待补充
+      }
+    }
+```
+
+对于diff函数处理两个都是数组的情况（不考虑可以），遵循以下操作：
+
+1. 前面有相同节点的原生进行patch操作
+2. 如果new更长，就对更长的部分直接mount
+3. 如果old更长，就对更长的部分直接移除
+
+```javascript
+       // 1.前面有相同节点的进z行原生的patch操作
+        const commonLength = Math.min(oldChildren.length, newChildren.length);
+        for (let i = 0; i < commonLength; i++) {
+          patch(oldChildren[i], newChildren[i]);
+        }
+        // 2.newChildren>oldChildren
+        if (newChildren.length > oldChildren.length) {
+          //对于更长部分进行遍历
+          newChildren.slice(oldChildren.length).forEach((item) => {
+            //直接挂载
+            mount(item, el);
+          });
+        }
+        // 3.newChildren<oldChildren
+        if (newChildren.length < oldChildren.length) {
+          oldChildren.slice(newChildren.length).forEach((item) => {
+            el.removeChild(item);
+            //对更长的节点进行移除操作
+          });
+        }
+```
+
+**响应式系统的实现**
+
+
+
 #### Vue博客
 
 [Introduction · 深入剖析Vue源码 (penblog.cn)](https://book.penblog.cn/)
