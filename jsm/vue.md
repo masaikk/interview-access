@@ -40,8 +40,7 @@ P10讲到了，很快，但是目前社区支持不够。
 
 [参考链接](https://segmentfault.com/a/1190000011381906)
 
-```javascript
-```
+
 
 
 
@@ -661,7 +660,42 @@ P18 P19 P20 P21
 
 ![image-20220414172608641](vue.assets/image-20220414172608641.png)
 
+##### mini-Vue的实现
 
+主要包括以下三个模块：
+
++ 渲染系统模块
+  + h函数，用于返回一个VNode对象
+  + mount函数，用于将VNode挂载到DOM上
+  + patch函数，用于对两个VNode进行对比，决定如何处理新的VNode
++ 可响应式系统模块
++ 应用程序入口模块
+
+思考Vue里面的h函数，主要传入了三个参数，第一个是标签名称，第二个是props比如说各个属性，第三个是内容或者是数组表示子节点，里面也包含h函数渲染出来的VNode。如下所示：
+
+```javascript
+    const VNode = h('div', {'class': 'why'}, [
+        h('h2', null, '计数：100'),
+        h('button', null, '+1')
+    ])
+```
+
+大概是这样的实现情况
+
+```javascript
+const h = (tag, props, children) => {
+  // 渲染VNode对象
+  return {
+    tag,
+    props,
+    children,
+  };
+};
+```
+
+简易的VNode如上所示，是树状的结构。在控制台打印输出如下：
+
+![image-20220415114259993](vue.assets/image-20220415114259993.png)
 
 #### Vue博客
 
