@@ -48,8 +48,6 @@ P10讲到了，很快，但是目前社区支持不够。
 
 ### Vue3父子组件传递值
 
-### 这里不想看网课，暂时通过看博客复习这个。看不懂再回来P11
-
 参考如下博客：
 
 https://juejin.cn/post/6965062549771386887
@@ -461,6 +459,16 @@ export default {
 代码位于``demo2/src/components/compisi/useSlot2.vue``
 
 同时，子组件里面的slot的name属性也可以结合子组件的props属性，都通过父组件的传入的值进行渲染。更具有普适性。
+
+---
+
+### keep-alive
+
+---
+
+### animation
+
+
 
 ---
 
