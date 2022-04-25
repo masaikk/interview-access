@@ -587,6 +587,8 @@ class MyLinear(nn.Module):
 
 ---
 
+### JS正则表达式配合match
+
 JavaScript通过match配合拓展运算符来匹配正则表达式的各部分
 
 ```javascript
@@ -610,6 +612,118 @@ function getNumberParts(number) {
 注意其中``const [, ...captures] = number.match(rnumber);``这行的代码。
 
 源代码位于[此](code/js/other/reFetch/main.js)
+
+---
+
+### Python的logging
+
+参考[https://juejin.cn/post/6844903692915703815](https://juejin.cn/post/6844903692915703815)
+
+对于日志的具体信息，有以下格式的记录：
+
+|  **变量**   |    **格式**     |        **变量描述**        |
+| :---------: | :-------------: | :------------------------: |
+|   asctime   |   %(asctime)s   |      时间，可以格式化      |
+|    name     |     %(name)     |       日志对象的名称       |
+|  filename   |  %(filename)s   |     不包含路径的文件名     |
+|  pathname   |  %(pathname)s   |      包含路径的文件名      |
+|  funcName   |  %(funcName)s   |    日志记录所在的函数名    |
+|  levelname  |  %(levelname)s  |       日志的级别名称       |
+|   message   |   %(message)s   |       具体的日志信息       |
+|   lineno    |   %(lineno)d    | 执行日志记录代码所在的行号 |
+|  pathname   |  %(pathname)s   |          完整路径          |
+|   process   |   %(process)d   |         当前进程ID         |
+| processName | %(processName)s |        当前进程名称        |
+|   thread    |   %(thread)d    |         当前线程ID         |
+| threadName  | %(threadName)s  |        当前线程名称        |
+
+无配置文件的log默认输出到控制台。logging 模块这样设计是为了更好的灵活性，比如有时候我们既想在控制台中输出DEBUG 级别的日志，又想在文件中输出WARNING级别的日志。可以只设置一个最低级别的 Logger 对象，两个不同级别的 Handler 对象，示例代码如下：
+
+```python
+import logging
+import logging.handlers
+
+logger = logging.getLogger("logger")
+
+handler1 = logging.StreamHandler()
+handler2 = logging.FileHandler(filename="test.log")
+
+logger.setLevel(logging.DEBUG)
+handler1.setLevel(logging.WARNING)
+handler2.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter("%(asctime)s %(name)s %(levelname)s %(message)s")
+handler1.setFormatter(formatter)
+handler2.setFormatter(formatter)
+
+logger.addHandler(handler1)
+logger.addHandler(handler2)
+
+# 分别为 10、30、30
+# print(handler1.level)
+# print(handler2.level)
+# print(logger.level)
+
+logger.debug('This is a customer debug message')
+logger.info('This is an customer info message')
+logger.warning('This is a customer warning message')
+logger.error('This is an customer error message')
+logger.critical('This is a customer critical message')
+```
+
+最终logger的设置步骤：先设置logger对象，再设置handler对象（可以有多个），然后针对每个handler对象设置format等信息，最后给logger对象添加handler对象。使用logger的方法来记录logger。
+
+参考正确的代码：
+
+```python
+import logging
+
+
+class Log:
+    def __init__(self):
+        self.logger = logging.getLogger('log1')
+        self.log_handler = logging.FileHandler(filename="useapi/static/test.log", mode="a")
+        self.stream_handler = logging.StreamHandler()
+
+        self.formatter = logging.Formatter("%(asctime)s %(name)s:%(levelname)s:%(message)s")
+
+        self.stream_handler.setFormatter(self.formatter)
+        self.log_handler.setFormatter(self.formatter)
+        self.log_handler.setLevel(logging.DEBUG)
+        self.logger.addHandler(self.log_handler)
+        self.logger.addHandler(self.stream_handler)
+
+    def log_info(self, mess):
+        self.logger.info(mess)
+
+    def log_warn(self, mess):
+        self.logger.warning(mess)
+
+```
+
+
+
+创建了自定义的 Logger 对象，就不要在用 logging 中的日志输出方法了，这些方法使用的是默认配置的 Logger 对象，否则会输出的日志信息会重复。应该只用logger的输出方法，例如以下代码：
+
+```python
+import logging
+import logging.handlers
+
+logger = logging.getLogger("logger")
+handler = logging.StreamHandler()
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter("%(asctime)s %(name)s %(levelname)s %(message)s")
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.debug('This is a customer debug message')
+logging.info('This is an customer info message')
+logger.warning('This is a customer warning message')
+logger.error('This is an customer error message')
+logger.critical('This is a customer critical message')
+
+```
+
+以上信息有些被输出了两遍。
 
 ---
 
