@@ -16,7 +16,15 @@ Docker 不是虚拟机，容器中的应用都应该以前台执行，而不是�
 
 ### 基本命令
 
-+ 
++ COPY <src> <dest>
+  + 这里的src是相对于dockerfile的路径
+
++ CMD ["executable","param1","param2"]
+  + 相对于``executable param1 param2``
+  + 一个dockerfile中只能有一个CMD指令
+
++ RUN ["executable","param1","param2"]
+  + 相对于``executable param1 param2``
 
 ---
 
@@ -24,14 +32,45 @@ Docker 不是虚拟机，容器中的应用都应该以前台执行，而不是�
 
 + MySQL
   + ``docker run -p 3306:3306  -e MYSQL_ROOT_PASSWORD=123 -d mysql``
+  
 + MongoDB
   + [官网](https://hub.docker.com/_/mongo)
   + ``docker run -d mongo``
   + 使用如下命令``docker exec -it ${ID} sh``
+  
 + Nginx
   + ``docker run -p 80:80 -d nginx``
+  
   + 配置文件位于/etc/nginx/conf.d/default.conf
-  + 
+  
+  + ```shell
+    server {
+        listen       80;
+        listen  [::]:80;
+        server_name  localhost;
+    
+        #access_log  /var/log/nginx/host.access.log  main;
+    
+        location / {
+            root   /usr/share/nginx/html;
+            index  index.html index.htm;
+        }
+    
+        #error_page  404              /404.html;
+    
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   /usr/share/nginx/html;
+        }
+        }
+    ```
+  
++ nodered/node-red
+
+  + ``docker run -it -p 1880:1880 -v myNodeREDdata:/data --name mynodered nodered/node-red``
+
 
 
 ---
