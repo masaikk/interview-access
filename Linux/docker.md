@@ -18,13 +18,48 @@ Docker 不是虚拟机，容器中的应用都应该以前台执行，而不是�
 
 + COPY <src> <dest>
   + 这里的src是相对于dockerfile的路径
-
 + CMD ["executable","param1","param2"]
   + 相对于``executable param1 param2``
   + 一个dockerfile中只能有一个CMD指令
-
 + RUN ["executable","param1","param2"]
   + 相对于``executable param1 param2``
++ WORKDIR src
+  + 定义以上的CMD或者RUN命令的运行的路径。
+
++ VOLUME 
+  + 指定一个数据卷挂载点
+  + ``VOLUME ["/data"]``
+
++ ENV
+  + 使用``ENV <key> <value>``或者``ENV <key>=<value>``的形式确定变量
+  + 使用的时候``${key}``
+
++ ARG 
+  + 定义创建镜像时候的变量
+
++ EXPOSE
+  + 声明镜像内服务监听的端口
+  + 在build阶段依然需要``-p``就行端口映射
+
+
+### 参考代码
+
+```dockerfile
+FROM nginx:latest
+
+LABEL maintainer="masaikk<201830660420@mail.scut.edu.cn>"
+
+EXPOSE 80 443
+
+ENV path_nginx "/usr/share/nginx/html/"
+
+ENV base_path "st/*"
+# 注意这里是对于dockerfile的相对路径
+
+COPY ${base_path} ${path_nginx}
+```
+
+
 
 ---
 
@@ -82,8 +117,7 @@ Docker 不是虚拟机，容器中的应用都应该以前台执行，而不是�
 + ``-P``随机一个端口映射
 + ``-link``连接数据卷容器
 + ``-v``挂载目录。``-v 宿主机目录:容器目录`` 这里的容器目录会自动创建，并且容器目录不可以为相对路径。
-
-
++ ``-p``映射端口。``-v 宿主机端口:容器端口``
 
 ---
 
