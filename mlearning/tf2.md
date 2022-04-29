@@ -4,7 +4,7 @@
 
 参考自己的keras学习代码[keras代码](https://gitee.com/masaikk/rectr.git)
 
-主要包括tensorflow2和tensorflow.js
+主要包括tensorflow2、tensorflow.js和TFX
 
 运行平台包括anaconda和nodejs。
 
@@ -556,4 +556,12 @@ async function trainModel(
   ).dataSync();
   console.log("testing loss: " + loss);
 ```
+
+---
+
+## TensorFlow Extended(TFX)
+
+
+
+## TensorFlow Serving
 

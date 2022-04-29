@@ -19,8 +19,8 @@
       +  《Python科学计算和数据科学应用》[file](pymear.md) [code:data-deep-mear-exercise](https://gitee.com/masaikk/data-deep-mear-exercise)
 3.  网页上看到的杂项知识 [file](know.md)🚲
 3.  看论文链接 [paper](https://gitee.com/masaikk/read-paper)🚗
-3.  机器学习的面经知识笔记，位于文件夹[mlearning](mlearning)。文件夹下的[question](mlearning/question.md)记录问题，待完善答案。其余包括tf2和nlp相关知识。
-3.  大前端的面经笔记，位于文件夹[jsm](jsm)。文件夹下的[question](jsm/question.md)记录问题，待完善答案。主要包括typescript，vue3和koa的知识。tfjs的知识位于mlearning文件夹下面。
+3.  机器学习的面经知识笔记，位于文件夹[mlearning](mlearning)。文件夹下的[question](mlearning/question.md)记录问题，待完善答案。其余包括tf2和NLP相关知识。
+3.  大前端的面经笔记，位于文件夹[jsm](jsm)。文件夹下的[question](jsm/question.md)记录问题，待完善答案。主要包括typescript，vue3和koa的知识。TFjs的知识位于mlearning文件夹的tf2里面。
 3.  Linux相关知识，位于文件夹[linux](./Linux)。包括docker知识和Linux运维的知识。
 
 #### 架构说明
