@@ -63,6 +63,10 @@ http 协议的默认端口为 80，https 的默认端口为 443。
 
 ---
 
+
+
+## 编程语言基础知识
+
 ### JS中类型检测的三种方法
 
 1. ``typeof``关键字
@@ -457,6 +461,113 @@ document.getElementById('btn').onclick = debounce(function () {
 3. vmin：选取vw和vh中最小的那个。
 
 4. vmax：选取vw和vh中最大的那个。
+
+---
+
+## Django要点
+
+### csrf
+
+由于django对于post等登陆接口的保护，所以设置了“跨站请求伪造保护”机制，即csrf。实质上就是对于post请求的字段中增加了应该token用来保证整个请求是真实的用户发送的（但是不能防止xss注入）。如果只是在模板中的表单里面使用csrf机制，只要在表单里面添加``{% csrf_token %}``，详见[官方文档](https://docs.djangoproject.com/zh-hans/4.0/ref/csrf/)，在此讨论在前后端分离的项目中使用这个机制。
+
+创建新的django项目之后，可以看到csrf中间件是默认开启的，即``django.middleware.csrf.CsrfViewMiddleware``已经在settings.py的``MIDDLEWARE``字段中。例如：
+
+```python
+MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    
+    'django.middleware.csrf.CsrfViewMiddleware',
+
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+```
+
+设置测试的路由``path('po/',views.testpost,name='po')``，对应函数
+
+```python
+def testpost(request):
+    return HttpResponse('Got post successfully')
+```
+
+直接用postman测试，返回403，显示被csrf挡了
+
+![image-20220502193727161](basic.assets/image-20220502193727161.png)
+
+但是，get请求是不会被csrf挡住的，所以提供如下解决post不被挡住的思路：
+
+1. 安排一个设置token的接口，使用get获取，并且将token保存在本地的cookies中
+2. 在发post到安排了csrf的端口之前，解析本地的cookies，获取到token字段
+3. 将token的名字设置为``X-CSRFToken``添加到post的head中。
+4. 最后再发送post请求。
+
+下面对于以上步骤进行说明：
+
+设置获取token的get端口：
+
+```python
+from django.middleware.csrf import get_token,rotate_token
+
+def set_cook(request):
+    get_token(request)
+    rotate_token(request)
+    return render(request,'rrl.html')
+```
+
+以上代码也可以用如下方式代替
+
+```python
+from django.views.decorators.csrf import ensure_csrf_cookie
+    
+@ensure_csrf_cookie
+def server(request):
+ 
+    return render(request,'server.html')
+```
+
+即可获取包含了token的cookies：
+
+![image-20220502194520015](basic.assets/image-20220502194520015.png)
+
+在post环境下，可以在test中写如下JavaScript代码，获取这里的cookies并且可以进行下一次请求的发送：
+
+```javascript
+var csrf_token = postman.getResponseCookie("csrftoken").value
+postman.clearGlobalVariable("csrftoken");
+postman.setGlobalVariable("csrftoken", csrf_token);
+```
+
+以上代码的意思是设置了一个叫``csrftoken``的postman的全局变量，来保存这里的token
+
+在下一个post请求的head中，设置如下：
+
+![image-20220502194755403](basic.assets/image-20220502194755403.png)
+
+使用mustache语法来添加head里面的``X-CSRFToken``字段，再次对于刚才被csrf拒绝的端口进行测试，即可成功运行。
+
+**使用axios解决csrf问题** 待补充
+
+**csrf装饰器对于视图函数的设置：**
+
+装饰器`csrf_protect`可以在全局未开启csrf保护的时候单独为某一个视图函数添加csrf保护。
+
+装饰器``csrf_exempt``可以忽略一个视图函数的csrf保护。
+
+---
+
+### cors
+
+
+
+---
+
+### django部署
+
+
 
 ---
 

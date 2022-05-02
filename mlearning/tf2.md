@@ -171,6 +171,16 @@ tensorflow_datasets使用了tensorflow官方的数据集
 
 ---
 
+### model
+
+如果我们需要在训练和预测时实现不同的行为，可以在model的`call`方法中加入一个布尔类型的值`training`，当训练时这个参数值为`True`，进行评估或者预测时(非训练行为)，这个参数值为`False`。
+
+
+
+
+
+---
+
 ## TensorFlowJS
 
 使用了typescript和"@tensorflow/tfjs-node": "^3.15.0"，代码位于``ts-node/src/index.ts``，使用prettier作为代码格式化工具。使用nodemon作为监听的包。
@@ -556,6 +566,16 @@ async function trainModel(
   ).dataSync();
   console.log("testing loss: " + loss);
 ```
+
+### 保存模型
+
+```typescript
+const saveResults: io.SaveResult = await model.save(
+              "file://./save_model/model-3"
+            );
+```
+
+
 
 ---
 

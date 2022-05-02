@@ -59,6 +59,32 @@ module.exports = async (ctx, next) => {
 }
 ```
 
+### ctx抛出错误
+
+```typescript
+const getError = async (ctx: any) => {
+  ctx.throw(500);
+};
+export { getError };
+```
+
+返回一个 **Internal Server Error**。
+
+### koa的静态资源中间件
+
+```typescript
+const staticMiddle = require("koa-static");
+const path = require("path");
+
+app.use(staticMiddle(path.join(__dirname, "../../static")));
+```
+
+初始化的时候就使用静态资源的文件夹。
+
+使用时url类似于``http://127.0.0.1:3000/yuka.jpg``
+
+
+
 ---
 
 ###  koa的跨域解决问题
