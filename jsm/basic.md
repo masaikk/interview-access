@@ -571,3 +571,123 @@ postman.setGlobalVariable("csrftoken", csrf_token);
 
 ---
 
+### nginx转发到django
+
+背景：如果有多台服务器，可以部署多个后端对数据进行分布式处理。配合docker等工具，虽然有多个服务器，但是前端在请求的时候只用请求nginx服务器，之后的工作由nginx处理。并且使用nginx的反向代理可以顺带解决跨域请求的问题。如果每个服务器端配置不同，可以通过nginx实现端口转发，负载控制操作。碰巧我就有那么几台服务器，所以可以部署诺干个django后端。并且可以使用nginx的代理操作将某一个请求的端口号省略掉。
+
+在宝塔或者阿里云控制台等开启某防火墙端口，运行django，确保可以直接访问。
+
+django里面的app的views视图可以添加如下函数:
+
+```python
+def showG(request):
+    print('Request from {}:'.format(request.META['REMOTE_ADDR']))
+    return HttpResponse('get')
+```
+
+使用``runserver``运行服务器。
+
+本地运行一个docker的nginx容器，使用如下命令``docker run -it -d -p 12345:80 nginx``
+
+浏览器打开http://127.0.0.1:12345就可以看到nginx默认页面
+
+![image-20220503114859013](basic.assets/image-20220503114859013.png)
+
+可以修改配置文件``etc/nginx/conf.d/defalut.conf``进行一次反向代理
+
+```json
+server {
+    listen       80;
+    listen  [::]:80;
+    server_name  www.masaikk.xyz;
+
+    #access_log  /var/log/nginx/host.access.log  main;
+
+    location / {
+        proxy_pass http://www.masaikk.xyz:10003;
+        proxy_redirect default;
+    }
+
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+}
+```
+
+这里将本地的80转发到了``http://www.masaikk.xyz:10003``，可以正常访问。
+
+![image-20220503141023630](basic.assets/image-20220503141023630.png)
+
+后端也可以正常收到请求并且记录。
+
+![image-20220503141710225](basic.assets/image-20220503141710225.png)
+
+添加对于多个服务器的配置，在配置文件中添加如下流：
+
+```json
+upstream todj{
+    server www.masaikk.xyz:10003;
+    server 119.23.182.180:10003;
+}
+```
+
+**这个流的名字``todj``需要添加到django的ALLOW_HOSTS中。**
+
+修改配置文件
+
+```json
+upstream todj{
+    server www.masaikk.xyz:10003;
+    server 119.23.182.180:10003;
+}
+
+server {
+    listen       80;
+    listen  [::]:80;
+    server_name  www.masaikk.xyz;
+
+    #access_log  /var/log/nginx/host.access.log  main;
+
+    location / {
+        proxy_pass http://todj;
+        proxy_redirect default;
+    }
+
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+}
+
+
+```
+
+重启容器，即可达到预想效果：
+
+![image-20220503145630920](basic.assets/image-20220503145630920.png)
+
+两台服务器都能收到请求。
+
+同时，可以通过设置权重的方式来设置对于每个服务器的访问流量控制。
+
+```json
+upstream todj{
+    server www.masaikk.xyz:10003 weight=1;
+    server 119.23.182.180:10003 weight=3;
+}
+
+```
+
+---
+
