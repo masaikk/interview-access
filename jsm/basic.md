@@ -561,13 +561,62 @@ postman.setGlobalVariable("csrftoken", csrf_token);
 
 ### cors
 
+参考https://www.ruanyifeng.com/blog/2016/04/cors.html
+
+CORS是一个W3C标准，全称是"跨域资源共享"（Cross-origin resource sharing）。
+
 
 
 ---
 
 ### django部署
 
+对于生成环境来说，使用``python manage.py runserver``来说是不合适的。可以使用uWSGI服务器来运行django项目。但是由于自己的机子装不好uwsgi，所以使用docker安装。测试的django项目名字叫做sjor。
 
+**首先使用uwsgi搭建可以使用http的环境的方法。这里可以直接用浏览器访问。**
+
+拉取python:3.8镜像并且映射端口。使用``docker cp /path id:/sjor``命令将项目文件复制到编号为id的容器的/sjor目录下。
+
+因为python镜像的CMD命令是``python3``所以应该使用``docker exec -it id bash``attach到容器的bash中。使用``pip install -r requirements.txt``安装依赖。参考依赖：
+
+```markdown
+asgiref==3.5.1
+backports.zoneinfo==0.2.1
+Django==4.0.4
+mysqlclient==2.1.0
+PyMySQL==1.0.2
+sqlparse==0.4.2
+typing_extensions==4.2.0
+uWSGI==2.0.20
+```
+
+使用``uwsgi --ini uwsgi.ini``来运行项目，示例的代码
+
+```ini
+[uwsgi]
+http=  :8002
+chdir=/sjor
+wsgi-file=sjor/wsgi.py
+process=4
+threads=2
+pidfile=pro.pid
+daemonize=sjor.log
+master=true
+```
+
+可以使用``uwsgi --stop pro.pid``来停止服务。
+
+以上表示将http请求发送到了容器8002端口。如果在运行容器的时候进行了端口映射，那么直接浏览器访问就可以看到:
+
+![image-20220504101851363](basic.assets/image-20220504101851363.png)
+
+可以在容器内使用``ps -aux``看到进程列表
+
+![image-20220504102215101](basic.assets/image-20220504102215101.png)
+
+**还可以考虑使用uwsgi和nginx的方法来搭建发送socket的后端。这里不能直接用浏览器访问uswgi。**
+
+但是我还没搞定。
 
 ---
 
@@ -589,13 +638,13 @@ def showG(request):
 
 本地运行一个docker的nginx容器，使用如下命令``docker run -it -d -p 12345:80 nginx``
 
-浏览器打开http://127.0.0.1:12345就可以看到nginx默认页面
+浏览器打开[http://127.0.0.1:12345](http://127.0.0.1:12345)就可以看到nginx默认页面
 
 ![image-20220503114859013](basic.assets/image-20220503114859013.png)
 
 可以修改配置文件``etc/nginx/conf.d/defalut.conf``进行一次反向代理
 
-```json
+```nginx
 server {
     listen       80;
     listen  [::]:80;
@@ -630,7 +679,7 @@ server {
 
 添加对于多个服务器的配置，在配置文件中添加如下流：
 
-```json
+```nginx
 upstream todj{
     server www.masaikk.xyz:10003;
     server 119.23.182.180:10003;
@@ -641,7 +690,7 @@ upstream todj{
 
 修改配置文件
 
-```json
+```nginx
 upstream todj{
     server www.masaikk.xyz:10003;
     server 119.23.182.180:10003;
@@ -681,7 +730,7 @@ server {
 
 同时，可以通过设置权重的方式来设置对于每个服务器的访问流量控制。
 
-```json
+```nginx
 upstream todj{
     server www.masaikk.xyz:10003 weight=1;
     server 119.23.182.180:10003 weight=3;
