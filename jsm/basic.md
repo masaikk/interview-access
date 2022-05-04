@@ -573,6 +573,8 @@ CORS是一个W3C标准，全称是"跨域资源共享"（Cross-origin resource s
 
 对于生成环境来说，使用``python manage.py runserver``来说是不合适的。可以使用uWSGI服务器来运行django项目。但是由于自己的机子装不好uwsgi，所以使用docker安装。测试的django项目名字叫做sjor。
 
+![image-20220504105619326](basic.assets/image-20220504105619326.png)
+
 **首先使用uwsgi搭建可以使用http的环境的方法。这里可以直接用浏览器访问。**
 
 拉取python:3.8镜像并且映射端口。使用``docker cp /path id:/sjor``命令将项目文件复制到编号为id的容器的/sjor目录下。
@@ -616,7 +618,73 @@ master=true
 
 **还可以考虑使用uwsgi和nginx的方法来搭建发送socket的后端。这里不能直接用浏览器访问uswgi。**
 
-但是我还没搞定。
+这里可以使用uwsgi的socket服务而不是使用http，这样的话就更快。
+
+```ini
+[uwsgi]
+socket = :8002
+chdir = /sjor
+wsgi-file = sjor/wsgi.py
+process = 4
+threads = 2
+pidfile = pro.pid
+daemonize = sjor.log
+master = true
+vacuum = true
+max-requests = 1000
+limit-as = 512
+buffer-size = 30000
+
+```
+
+开启一个nginx容器，映射端口80到宿主机上
+
+```nginx
+upstream todj{
+    server 119.23.182.180:10003 weight=1;
+}
+
+server {
+    listen       80;
+    listen  [::]:80;
+    server_name  localhost;
+
+    access_log  /var/log/nginx/host.access.log  main;
+
+    location / {
+        uwsgi_pass todj;
+        include /etc/nginx/uwsgi_params;
+    }
+
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+}
+```
+
+这里的流的名字，要加入到django项目的``ALLOW_HOST``字段中。例如这里的``todj``。
+
+打开本地宿主机被绑定的端口，可以看到已经成功访问了：
+
+![image-20220504134659247](basic.assets/image-20220504134659247.png)
+
+但是如果是本地docker允许的uwsgi，用nginx会报错。
+
+```markdown
+An error occurred.
+Sorry, the page you are looking for is currently unavailable.
+Please try again later.
+
+If you are the system administrator of this resource then you should check the error log for details.
+
+Faithfully yours, nginx.
+```
 
 ---
 
