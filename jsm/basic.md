@@ -592,16 +592,16 @@ typing_extensions==4.2.0
 uWSGI==2.0.20
 ```
 
-使用``uwsgi --ini uwsgi.ini``来运行项目，示例的代码
+使用``uwsgi --ini uwsgi.ini``来运行项目，示例的代码如下：
 
 ```ini
 [uwsgi]
-http=  :8002
-chdir=/sjor
-wsgi-file=sjor/wsgi.py
-process=4
-threads=2
-pidfile=pro.pid
+http = :8002
+chdir = /sjor
+wsgi-file = sjor/wsgi.py
+process = 4
+threads = 2
+pidfile = pro.pid
 daemonize=sjor.log
 master=true
 ```
@@ -612,7 +612,7 @@ master=true
 
 ![image-20220504101851363](basic.assets/image-20220504101851363.png)
 
-可以在容器内使用``ps -aux``看到进程列表
+可以在容器内使用``ps -aux``看到进程列表：
 
 ![image-20220504102215101](basic.assets/image-20220504102215101.png)
 
@@ -637,7 +637,7 @@ buffer-size = 30000
 
 ```
 
-开启一个nginx容器，映射端口80到宿主机上
+开启一个nginx容器，映射端口80到宿主机上，如下所示：
 
 ```nginx
 upstream todj{
@@ -674,7 +674,7 @@ server {
 
 ![image-20220504134659247](basic.assets/image-20220504134659247.png)
 
-但是如果是本地docker允许的uwsgi，用nginx会报错。
+但是如果是本地docker的Python容器运行的uwsgi，用nginx进行上述连接会报错。
 
 ```markdown
 An error occurred.
@@ -803,8 +803,11 @@ upstream todj{
     server www.masaikk.xyz:10003 weight=1;
     server 119.23.182.180:10003 weight=3;
 }
-
 ```
 
+也可以使用上述说明的使用socket的方式和nginx沟通，不过需要注意的是，使用了socket的ip不需要记上``http://``等前缀。
+
 ---
+
+
 
