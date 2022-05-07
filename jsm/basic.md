@@ -809,5 +809,25 @@ upstream todj{
 
 ---
 
+django admin
 
+可以使用admin对于model层的数据进行可视化操作。（感觉比pycharm好看一些）
+
+如果需要对于某个model的类进行管理，需要在那个app的admin中注册：
+
+```python
+from django.contrib import admin
+
+# Register your models here.
+from useapi.models import User, MusicLog
+
+
+@admin.register(User)
+@admin.register(MusicLog)
+class UserAdmin(admin.ModelAdmin):
+    pass
+
+```
+
+以上是使用类以及装饰器的方法。
 

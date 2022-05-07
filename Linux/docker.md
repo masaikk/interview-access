@@ -67,6 +67,7 @@ COPY ${base_path} ${path_nginx}
 
 + MySQL
   + ``docker run -p 3306:3306  -e MYSQL_ROOT_PASSWORD=123 -d mysql``
+  + 需要注意数据持久化的问题``-v /data/mysql/data:/var/lib/mysql``
   
 + MongoDB
   + [官网](https://hub.docker.com/_/mongo)
@@ -101,6 +102,8 @@ COPY ${base_path} ${path_nginx}
         }
         }
     ```
+    
+  + uWSGI配置详见django笔记。
   
 + nodered/node-red
 
