@@ -809,7 +809,7 @@ upstream todj{
 
 ---
 
-django admin
+#### django admin
 
 可以使用admin对于model层的数据进行可视化操作。（感觉比pycharm好看一些）
 
@@ -830,4 +830,8 @@ class UserAdmin(admin.ModelAdmin):
 ```
 
 以上是使用类以及装饰器的方法。
+
+---
+
+
 
