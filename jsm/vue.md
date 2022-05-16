@@ -1383,6 +1383,8 @@ VueX推荐只使用一个``$store``
 
 ### Axios封装
 
+#### axios类封装
+
 先尝试在main.ts中使用封装的AXIOS实例。
 
 思考的步骤如下所示：
@@ -1482,7 +1484,86 @@ masaikkRequest.request({
 
 ![image-20220404122452525](vue.assets/image-20220404122452525.png)
 
-p33 拦截器
+#### axios实例封装
+
+在此也提出一中封装axios实例的方法。
+
+```javascript
+import axios from "axios";
+const serviceAxios = axios.create({
+  baseURL: "http://127.0.0.1:8000",
+  timeout: 5000,
+});
+
+export default serviceAxios;
+```
+
+导出这个``serviceAxios``之后就能封装它的各种方法。例如：
+
+```javascript
+import serviceAxios from "@/apis/networks";
+
+export const getComments = (params) => {
+  return serviceAxios({
+    method: "get",
+    url: "/user/get_comments/",
+    params,
+  });
+};
+
+export const addCommentById = (params) => {
+  return serviceAxios({
+    method: "get",
+    url: "/user/add_comment/",
+    params,
+  });
+};
+```
+
+最后可以在vue组件中导入封装好的方法并使用：
+
+```javascript
+getComments({}).then((res) => {
+    // res
+});
+```
+
+#### axios拦截器
+
+提供一种简易的axios拦截器实现方法：
+
+```javascript
+import axios from "axios";
+const serviceAxios = axios.create({
+  baseURL: "http://127.0.0.1:8000",
+  timeout: 5000,
+});
+
+serviceAxios.interceptors.request.use(
+  (config) => {
+    console.log(config);
+    return config;
+  },
+  (error) => {
+    Promise.reject(error);
+  }
+);
+
+serviceAxios.interceptors.response.use(
+  (res) => {
+    console.log(res);
+    return res;
+  },
+  (error) => {
+    console.log(error);
+  }
+);
+
+export default serviceAxios;
+
+```
+
+上面分别使用了请求拦截和响应拦截，并且要特别注意在拦截之后要返回。如``return config;``和``return res;``。
 
 ---
 
