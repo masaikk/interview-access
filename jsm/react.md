@@ -392,3 +392,8 @@ class InputComponent extends React.Component {
 
 非受控组件相比于上述绑定表单数据到state中的受控组件的区别是，这里操作ref来使用手动来操作dom节点。
 
+1. 导入`createRef` 函数
+2. 调用createRef函数，创建一个ref对象，存储到名为`msgRef`的实例属性中
+3. 为input添加ref属性，值为`msgRef`
+4. 在按钮的事件处理程序中，通过`msgRef.current`即可拿到input对应的dom元素，而其中`msgRef.current.value`拿到的就是文本框的值。
+
