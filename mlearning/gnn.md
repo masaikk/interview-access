@@ -28,6 +28,10 @@ embedding的五种方法：
 
 单纯的卷积。不过要注意正则化的两种形式。有$D^{-1}A$得到非对称矩阵和$D^{-\frac{1}{2}}AD^{-\frac{1}{2}}$可以得到对称矩阵。
 
+代码参考[https://github.com/tkipf/pygcn](https://github.com/tkipf/pygcn)
+
+
+
 ### GraphSAGE
 
 于GCN的不同点在于，GCN局限于见过的图，而GraphSAGE能够在没见过的节点上进行。而且，GCN是面向全图进行的，GraphSAGE是局部的邻居聚合。

@@ -142,5 +142,100 @@ import './app.css'
 
 ![image-20220516220344242](react.assets/image-20220516220344242.png)
 
+#### 函数型组件
 
+```jsx
+function Hello(){
+    return <div>hello</div>
+}
+
+function App() {
+  return (
+    <div className="App">
+        <Hello></Hello>
+    </div>
+  );
+}
+```
+
+也可以自闭合的形式``<Hello/>``。组件的名称必须首字母大写，必须要有返回值。
+
+#### 类组件
+
+```jsx
+class HelloComponent extends React.Component {
+    render() {
+        return(
+            <div>
+                hello component in class definition
+            </div>
+        )
+    }
+}
+```
+
+首字母必须要大写，继承来自``React.Component``在类中实现render方法，并且有一个返回值。
+
+#### 事件绑定
+
+##### 基本绑定
+
+用``onClick``这种形式来绑定事件。绑定两种组件声明方式的示例代码：
+
+```jsx
+import React from "react";
+
+const clickAndMotion = ()=>{
+    console.log('clicked');
+}
+
+function Hello(){
+    return(
+        <div onClick={
+            clickAndMotion
+        }>hello</div>
+    )
+}
+
+class HelloComponent extends React.Component {
+    render() {
+        return(
+            <div onClick={
+                clickAndMotion
+            }>
+                hello component in class definition
+            </div>
+        )
+    }
+}
+```
+
+注意要有大括号。
+
+##### 阻止默认事件
+
+使用句柄event对象的preventDefault()可以阻止默认事件的触发。
+
+```jsx
+class MyATag1 extends React.Component {
+    aTagMethod=(e)=>{
+        e.preventDefault();
+        console.log('默认事件被阻止了');
+    }
+
+    render() {
+        return(
+            <a onClick={
+                this.aTagMethod
+            } href = 'http://masaikk.xyz'>
+                a标签,但是被阻止了默认事件
+            </a>
+        )
+    }
+}
+```
+
+![image-20220517120449880](react.assets/image-20220517120449880.png)
+
+##### 传递更多参数
 
