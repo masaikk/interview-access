@@ -727,3 +727,17 @@ logger.critical('This is a customer critical message')
 
 ---
 
+### torchsnooper
+
+[参考链接](https://github.com/zasdfgbnm/TorchSnooper)
+
+```python
+with torchsnooper.snoop():
+    for epoch in range(args.epochs):
+        train(epoch)
+```
+
+
+
+---
+

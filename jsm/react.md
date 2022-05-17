@@ -279,3 +279,82 @@ function Hello(){
 
 ##### 组件状态
 
+在没有hook之前，函数组件是没有状态的。
+
+修改状态要使用setState方法来进行。
+
+```jsx
+state = {
+        msg: 'this is a message',
+        counter: 0
+    }
+addCount = () => {
+        this.setState({
+            counter: this.state.counter + 1
+        })
+    }
+```
+
+这里的``state``的名字是固定的。
+
+完整的组件例子，并且在jsx中要注意this的指向问题
+
+```jsx
+class HelloComponent extends React.Component {
+    state = {
+        msg: 'this is a message',
+        counter: 0
+    }
+    addCount = () => {
+        this.setState({
+            counter: this.state.counter + 1
+        })
+    }
+
+    render() {
+        return (
+            <>
+                <h3>
+                    {this.state.msg}
+                </h3>
+                <div onClick={
+                    clickAndMotion
+                }>
+                    hello component in class definition and the count is {this.state.counter}
+                </div>
+                <button onClick={this.addCount}>add count</button>
+            </>
+
+        )
+    }
+}
+```
+
+不同于vue的响应式，在react中对于state中不同的数据结构的修改药使用setState，参考：
+
+```jsx
+state = {
+  count : 0,
+  list: [1,2,3],
+  person: {
+     name:'jack',
+     age:18
+  }
+}
+```
+
+示例的修改代码：
+
+```jsx
+this.setState({
+    count: this.state.count + 1
+    list: [...this.state.list, 4],
+    person: {
+       ...this.state.person,
+       // 覆盖原来的属性 就可以达到修改对象中属性的目的
+       name: 'rose'
+    }
+})
+```
+
+##### 绑定表单数据

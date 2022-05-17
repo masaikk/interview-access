@@ -64,7 +64,7 @@ adj = sp.coo_matrix((np.ones(edges.shape[0]), (edges[:, 0], edges[:, 1])),
 adj = adj + adj.T.multiply(adj.T > adj) - adj.multiply(adj.T > adj)
 ```
 
-然后对于特征和邻接表进行归一化操作
+然后对于特征和邻接表进行归一化操作。（如果不进行归一化就会造成梯度爆炸或者梯度消失）
 
 ```python
 def normalize(mx):
@@ -80,6 +80,20 @@ def normalize(mx):
 这里使用的是$D^{-1}A$形式非对称的归一化方法。这里的mx按行相加都为1。
 
 ![image-20220517140644327](gnn.assets/image-20220517140644327.png)
+$$
+H^{(l+1)}=\sigma(\tilde{D^{-\frac{1}{2}}}\tilde{A}\tilde{D^{-\frac{1}{2}}}\cdot H^{(l)} \cdot W^{(l)})
+$$
+其中这里的$\tilde{A}$为邻接矩阵$A$加上对角阵$I$再归一化的结果。
+
+反映在代码中是：
+
+```python
+adj = normalize(adj + sp.eye(adj.shape[0]))
+```
+
+GCN层解析
+
+
 
 
 
