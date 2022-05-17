@@ -357,4 +357,38 @@ this.setState({
 })
 ```
 
+##### react组件中的this问题
+
+因为this的问题，所以建议在类定义中使用箭头函数添加方法。
+
+或者在构造函数中使用bind的方法绑定函数到this上。
+
 ##### 绑定表单数据
+
+参考vue中的双向绑定。
+
+```jsx
+class InputComponent extends React.Component {
+    // 声明组件状态
+    state = {
+        message: 'this is message',
+    }
+    // 声明事件回调函数
+    changeHandler = (e) => {
+        this.setState({ message: e.target.value })
+    }
+    render () {
+        return (
+            <div>
+                {/* 绑定value 绑定事件*/}
+                <input value={this.state.message} onChange={this.changeHandler} />
+            </div>
+        )
+    }
+}
+```
+
+##### 使用ref操作非受控组件
+
+非受控组件相比于上述绑定表单数据到state中的受控组件的区别是，这里操作ref来使用手动来操作dom节点。
+
