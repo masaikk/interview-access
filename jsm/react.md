@@ -239,3 +239,43 @@ class MyATag1 extends React.Component {
 
 ##### 传递更多参数
 
+必须改成箭头函数调用的形式，如下：
+
+```jsx
+function Hello(){
+    const saySome = (msg) => {
+        console.log(msg);
+    }
+    return(
+        <div onClick={
+            ()=>{
+                saySome('my information')
+            }
+        }>hello</div>
+    )
+}
+```
+
+这样的形式然后还想操作event句柄的话就需要指定箭头函数的参数：
+
+```jsx
+function Hello(){
+    const saySome = (msg,e) => {
+        console.log(msg);
+    }
+    const checkEvent=(e)=>{
+        e.preventDefault();
+    }
+    return(
+        <a href='http://www.masaikk.xyz' onClick={
+            (e)=>{
+                saySome('my information');
+                checkEvent(e)
+            }
+        }>hello</a>
+    )
+}
+```
+
+##### 组件状态
+

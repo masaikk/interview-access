@@ -30,6 +30,57 @@ embedding的五种方法：
 
 代码参考[https://github.com/tkipf/pygcn](https://github.com/tkipf/pygcn)
 
+使用了cora数据集进行分类示例，cora数据集包括节点的特征（稀疏），节点的分类标签和节点之间的单向连接关系。
+
+```python
+idx_features_labels = np.genfromtxt("{}{}.content".format(path, dataset),dtype=np.dtype(str))
+```
+
+使用如上代码读取节点，节点特征和标签：
+
+![image-20220517124438086](gnn.assets/image-20220517124438086.png)
+
+可以看到每个节点有1433个特征。
+
+边的数据如下，为无序的单项连接，共计5429边。
+
+![image-20220517130640409](gnn.assets/image-20220517130640409.png)
+
+使用如下语句处理边
+
+```python
+edges = np.array(list(map(idx_map.get, edges_unordered.flatten())),
+                     dtype=np.int32).reshape(edges_unordered.shape)
+adj = sp.coo_matrix((np.ones(edges.shape[0]), (edges[:, 0], edges[:, 1])),
+                        shape=(labels.shape[0], labels.shape[0]),
+                        dtype=np.float32)
+```
+
+最终adj是coo_matrix的形式。
+
+因为邻接表是单向的所以要建立对称的邻接矩阵（将有向图转为无向图）。具体实现为原矩阵加上转置矩阵，再减去重叠部分。如下所示：
+
+```python
+adj = adj + adj.T.multiply(adj.T > adj) - adj.multiply(adj.T > adj)
+```
+
+然后对于特征和邻接表进行归一化操作
+
+```python
+def normalize(mx):
+    """Row-normalize sparse matrix"""
+    rowsum = np.array(mx.sum(1)) # 计算得到 和向量
+    r_inv = np.power(rowsum, -1).flatten() # 求倒数
+    r_inv[np.isinf(r_inv)] = 0. # 如果出现了inf就设置为0
+    r_mat_inv = sp.diags(r_inv) # 将向量转化为对角阵D^-1
+    mx = r_mat_inv.dot(mx) # 使用了D^-1 * A 的归一化
+    return mx
+```
+
+这里使用的是$D^{-1}A$形式非对称的归一化方法。这里的mx按行相加都为1。
+
+![image-20220517140644327](gnn.assets/image-20220517140644327.png)
+
 
 
 ### GraphSAGE

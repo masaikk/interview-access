@@ -1563,7 +1563,7 @@ export default serviceAxios;
 
 ```
 
-上面分别使用了请求拦截和响应拦截，并且要特别注意在拦截之后要返回。如``return config;``和``return res;``。
+上面分别使用了请求拦截和响应拦截，并且要特别注意在拦截之后要返回。如``return config;``和``return res;``，否则就没有拦截的意义。
 
 ---
 
