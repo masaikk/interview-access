@@ -81,7 +81,7 @@ def normalize(mx):
 
 ![image-20220517140644327](gnn.assets/image-20220517140644327.png)
 $$
-H^{(l+1)}=\sigma(\tilde{D^{-\frac{1}{2}}}\tilde{A}\tilde{D^{-\frac{1}{2}}}\cdot H^{(l)} \cdot W^{(l)})
+H^{(l+1)}=\sigma(\tilde{D}^{-\frac{1}{2}}\tilde{A}\tilde{D}^{-\frac{1}{2}}\cdot H^{(l)} \cdot W^{(l)})
 $$
 其中这里的$\tilde{A}$为邻接矩阵$A$加上对角阵$I$再归一化的结果。
 
@@ -91,7 +91,94 @@ $$
 adj = normalize(adj + sp.eye(adj.shape[0]))
 ```
 
-GCN层解析
+GCN模型解析
+
+```python
+class GCN(nn.Module):
+    def __init__(self, nfeat, nhid, nclass, dropout):
+        super(GCN, self).__init__()
+
+        self.gc1 = GraphConvolution(nfeat, nhid)
+        self.gc2 = GraphConvolution(nhid, nclass)
+        self.dropout = dropout
+
+    def forward(self, x, adj):
+        x = F.relu(self.gc1(x, adj))
+        x = F.dropout(x, self.dropout, training=self.training)
+        x = self.gc2(x, adj)
+        return F.log_softmax(x, dim=1)
+```
+
+每层的代码为：
+
+```python
+class GraphConvolution(Module):
+    """
+    Simple GCN layer, similar to https://arxiv.org/abs/1609.02907
+    """
+
+    def __init__(self, in_features, out_features, bias=True):
+        super(GraphConvolution, self).__init__()
+        self.in_features = in_features
+        self.out_features = out_features
+        self.weight = Parameter(torch.FloatTensor(in_features, out_features))
+        if bias:
+            self.bias = Parameter(torch.FloatTensor(out_features))
+        else:
+            self.register_parameter('bias', None)
+        self.reset_parameters()
+
+    def reset_parameters(self):
+        stdv = 1. / math.sqrt(self.weight.size(1))
+        self.weight.data.uniform_(-stdv, stdv)
+        if self.bias is not None:
+            self.bias.data.uniform_(-stdv, stdv)
+
+    def forward(self, input, adj):
+        support = torch.mm(input, self.weight)
+        output = torch.spmm(adj, support)
+        if self.bias is not None:
+            return output + self.bias
+        else:
+            return output
+
+    def __repr__(self):
+        return self.__class__.__name__ + ' (' \
+               + str(self.in_features) + ' -> ' \
+               + str(self.out_features) + ')'
+
+```
+
+单层GCN中的``support = torch.mm(input, self.weight)``表示$H^{(l)} \cdot W^{(l)}$。``output = torch.spmm(adj, support)``稀疏矩阵相乘表示$\tilde{D}^{-\frac{1}{2}}\tilde{A}\tilde{D}^{-\frac{1}{2}}\cdot H^{(l)} \cdot W^{(l)}$。
+
+设置了训练的函数
+
+```python
+def train(epoch):
+    t = time.time()
+    model.train()
+    optimizer.zero_grad()
+    output = model(features, adj)
+    loss_train = F.nll_loss(output[idx_train], labels[idx_train])
+    acc_train = accuracy(output[idx_train], labels[idx_train])
+    loss_train.backward()
+    optimizer.step()
+
+    if not args.fastmode:
+        # Evaluate validation set performance separately,
+        # deactivates dropout during validation run.
+        model.eval()
+        output = model(features, adj)
+
+    loss_val = F.nll_loss(output[idx_val], labels[idx_val])
+    acc_val = accuracy(output[idx_val], labels[idx_val])
+    print('Epoch: {:04d}'.format(epoch+1),
+          'loss_train: {:.4f}'.format(loss_train.item()),
+          'acc_train: {:.4f}'.format(acc_train.item()),
+          'loss_val: {:.4f}'.format(loss_val.item()),
+          'acc_val: {:.4f}'.format(acc_val.item()),
+          'time: {:.4f}s'.format(time.time() - t))
+```
 
 
 
