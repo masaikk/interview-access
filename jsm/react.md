@@ -462,9 +462,144 @@ class Son2 extends React.Component {
 3. 子组件通过props调用 回调函数
 4. 将子组件中的数据作为参数传递给回调函数
 
+例如如下的父组件先声明一个回调函数，再通过props的方式传递给子组件：
+
+```jsx
+class App extends React.Component {
+    state = {
+        msg:"app父组件的信息"
+    }
+    changeAppStateMsg=(newMsg)=>{
+        this.setState({
+            msg:newMsg
+        })
+    }
+    render() {
+        return(
+            <>
+                <Son1 msg={this.state.msg} changeAppStateMsg={this.changeAppStateMsg}></Son1>
+                <Son2 msg={this.state.msg}></Son2>
+            </>
+        )
+    }
+}
+```
+
+在子组件中先通过props拿到这个回调函数，在通过自己的方法调用这个回调函数即可。
+
+```jsx
+function Son1(props){
+    function handlerChangeMsg(){
+        console.log('修改数据');
+        props.changeAppStateMsg('新的信息，由子组件修改')
+    }
+    return(
+        <div>
+            <button onClick={handlerChangeMsg}>改变数据</button>
+        </div>
+    )
+}
+```
+
+由于测试的组件
+
+```jsx
+class Son2 extends React.Component {
+    render() {
+        return(
+            <div>
+                类组件,{this.props.msg}
+            </div>
+        )
+    }
+}
+```
+
+最初的页面为：
+
+![image-20220518160947518](react.assets/image-20220518160947518.png)
+
+点击按钮启动改变数据（传递信息）的回调函数之后：
+
+![image-20220518161034023](react.assets/image-20220518161034023.png)
+
+##### 跨组件通信
+
+1. 创建Context对象 导出 Provider 和 Consumer对象
+
+   ```
+   const { Provider, Consumer } = createContext()
+   ```
+
+2. 使用Provider包裹根组件提供数据
+
+   ```
+   <Provider value={this.state.message}>
+       {/* 根组件 */}
+   </Provider>
+   ```
+
+3. 需要用到数据的组件使用Consumer包裹获取数据
+
+   ```
+   <Consumer >
+       {value => /* 基于 context 值进行渲染*/}
+   </Consumer>
+   ```
+
+使用``import React, { createContext }  from 'react'``
+
+注意provider节点的包裹问题，示例代码如下所示：
+
+```jsx
+function GrandSon1(){
+    return(
+        <div>
+            <p>孙子节点</p>
+            <Consumer>
+                {value => value}
+            </Consumer>
+        </div>
+    )
+}
+
+class Son2 extends React.Component {
+    render() {
+        return(
+            <div>
+                <GrandSon1></GrandSon1>
+                类组件,{this.props.msg}
+            </div>
+        )
+    }
+}
 
 
+class App extends React.Component {
+    state = {
+        msg:"app父组件的信息",
+        toGrandson:"给孙子节点的信息"
+    }
+    changeAppStateMsg=(newMsg)=>{
+        this.setState({
+            msg:newMsg
+        })
+    }
+    render() {
+        return(
+            <>
+                <Son1 msg={this.state.msg} changeAppStateMsg={this.changeAppStateMsg}></Son1>
+                <Provider value={this.state.toGrandson}>
+                    <Son2 msg={this.state.msg}></Son2>
+                </Provider>
 
+            </>
+        )
+    }
+}
+```
+
+![image-20220518163302051](react.assets/image-20220518163302051.png)
 
 
 
