@@ -4,7 +4,7 @@
 
 ## 基本知识
 
-参考[https://gitee.com/react-cp/react-pc-doc/blob/master/1.%E5%9F%BA%E7%A1%80%E6%96%87%E6%A1%A3/react-%E5%9F%BA%E7%A1%80.md](https://gitee.com/react-cp/react-pc-doc/blob/master/1.%E5%9F%BA%E7%A1%80%E6%96%87%E6%A1%A3/react-%E5%9F%BA%E7%A1%80.md)
+参考[masaikk/react-pc-doc (gitee.com)](https://gitee.com/masaikk/react-pc-doc)
 
 ### 单个组件
 
@@ -396,4 +396,75 @@ class InputComponent extends React.Component {
 2. 调用createRef函数，创建一个ref对象，存储到名为`msgRef`的实例属性中
 3. 为input添加ref属性，值为`msgRef`
 4. 在按钮的事件处理程序中，通过`msgRef.current`即可拿到input对应的dom元素，而其中`msgRef.current.value`拿到的就是文本框的值。
+
+##### 组件通信
+
+###### 父传子
+
+使用props：
+
++ 在类组件中使用this.props获取props对象
++ 在函数组件中使用参数来获取props对象
+
+在父组件中传值的写法是一样的
+
+```jsx
+class App extends React.Component {
+    state = {
+        msg:"app父组件的信息"
+    }
+    render() {
+        return(
+            <>
+                <Son1 msg={this.state.msg}></Son1>
+                <Son2 msg={this.state.msg}></Son2>
+            </>
+        )
+    }
+}
+```
+
+函数式组件需要在参数中加入props
+
+```jsx
+function Son1(props){
+    return(
+        <div>
+            {props.msg}
+            函数组件
+        </div>
+    )
+}
+```
+
+类组件中要使用this.props才能拿到数据。
+
+```jsx
+class Son2 extends React.Component {
+    render() {
+        return(
+            <div>
+                类组件,{this.props.msg}
+            </div>
+        )
+    }
+}
+```
+
+![image-20220518113353562](react.assets/image-20220518113353562.png)
+
+###### 子传父
+
+使用回调函数的方法：
+
+1. 父组件提供一个回调函数 - 用于接收数据
+2. 将函数作为属性的值，传给子组件
+3. 子组件通过props调用 回调函数
+4. 将子组件中的数据作为参数传递给回调函数
+
+
+
+
+
+
 
