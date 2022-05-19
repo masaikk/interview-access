@@ -212,7 +212,7 @@ class HelloComponent extends React.Component {
 
 注意要有大括号。
 
-##### 阻止默认事件
+#### 阻止默认事件
 
 使用句柄event对象的preventDefault()可以阻止默认事件的触发。
 
@@ -237,7 +237,7 @@ class MyATag1 extends React.Component {
 
 ![image-20220517120449880](react.assets/image-20220517120449880.png)
 
-##### 传递更多参数
+#### 传递更多参数
 
 必须改成箭头函数调用的形式，如下：
 
@@ -277,7 +277,7 @@ function Hello(){
 }
 ```
 
-##### 组件状态
+#### 组件状态
 
 在没有hook之前，函数组件是没有状态的。
 
@@ -357,13 +357,15 @@ this.setState({
 })
 ```
 
-##### react组件中的this问题
+#### react组件中的this问题
 
 因为this的问题，所以建议在类定义中使用箭头函数添加方法。
 
 或者在构造函数中使用bind的方法绑定函数到this上。
 
-##### 绑定表单数据
+#### 绑定表单数据
+
+##### 受控组件
 
 参考vue中的双向绑定。
 
@@ -397,9 +399,9 @@ class InputComponent extends React.Component {
 3. 为input添加ref属性，值为`msgRef`
 4. 在按钮的事件处理程序中，通过`msgRef.current`即可拿到input对应的dom元素，而其中`msgRef.current.value`拿到的就是文本框的值。
 
-##### 组件通信
+#### 组件通信
 
-###### 父传子
+##### 父传子
 
 使用props：
 
@@ -453,7 +455,7 @@ class Son2 extends React.Component {
 
 ![image-20220518113353562](react.assets/image-20220518113353562.png)
 
-###### 子传父
+##### 子传父
 
 使用回调函数的方法：
 
@@ -603,7 +605,7 @@ class App extends React.Component {
 
 
 
-##### 生命周期
+#### 生命周期
 
 只有类组件才有生命周期，因为函数式组件不需要实例化所以没有生命周期。
 
@@ -662,11 +664,11 @@ class LifeCycle extends React.Component {
 | -------------------- | ------------------------ | ---------------------------------- |
 | componentWillUnmount | 组件卸载（从页面中消失） | 执行清理工作（比如：清理定时器等） |
 
-##### Hook
+#### Hook
 
 *hook只能在函数组件中使用。*
 
-###### useState
+##### useState
 
 1. 导入 `useState` 函数
 2. 调用 `useState` 函数，并传入状态的初始值
@@ -698,7 +700,7 @@ export function Comp1() {
 
 使用``useState()``返回一个包含了两个元素的数组，第一个是值，第二个是用来设置值的函数。使用时给这个函数传入数据``changeMsg(msg + '!')``。并且每次使用了这个函数并且造成VNode更新之后，这个组件都会重新渲染。
 
-###### useEffect
+##### useEffect
 
 设置副作用，通过传入一个回调函数来进行副作用的操作。例如
 
@@ -737,4 +739,71 @@ useEffect(() => {
         document.title = msg;
     },[msg])
 ```
+
+### react-router
+
+#### 安装
+
+使用``npm install react-router-dom@6 --save``安装，``import {BrowserRouter, Routes, Route, Link} from "react-router-dom";``导入。
+
+#### 基本使用
+
+示例代码：
+
+```jsx
+class App extends React.Component {
+
+    render() {
+        return (
+            <>
+                <BrowserRouter>
+                    <Link to="/">首页</Link>
+                    <Link to="/about">关于</Link>
+
+                    <Routes>
+                        <Route path="/" element={<Home/>}/>
+                        <Route path="/about" element={<About/>}/>
+                    </Routes>
+                </BrowserRouter>
+
+            </>
+        )
+    }
+}
+```
+
+其中Home和About分别是两个组件。
+
+```jsx
+function Home(){
+    return(
+        <div>
+            home
+        </div>
+    )
+}
+export default Home
+```
+
+```jsx
+function About(){
+    return(
+        <div>
+            about
+        </div>
+    )
+}
+
+export default About
+```
+
+显示的结果如下：
+
+![image-20220520000620777](react.assets/image-20220520000620777.png)
+
+![image-20220520000631672](react.assets/image-20220520000631672.png)
+
+
+
+
 
