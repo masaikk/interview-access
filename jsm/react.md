@@ -647,3 +647,94 @@ class LifeCycle extends React.Component {
 | render            | 每次组件渲染都会触发                                | 渲染UI（**注意： 不能在里面调用setState()** ）               |
 | componentDidMount | 组件挂载（完成DOM渲染）后执行，初始化的时候执行一次 | 1. 发送网络请求 2.DOM操作                                    |
 
+更新渲染的生命周期
+
+![img](react.assets/life2.png)
+
+| 钩子函数           | 触发时机                  | 作用                                                         |
+| ------------------ | ------------------------- | ------------------------------------------------------------ |
+| render             | 每次组件渲染都会触发      | 渲染UI（与 挂载阶段 是同一个render）                         |
+| componentDidUpdate | 组件更新后（DOM渲染完毕） | DOM操作，可以获取到更新后的DOM内容，**不要直接调用setState** |
+
+消除时的生命周期
+
+| 钩子函数             | 触发时机                 | 作用                               |
+| -------------------- | ------------------------ | ---------------------------------- |
+| componentWillUnmount | 组件卸载（从页面中消失） | 执行清理工作（比如：清理定时器等） |
+
+##### Hook
+
+*hook只能在函数组件中使用。*
+
+###### useState
+
+1. 导入 `useState` 函数
+2. 调用 `useState` 函数，并传入状态的初始值
+3. 从`useState`函数的返回值中，拿到状态和修改状态的方法
+4. 在JSX中展示状态
+5. 调用修改状态的方法更新状态
+
+```jsx
+import {useState} from "react";
+
+export function Comp1() {
+    const [msg, changeMsg] = useState('this message');
+
+    function changeMsgHandler() {
+        changeMsg(
+            msg + '!'
+        )
+    }
+
+    return (
+        <div>
+            <button onClick={changeMsgHandler}>
+                {msg}
+            </button>
+        </div>
+    )
+}
+```
+
+使用``useState()``返回一个包含了两个元素的数组，第一个是值，第二个是用来设置值的函数。使用时给这个函数传入数据``changeMsg(msg + '!')``。并且每次使用了这个函数并且造成VNode更新之后，这个组件都会重新渲染。
+
+###### useEffect
+
+设置副作用，通过传入一个回调函数来进行副作用的操作。例如
+
+```jsx
+import {useState, useEffect} from "react";
+
+export function Comp1() {
+    const [msg, changeMsg] = useState('this message');
+    useEffect(() => {
+        document.title = msg;
+    })
+
+    function changeMsgHandler() {
+        changeMsg(
+            msg + '!'
+        )
+
+    }
+
+    return (
+        <div>
+            <button onClick={changeMsgHandler}>
+                {msg}
+            </button>
+        </div>
+    )
+}
+```
+
+以上的情况下会在出现渲染之后都会调用一次``useEffect``里面的回调函数（默认情况）。
+
+也可以控制``useEffect``的调用时机，通过给``useEffect``传入第二个参数来控制。在这个回调函数中用到的数据都应该添加在这第二个数组参数中比如
+
+```javascript
+useEffect(() => {
+        document.title = msg;
+    },[msg])
+```
+
