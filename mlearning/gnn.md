@@ -215,7 +215,34 @@ GraphSAGE_minibatch
 
 ![image-20220314105452901](gnn.assets/image-20220314105452901.png)
 
-如上图所示，计算i节点余某一个邻居就节点$e^{LeakReLU(e_{ij})}$的值，在把分母算上所有节点这种运算的和，最终得到$a_{ij}$为i节点到j节点的注意力系数。 
+如上图所示，计算i节点余某一个邻居就节点$e^{LeakReLU(e_{ij})}$的值，在把分母算上所有节点这种运算的和，最终得到$a_{ij}$为i节点到j节点的注意力系数。
+
+代码展示，在读取数据以及正则化阶段与GCN代码类似。代码参考[https://github.com/Diego999/pyGAT/blob/master/utils.py](https://github.com/Diego999/pyGAT/blob/master/utils.py)。
+
+ 构建GAT模型
+
+```python
+class GAT(nn.Module):
+    def __init__(self, nfeat, nhid, nclass, dropout, alpha, nheads):
+        """Dense version of GAT."""
+        super(GAT, self).__init__()
+        self.dropout = dropout
+
+        self.attentions = [GraphAttentionLayer(nfeat, nhid, dropout=dropout, alpha=alpha, concat=True) for _ in range(nheads)]
+        for i, attention in enumerate(self.attentions):
+            self.add_module('attention_{}'.format(i), attention)
+
+        self.out_att = GraphAttentionLayer(nhid * nheads, nclass, dropout=dropout, alpha=alpha, concat=False)
+
+    def forward(self, x, adj):
+        x = F.dropout(x, self.dropout, training=self.training)
+        x = torch.cat([att(x, adj) for att in self.attentions], dim=1)
+        x = F.dropout(x, self.dropout, training=self.training)
+        x = F.elu(self.out_att(x, adj))
+        return F.log_softmax(x, dim=1)
+```
+
+
 
 ---
 
