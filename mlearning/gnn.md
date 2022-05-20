@@ -295,7 +295,31 @@ class GraphAttentionLayer(nn.Module):
 
 ```
 
-创建$\alpha$向量``self.a = nn.Parameter(torch.empty(size=(2*out_features, 1)))``
+创建$\alpha$向量``self.a = nn.Parameter(torch.empty(size=(2*out_features, 1)))``因为
+
+![image-20220314105005725](gnn.assets/image-20220314105005725.png)
+
+表示两个h向量拼接在一起所以$\alpha$向量是有2倍的。在cora数据集上是16*1。
+
+创建W向量``self.W = nn.Parameter(torch.empty(size=(in_features, out_features)))``在cora数据集上表示1433*8。
+
+```python
+self.attentions = [GraphAttentionLayer(nfeat, nhid, dropout=dropout, alpha=alpha, concat=True) for _ in range(nheads)]
+for i, attention in enumerate(self.attentions):
+    self.add_module('attention_{}'.format(i), attention)
+```
+
+表示循环了8次，有8个attention层，然后拼接在一起。这里表示多头注意力。
+
+最后再加上一个attention层将之前层合起来。
+
+```python
+self.out_att = GraphAttentionLayer(nhid * nheads, nclass, dropout=dropout, alpha=alpha, concat=False)
+```
+
+
+
+
 
 ---
 
