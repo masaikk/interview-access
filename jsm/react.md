@@ -803,7 +803,117 @@ export default About
 
 ![image-20220520000631672](react.assets/image-20220520000631672.png)
 
+#### 两种router
 
+有``HashRouter``和``BrowserRouter``两种形式，分别对应与hash模式与history模式的两种路由。
+
+#### Routes
+
+在这个标签里面添加路由以及要渲染的页面
+
+```jsx
+<Routes>
+                        <Route path="/" element={
+                            <>
+                                <Home/>
+                                <About/>
+                            </>
+                        }/>
+                        <Route path="/about" element={<About/>}/>
+                    </Routes>
+```
+
+#### useNavigate
+
+使用这个钩子函数可以在jsx中进行路由的跳转，示例：
+
+```jsx
+import {useNavigate} from "react-router-dom";
+
+function Home() {
+    const navigate = useNavigate();
+    const goToAboutPageHandler = () => {
+        navigate('/about', {
+            replace: true
+        })
+    }
+    return (
+        <div>
+            <h3>
+                home
+            </h3>
+            <button onClick={goToAboutPageHandler}>跳转至about</button>
+        </div>
+    )
+}
+
+export default Home
+```
+
+首先生成一个实例``const navigate = useNavigate();``
+
+然后调用相关的方法进行路由的跳转：
+
+```jsx
+const goToAboutPageHandler = () => {
+        navigate('/about', {
+            replace: true
+        })
+    }
+```
+
+第二个参数``{replace: true }``表示不采用历史模式。
+
+#### router携带参数
+
+![image-20220520162802917](react.assets/image-20220520162802917.png)
+
+通过以上的方法进行参数的传递和参数的解析
+
+```jsx
+import {useNavigate} from "react-router-dom";
+
+function Home() {
+    const navigate = useNavigate();
+    const goToAboutPageHandler = () => {
+        navigate('/about?msg=masaikk', {
+            replace: true
+        })
+    }
+    return (
+        <div>
+            <h3>
+                home
+            </h3>
+            <button onClick={goToAboutPageHandler}>跳转至about</button>
+        </div>
+    )
+}
+
+export default Home
+```
+
+在被跳转的组件中使用``useSearchParams``钩子先获取params对象，在调用get方法获取参数的值。
+
+```jsx
+import {useSearchParams} from "react-router-dom";
+
+function About() {
+    const [params] = useSearchParams();
+    const msg = params.get('msg')
+    return (
+        <div>
+            about with msg: {msg}
+        </div>
+    )
+}
+
+export default About
+```
+
+页面展示如下所示：
+
+![image-20220520170705051](react.assets/image-20220520170705051.png)
 
 
 
