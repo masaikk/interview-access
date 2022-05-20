@@ -695,6 +695,20 @@ let { defaultMessage, defaultAudioURL } = toRefs(props);
 
 使用toRef是将reactive对象中的某件键转化为ref对象。
 
+#### watch
+
+第一个参数是一个函数，返回一个需要监听的值。
+
+```javascript
+const state = reactive({ count: 0 })
+watch(
+  () => state.count,
+  (count, prevCount) => {
+    /* ... */
+  }
+)
+```
+
 #### watchEffect和watch的区别
 
 ``watchEffect``会首先执行一次，然后记录下来里面有多少个可响应对象，最后然后里面的可响应对象有变化，就出现执行。默认的``watchEffect``会在挂载之前就运行，或者可以使用传入参数``{flush:"post"}``来让它挂载之后再运行。
@@ -737,10 +751,6 @@ setup(){
       flush:"post"
     })
 ```
-
-p17
-
-
 
 ---
 
@@ -1564,6 +1574,152 @@ export default serviceAxios;
 ```
 
 上面分别使用了请求拦截和响应拦截，并且要特别注意在拦截之后要返回。如``return config;``和``return res;``，否则就没有拦截的意义。
+
+---
+
+### i18n
+
+安装``npm install vue-i18n@9 --save``。
+
+i18n插件支持vue2和vue3，区别在于使用compositionAPI，分别对应于全局的``$t``和``t``。下面对于vue3部分展示。
+
+在main.js中注册：
+
+```js
+import { createApp } from "vue";
+import App from "./App.vue";
+import { createI18n } from "vue-i18n";
+
+const messages = {
+  en: {
+    message: {
+      hello: "hello world",
+    },
+  },
+  ja: {
+    message: {
+      hello: "こんにちは、世界",
+    },
+  },
+};
+
+// 2. Create i18n instance with options
+const i18n = createI18n({
+  locale: "ja", // set locale
+  fallbackLocale: "en", // set fallback locale
+  legacy: false,
+  messages, // set locale messages
+  // If you need to specify other options, you can set other options
+  // ...
+});
+console.log(i18n);
+createApp(App).use(i18n).mount("#app");
+
+```
+
+注意要在vue3中使用需要设置对象``legacy: false,``。
+
+对于在每个组件中的导入``import {useI18n} from 'vue-i18n'``；使用``const {t,locale} =useI18n()``
+
+最后在页面中渲染整个句子的操作``{{t('message.hello')}}``
+
+并且可以修改locale.value的属性来修改地区。
+
+示例组件：
+
+```vue
+<template>
+  <div class="hello">
+    {{t('message.hello')}}
+    <button @click="changeLang">click</button>
+  </div>
+</template>
+
+<script>
+import {useI18n} from 'vue-i18n'
+export default {
+
+  name: 'HelloWorld',
+  setup(){
+    const {t,locale} =useI18n()
+    const changeLang=()=>{
+      locale.value='en'
+    }
+    return{
+      t,
+      changeLang
+    }
+  }
+
+}
+</script>
+```
+
+使用选择栏修改语言的小demo
+
+```vue
+<template>
+  <div>
+    <el-select v-model="langeValue" class="m-2" placeholder="Select" size="small">
+      <el-option
+          v-for="item in options"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+      />
+    </el-select>
+    <h3>
+      {{t('message.hello')}}
+    </h3>
+  </div>
+</template>
+
+<script>
+import {ref, watch} from "vue";
+import {useI18n} from 'vue-i18n'
+
+export default {
+  name: "ChangeLang",
+  setup() {
+    const {t, locale} = useI18n()
+    const langeValue = ref('en')
+    const changeLang = (newLang) => {
+      console.log(`设置了新语言${newLang}`);
+      locale.value = newLang;
+    }
+    watch(()=>langeValue.value, (newLang) => {
+      changeLang(newLang);
+      //监听是否有变化
+    })
+    const options = [
+      {
+        value: 'en',
+        label: 'en',
+      },
+      {
+        value: 'zh',
+        label: 'zh',
+      },
+      {
+        value: 'ja',
+        label: 'ja',
+      },
+    ]
+    return {
+      t,
+      langeValue,
+      options
+    }
+  }
+}
+</script>
+```
+
+![image-20220520213027452](vue.assets/image-20220520213027452.png)
+
+![image-20220520213041576](vue.assets/image-20220520213041576.png)
+
+代码位于``i18ndemo/src/components/ChangeLang.vue``
 
 ---
 
