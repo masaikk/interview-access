@@ -207,6 +207,118 @@ GraphSAGE_minibatch
 
 想求得a节点的嵌入，看得到有邻居cfj。对于c节点嵌入，根据邻居d和e在第0层的嵌入算得c的邻居嵌入，再通过它自身的嵌入拼接起来算得节点c在第1层的嵌入表示。
 
+参考代码[twjiang/graphSAGE-pytorch: A PyTorch implementation of GraphSAGE. This package contains a PyTorch implementation of GraphSAGE. (github.com)](https://github.com/twjiang/graphSAGE-pytorch)
+
+```python
+    def load_dataSet(self, dataSet='cora'):
+        if dataSet == 'cora':
+            cora_content_file = self.config['file_path.cora_content']
+            cora_cite_file = self.config['file_path.cora_cite']
+
+            feat_data = []
+            labels = []  # label sequence of node
+            node_map = {}  # map node to Node_ID
+            label_map = {}  # map label to Label_ID
+            with open(cora_content_file) as fp:
+                for i, line in enumerate(fp):
+                    info = line.strip().split()
+                    feat_data.append([float(x) for x in info[1:-1]])
+                    node_map[info[0]] = i
+                    if not info[-1] in label_map:
+                        label_map[info[-1]] = len(label_map)
+                    labels.append(label_map[info[-1]])
+            feat_data = np.asarray(feat_data)
+            labels = np.asarray(labels, dtype=np.int64)
+
+            adj_lists = defaultdict(set)
+            with open(cora_cite_file) as fp:
+                for i, line in enumerate(fp):
+                    info = line.strip().split()
+                    assert len(info) == 2
+                    paper1 = node_map[info[0]]
+                    paper2 = node_map[info[1]]
+                    adj_lists[paper1].add(paper2)
+                    adj_lists[paper2].add(paper1)
+
+            assert len(feat_data) == len(labels) == len(adj_lists)
+            test_indexs, val_indexs, train_indexs = self._split_data(feat_data.shape[0])
+
+            setattr(self, dataSet + '_test', test_indexs)
+            setattr(self, dataSet + '_val', val_indexs)
+            setattr(self, dataSet + '_train', train_indexs)
+
+            setattr(self, dataSet + '_feats', feat_data)
+            setattr(self, dataSet + '_labels', labels)
+            setattr(self, dataSet + '_adj_lists', adj_lists)
+
+        elif dataSet == 'pubmed':
+            pubmed_content_file = self.config['file_path.pubmed_paper']
+            pubmed_cite_file = self.config['file_path.pubmed_cites']
+
+            feat_data = []
+            labels = []  # label sequence of node
+            node_map = {}  # map node to Node_ID
+            with open(pubmed_content_file) as fp:
+                fp.readline()
+                feat_map = {entry.split(":")[1]: i - 1 for i, entry in enumerate(fp.readline().split("\t"))}
+                for i, line in enumerate(fp):
+                    info = line.split("\t")
+                    node_map[info[0]] = i
+                    labels.append(int(info[1].split("=")[1]) - 1)
+                    tmp_list = np.zeros(len(feat_map) - 2)
+                    for word_info in info[2:-1]:
+                        word_info = word_info.split("=")
+                        tmp_list[feat_map[word_info[0]]] = float(word_info[1])
+                    feat_data.append(tmp_list)
+
+            feat_data = np.asarray(feat_data)
+            labels = np.asarray(labels, dtype=np.int64)
+
+            adj_lists = defaultdict(set)
+            with open(pubmed_cite_file) as fp:
+                fp.readline()
+                fp.readline()
+                for line in fp:
+                    info = line.strip().split("\t")
+                    paper1 = node_map[info[1].split(":")[1]]
+                    paper2 = node_map[info[-1].split(":")[1]]
+                    adj_lists[paper1].add(paper2)
+                    adj_lists[paper2].add(paper1)
+
+            assert len(feat_data) == len(labels) == len(adj_lists)
+            test_indexs, val_indexs, train_indexs = self._split_data(feat_data.shape[0])
+
+            setattr(self, dataSet + '_test', test_indexs)
+            setattr(self, dataSet + '_val', val_indexs)
+            setattr(self, dataSet + '_train', train_indexs)
+
+            setattr(self, dataSet + '_feats', feat_data)
+            setattr(self, dataSet + '_labels', labels)
+            setattr(self, dataSet + '_adj_lists', adj_lists)
+```
+
+读取数据，并且将节点之间的相连的关系转化为对称矩阵解析储存。
+
+在main.py里面读取
+
+```python
+features = torch.FloatTensor(getattr(dataCenter, ds + '_feats')).to(device)
+```
+
+features的大小为2708*1433。
+
+![image-20220530000743494](gnn.assets/image-20220530000743494.png)
+
+理解
+
+```python
+        for index in range(1, num_layers + 1):
+            layer_size = out_size if index != 1 else input_size
+            setattr(self, 'sage_layer' + str(index), SageLayer(layer_size, out_size, gcn=self.gcn))
+```
+
+示例中有两层的GraphSageLayer。对应了两个W参数，第一层的W参数的大小为[128,1433*2]，由于将1433特征的节点转化为128维，第二层将128维也变为128维。即用一个128维的向量表示聚合了两层邻居信息的节点。
+
 ### GAT
 
 ![image-20220314105005725](gnn.assets/image-20220314105005725.png)
