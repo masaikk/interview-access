@@ -47,8 +47,12 @@ vite会将js打包成ES Module的形式，比webpack更快，并且不需要load
 使用类似于vue-cli的vite脚手架@vitejs/create-app
 
 ```shell
-create-
+create-app
 ```
+
+---
+
+### vite-electron项目构建
 
 
 
@@ -767,6 +771,8 @@ setup(){
       flush:"post"
     })
 ```
+
+注意，获取的dom一定要在return中返回，才能进行渲染。
 
 ---
 
@@ -1738,4 +1744,101 @@ export default {
 代码位于``i18ndemo/src/components/ChangeLang.vue``
 
 ---
+
+## Vue3 SSR
+
+ssr操作是前端的发展趋势，在此记录学习笔记。参考代码：
+
+https://github.com/jeddygong/vite-templates/tree/master/koa2-ssr-vite-vue3-ts-pinia
+
+参考博客 https://juejin.cn/post/7086467466703929358
+
+---
+
+考虑对于app导入插件
+
+```typescript
+import { createApp } from './main';
+import { createRouter } from './router';
+import createStore from '@/store';
+
+const router = createRouter('client');
+const pinia = createStore();
+
+const { app } = createApp();
+
+app.use(router);
+app.use(pinia);
+
+// 初始化 pinia
+// 注意：__INITIAL_STATE__需要在 src/types/shims-global.d.ts中定义
+if (window.__INITIAL_STATE__) {
+    pinia.state.value = JSON.parse(window.__INITIAL_STATE__);
+}
+
+router.isReady().then(() => {
+    app.mount('#app', true);
+});
+
+```
+
+开启koa的服务器
+
+```typescript
+const fs = require('fs');
+const path = require('path');
+
+const Koa = require('koa');
+const koaConnect = require('koa-connect');
+
+const vite = require('vite');
+
+(async () => {
+    const app = new Koa();
+
+    // 创建 vite 服务
+    const viteServer = await vite.createServer({
+        root: process.cwd(),
+        logLevel: 'error',
+        server: {
+            middlewareMode: true
+        }
+    });
+
+    // 注册 vite 的 Connect 实例作为中间件（注意：vite.middlewares 是一个 Connect 实例）
+    app.use(koaConnect(viteServer.middlewares));
+
+    app.use(async (ctx) => {
+        try {
+            // 1. 获取index.html
+            let template = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf-8');
+
+            // 2. 应用 Vite HTML 转换。这将会注入 Vite HMR 客户端，
+            template = await viteServer.transformIndexHtml(ctx.path, template);
+
+            // 3. 加载服务器入口, vite.ssrLoadModule 将自动转换
+            const { render } = await viteServer.ssrLoadModule('/src/entry-server.ts');
+
+            //  4. 渲染应用的 HTML
+            const [renderedHtml, state] = await render(ctx, {});
+
+            const html = template
+                .replace('<!--app-html-->', renderedHtml)
+                .replace('<!--pinia-state-->', state);
+
+            ctx.type = 'text/html';
+            ctx.body = html;
+        } catch (e) {
+            viteServer && viteServer.ssrFixStacktrace(e);
+            console.log(e.stack);
+            ctx.throw(500, e.stack);
+        }
+    });
+
+    app.listen(9000, () => {
+        console.log('server is listening in 9000');
+    });
+})();
+
+```
 
