@@ -319,6 +319,40 @@ features的大小为2708*1433。
 
 示例中有两层的GraphSageLayer。对应了两个W参数，第一层的W参数的大小为[128,1433*2]，由于将1433特征的节点转化为128维，第二层将128维也变为128维。即用一个128维的向量表示聚合了两层邻居信息的节点。
 
+在graphSAGE层中对于多了的邻居节点进行的采样，作为聚合操作
+
+```python
+    def _get_unique_neighs_list(self, nodes, num_sample=10):
+        _set = set
+        to_neighs = [self.adj_lists[int(node)] for node in nodes]
+        if not num_sample is None:
+            _sample = random.sample
+            samp_neighs = [_set(_sample(to_neigh, num_sample)) if len(to_neigh) >= num_sample else to_neigh for to_neigh
+                           in to_neighs]
+        else:
+            samp_neighs = to_neighs
+        samp_neighs = [samp_neigh | set([nodes[i]]) for i, samp_neigh in enumerate(samp_neighs)]
+        _unique_nodes_list = list(set.union(*samp_neighs))
+        i = list(range(len(_unique_nodes_list)))
+        unique_nodes = dict(list(zip(_unique_nodes_list, i)))
+        return samp_neighs, unique_nodes, _unique_nodes_list
+```
+
+```python
+samp_neighs = [_set(_sample(to_neigh, num_sample)) if len(to_neigh) >= num_sample else to_neigh for to_neigh
+               in to_neighs]
+```
+
+这一步的含义是去除了某些节点中多余的邻居节点。
+
+```python
+samp_neighs = [samp_neigh | set([nodes[i]]) for i, samp_neigh in enumerate(samp_neighs)]
+```
+
+这一步是将节点本身和采样之后的邻居节点加在一起，是set列表的形式。
+
+
+
 ### GAT
 
 ![image-20220314105005725](gnn.assets/image-20220314105005725.png)
