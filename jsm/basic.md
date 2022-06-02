@@ -129,8 +129,8 @@ http 协议的默认端口为 80，https 的默认端口为 443。
 
 1.  首先创建了一个新的`空对象`。
 2.  `设置原型`，将对象的原型设置为函数的`prototype`对象。
-3. 让函数的`this`指向这个对象，执行构造函数的代码（为这个新对象添加属性）。
-4. 判断函数的返回值类型，如果是值类型，返回创建的对象。如果是引用类型，就返回这个引用类型的对象。
+3.  让函数的`this`指向这个对象，执行构造函数的代码（为这个新对象添加属性）。
+4.  判断函数的返回值类型，如果是值类型，返回创建的对象。如果是引用类型，就返回这个引用类型的对象。
 
 ---
 
@@ -356,6 +356,7 @@ x出现错误，调用catch
 
 ** 顺序 **
 先执行promise里面的的同步代码，然后再执行then里面的异步代码，可以使用事件循环来解释。
+
 ```javascript
 new Promise((resolve, reject) => {
     setTimeout(()=>{
@@ -372,6 +373,7 @@ new Promise((resolve, reject) => {
     console.log('finally');
 })
 ```
+
 以上代码输出
 after resolve
 then 
@@ -833,5 +835,121 @@ class UserAdmin(admin.ModelAdmin):
 
 ---
 
+## V8引擎
+
+![image-20220602133649724](basic.assets/image-20220602133649724.png)
 
 
+
+---
+
+## JavaScript执行过程
+
+参考https://blog.csdn.net/wexin_37276427/article/details/105028116
+
+对于常见编译型语言（例如：`Java` ）来说，编译步骤分为：词法分析 -> 语法分析 -> 语义检查 -> 代码优化和[字节码](https://so.csdn.net/so/search?q=字节码&spm=1001.2101.3001.7020)生成
+
+对于解释型语言（例如：`JavaScript` ）来说，编译阶通过词法分析 -> 语法分析 -> [代码生成](https://so.csdn.net/so/search?q=代码生成&spm=1001.2101.3001.7020)，就可以解释并执行代码了。
+
+例如
+
+```javascript
+(()=>{
+    let li = [...[1,2]];
+})()
+```
+
+在语法分析之后的tokens阶段的输出为
+
+```json
+{
+  "type": "Program",
+  "body": [
+    {
+      "type": "ExpressionStatement",
+      "expression": {
+        "type": "CallExpression",
+        "callee": {
+          "type": "ArrowFunctionExpression",
+          "id": null,
+          "params": [],
+          "body": {
+            "type": "BlockStatement",
+            "body": [
+              {
+                "type": "VariableDeclaration",
+                "declarations": [
+                  {
+                    "type": "VariableDeclarator",
+                    "id": {
+                      "type": "Identifier",
+                      "name": "li"
+                    },
+                    "init": {
+                      "type": "ArrayExpression",
+                      "elements": [
+                        {
+                          "type": "SpreadElement",
+                          "argument": {
+                            "type": "ArrayExpression",
+                            "elements": [
+                              {
+                                "type": "Literal",
+                                "value": 1,
+                                "raw": "1"
+                              },
+                              {
+                                "type": "Literal",
+                                "value": 2,
+                                "raw": "2"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "kind": "let"
+              }
+            ]
+          },
+          "generator": false,
+          "expression": false,
+          "async": false
+        },
+        "arguments": []
+      }
+    }
+  ],
+  "sourceType": "script"
+}
+```
+
+当 JS 引擎开始执行第一行 JavaScript 代码时，它会创建一个全局执行上下文然后将它压到执行栈中，每当引擎遇到一个函数调用，它会为该函数创建一个新的执行上下文并压入栈的顶部。
+
+引擎会执行那些执行上下文位于栈顶的函数。当该函数执行结束时，执行上下文从栈中弹出，控制流程到达当前栈中的下一个上下文。
+
+```javascript
+let a = 'Hello World!';
+function first() {
+  console.log('Inside first function');
+  second();
+  console.log('Again inside first function');
+}
+function second() {
+  console.log('Inside second function');
+}
+first();
+console.log('Inside Global Execution Context');
+```
+
+![stack.png](basic.assets/format,png.png)
+
+下面对于创建执行上下文进行解释：
+
+- 绑定 `this`
+- 创建**词法环境**
+- 创建**变量环境**
+
+在 ES6 中，**词法环境**和**变量环境**的一个不同就是前者被用来存储函数声明和变量（let 和 const）绑定，而后者只用来存储 var 变量绑定。

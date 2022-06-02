@@ -915,5 +915,7 @@ export default About
 
 ![image-20220520170705051](react.assets/image-20220520170705051.png)
 
+---
 
+## mobx
 
