@@ -529,6 +529,8 @@ $$z^{\Phi_0}_{i}$$表示在$$\Phi_0$$这种Meta-Path下面节点1对于它全部
 
 **代码解析**
 
+https://github.com/dmlc/dgl/tree/master/examples/pytorch/han
+
 使用了ACM的数据集
 
 ---
