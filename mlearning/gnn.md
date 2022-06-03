@@ -463,6 +463,8 @@ for i, attention in enumerate(self.attentions):
 self.out_att = GraphAttentionLayer(nhid * nheads, nclass, dropout=dropout, alpha=alpha, concat=False)
 ```
 
+---
+
 
 
 
@@ -524,6 +526,10 @@ $$z^{\Phi_0}_{i}$$表示在$$\Phi_0$$这种Meta-Path下面节点1对于它全部
 ![image-20220323200204337](gnn.assets/image-20220323200204337.png)
 
 ![image-20220323200247937](gnn.assets/image-20220323200247937.png)
+
+**代码解析**
+
+使用了ACM的数据集
 
 ---
 
