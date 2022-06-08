@@ -50,6 +50,100 @@ vite会将js打包成ES Module的形式，比webpack更快，并且不需要load
 create-app
 ```
 
+**vite的加载问题**
+
+浏览器中不能像npm那样加载地址，所以要将包的地址进行替换。
+
+并且，像vue文件这种浏览器不识别的文件，会被vite编译为同名文件的js文件。
+
+在这里对于vite工作原理进行解释的时候，需要做到以下两点：
+
+1. 替换模块的地址。在这里使用koa服务器进行替代，但是vite内置的服务器是connect。
+2. 解析vue文件。
+
+搭建服务器
+
+```javascript
+const Koa = require("koa")
+const app = new Koa()
+
+app.use(async ctx => {
+    ctx.body = 'koa 服务器'
+})
+
+app.listen(3000, () => {
+    console.log('using port 3000');
+})
+```
+
+也可以读取HTML文件进行渲染
+
+```javascript
+const Koa = require("koa")
+const app = new Koa()
+const fs=require('fs')
+
+app.use(async ctx => {
+    ctx.body = fs.readFileSync('./index.html','utf8')
+})
+
+app.listen(3000, () => {
+    console.log('using port 3000');
+})
+```
+
+由于浏览器不支持相对路径，所以应该对于路径进行转意表示，使用path模块进行路径的表示
+
+```javascript
+const Koa = require("koa")
+const app = new Koa()
+const fs = require('fs')
+const path = require('path')
+
+app.use(async ctx => {
+    const {url} = ctx.request;
+    if (url === '/') {
+        ctx.type = 'text/html'
+        ctx.body = fs.readFileSync('./index.html', 'utf8')
+    } else if (url.endsWith('.js')) {
+        const p = path.join(__dirname, url);
+        console.log(p);
+        ctx.type = 'application/javascript'
+        ctx.body = fs.readFileSync(p, 'utf8')
+    }
+})
+
+app.listen(3000, () => {
+    console.log('using port 3000');
+})
+```
+
+index.html的具体文件内容如下所示
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <!--    <link rel="icon" href="/favicon.ico" />-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Vite App</title>
+    <script src="main.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<!--    <script type="module" src="/src/main.js"></script>-->
+
+</body>
+</html>
+```
+
+简单设置main.js的内容为``alert('hello vite')``。此时能够出现正常的js效果。
+
+![image-20220608174456984](vue.assets/image-20220608174456984.png)
+
+
+
 ---
 
 ### vite-electron项目构建

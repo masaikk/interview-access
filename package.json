@@ -16,5 +16,8 @@
     "cpp"
   ],
   "author": "masaikk",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "koa": "^2.13.4"
+  }
 }
