@@ -156,7 +156,7 @@ createApp({
 
 考虑到``import { createApp, h } from "vue";``里面为裸模块的地址不是浏览器能够执行的路径，会报错：
 
-可以考虑使用这个函数进行路径的修改
+可以考虑使用这个函数进行路径的修改，以下表示的是如果有包是来自于node_modules文件夹，就先加上``/@modules``前缀
 
 ```javascript
 function rewriteImport(content) {
@@ -170,9 +170,139 @@ function rewriteImport(content) {
 }
 ```
 
+修改加载的文件，对于以上的包的路径进行替换，使其指向node_modules包（vite会自动帮用户操作这一步）
+
+```javascript
+const Koa = require("koa")
+const app = new Koa()
+const fs = require('fs')
+const path = require('path')
+
+app.use(async ctx => {
+    const {url} = ctx.request;
+    if (url === '/') {
+        ctx.type = 'text/html'
+        ctx.body = fs.readFileSync('./index.html', 'utf8')
+    } else if (url.endsWith('.js')) {
+        const p = path.join(__dirname, url);
+        console.log(p);
+        ctx.type = 'application/javascript'
+        ctx.body = rewriteImport(fs.readFileSync(p, 'utf8'))
+    } else if (url.startsWith('/@modules/')) {
+        console.log(url);
+        const moduleName = url.replace('/@modules/', '');
+        const prefix = path.join(__dirname, "../node_modules", moduleName);
+        const module = require(prefix + '/package.json').module
+        const filePath = path.join(prefix, module);
+        const ret = fs.readFileSync(filePath, "utf8")
+        console.log(ret);
+        ctx.type = 'application/javascript';
+        ctx.body = rewriteImport(ret)
+    }
+})
+
+function rewriteImport(content) {
+    return content.replace(/ from ['"](.*)['"]/g, function (s1, s2) {
+        if (s2.startsWith('./') || s2.startsWith('/') || s2.startsWith('../')) {
+            return s1;
+        } else {
+            return ` from '/@modules/${s2}'`;
+        }
+    })
+}
+
+app.listen(3000, () => {
+    console.log('using port 3000');
+})
+```
+
 此时可以加载的内容如下所示
 
-![image-20220609150747560](vue.assets/image-20220609150747560.png)
+![image-20220609213424574](vue.assets/image-20220609213424574.png)
+
+在network页面可以看到模块会被加载
+
+![image-20220609213637007](vue.assets/image-20220609213637007.png)
+
+但是如果此刻在代码中有node的判断，就会出现错误，因为此时没有环境变量
+
+![image-20220609214037535](vue.assets/image-20220609214037535.png)
+
+为了解决这个问题，可以在index.html中使用window.process变量进行定义。
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <!--    <link rel="icon" href="/favicon.ico" />-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Vite App</title>
+
+</head>
+<body>
+<div id="app"></div>
+<script>
+    window.process={
+        env:{
+            NODE_ENV :'dev'
+        }
+    }
+</script>
+<script src="/src/main.js" type="module"></script>
+</body>
+</html>
+
+```
+
+此时就能够正常渲染:
+
+![image-20220609214539049](vue.assets/image-20220609214539049.png)
+
+应该注意，上述的渲染是对于VNode的形式的，接下来对于SFC形式的文件进行渲染的操作：
+
+```vue
+<template>
+  <div>
+    <h1>
+      {{ info.mess }}
+    </h1>
+  </div>
+
+</template>
+
+<script>
+import {reactive} from "vue";
+
+export default {
+  name: "MyApp",
+  setup() {
+    let info = reactive({
+      mess: "my app"
+    })
+    return {
+      info
+    }
+
+  }
+}
+</script>
+
+<style scoped>
+
+</style>
+```
+
+修改mian.js文件
+
+```javascript
+import { createApp } from "vue";
+import MyApp from './MyApp.vue'
+
+createApp(MyApp).mount('#app');
+```
+
+但是很显然，直接在main.js中导入vue文件是无法识别的，所以应该转意到js文件。
 
 ---
 
