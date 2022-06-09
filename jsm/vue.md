@@ -142,7 +142,37 @@ index.html的具体文件内容如下所示
 
 ![image-20220608174456984](vue.assets/image-20220608174456984.png)
 
+修改main.js的文件内容为
 
+```javascript
+import { createApp, h } from "vue";
+
+createApp({
+    render() {
+        return h('div', 'this is a sentence');
+    }
+}).mount('#app');
+```
+
+考虑到``import { createApp, h } from "vue";``里面为裸模块的地址不是浏览器能够执行的路径，会报错：
+
+可以考虑使用这个函数进行路径的修改
+
+```javascript
+function rewriteImport(content) {
+    return content.replace(/ from ['"](.*)['"]/g, function (s1, s2) {
+        if (s2.startsWith('./') || s2.startsWith('/') || s2.startsWith('../')) {
+            return s1;
+        } else {
+            return ` from '/@modules/${s2}`;
+        }
+    })
+}
+```
+
+此时可以加载的内容如下所示
+
+![image-20220609150747560](vue.assets/image-20220609150747560.png)
 
 ---
 
