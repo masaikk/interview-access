@@ -421,6 +421,36 @@ const __script={
 
 ---
 
+### vite插件
+
+vite插件实际上是一个拥有名称，创建钩子或者生成钩子的对象。 
+
+示例插件
+
+```javascript
+export default function myExample() {
+    return {
+        name: 'my-example',
+        resolveId(source) {
+            if (source === 'virtual-module') {
+                return source
+            }
+            return null
+        },
+        load(id) {
+            if (id === 'virtual-module') {
+                return 'export default "This is virtual"'
+            }
+            return null;
+        }
+    };
+}
+```
+
+应该是应该函数的形式然后返回一个对象。
+
+---
+
 ### vite-electron项目构建
 
 
