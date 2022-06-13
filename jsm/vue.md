@@ -581,7 +581,9 @@ export default function vitePluginTemplate(): PluginOption {
 
 ![vite插件开发钩子函数 (1).png](vue.assets/a951108fd62d44f88b1489d7906c9482tplv-k3u1fbpfcp-zoom-in-crop-mark1304000.awebp)
 
+设置enforce的值用于表示该插件所执行的时机
 
+![image-20220613181351730](vue.assets/image-20220613181351730.png)
 
 ---
 
