@@ -358,7 +358,7 @@ app.use(async ctx => {
 
 如果文件是以.vue结尾的话，就走最后一项渲染的情况。
 
-首先进入
+首先进入这段代码
 
 ```javascript
         if (!query.type) {
@@ -425,7 +425,7 @@ const __script={
 
 vite插件实际上是一个拥有名称，创建钩子或者生成钩子的对象。 
 
-示例插件
+#### 示例插件
 
 ```javascript
 export default function myExample() {
@@ -448,6 +448,140 @@ export default function myExample() {
 ```
 
 应该是应该函数的形式然后返回一个对象。
+
+对于vite.config.js文件来说，导入插件并进行使用的代码如下所示
+
+```javascript
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import myExample from "./plugins/vite-plugin-my-example1";
+
+// https://vitejs.dev/config/
+export default defineConfig({
+    plugins: [vue(), myExample()]
+})
+```
+
+这个示例插件的用处是加载一个不存在的虚拟模块``virtual-module``
+
+在main.js里面，使用一个不存在的模块
+
+```javascript
+import { createApp } from 'vue'
+import App from './App.vue'
+import vm from 'virtual-module'
+
+console.log('vm '+vm)
+createApp(App).mount('#app')
+```
+
+而vite打包的结构如下所示
+
+![image-20220613172644738](vue.assets/image-20220613172644738.png)
+
+```javascript
+if (source === 'virtual-module') {
+    return source
+}
+return null
+```
+
+这里返回source是表示对于模块的命中之后的处理，返回null是表示没有命中，由其他插件进行处理。
+
+```javascript
+if (id === 'virtual-module') {
+                return 'export default "This is virtual"'
+            }
+```
+
+这里表示只返回这一句代码。
+
+实际上也就是导出该虚拟模块的值，在main.js中使用``import vm from 'virtual-module'``。这里vm的值就是``This is virtual``
+
+#### 插件钩子
+
+vite的钩子分为rollup钩子（与创建的时机有关）以及vite特有的钩子。
+
+参考[博客](https://juejin.cn/post/7103165205483356168)以及如下插件的模板[https://github.com/jeddygong/vite-templates/tree/master/vite-plugin-template](https://github.com/jeddygong/vite-templates/tree/master/vite-plugin-template)
+
+```typescript
+import type { PluginOption } from 'vite';
+
+export default function vitePluginTemplate(): PluginOption {
+  return {
+    // 插件名称
+    name: 'vite-plugin-template',
+
+    // pre 会较于 post 先执行
+    enforce: 'pre', // post
+
+    // 指明它们仅在 'build' 或 'serve' 模式时调用
+    apply: 'build', // apply 亦可以是一个函数
+
+    // 1. vite 独有的钩子：可以在 vite 被解析之前修改 vite 的相关配置。钩子接收原始用户配置 config 和一个描述配置环境的变量env
+    config(config, { command }) {},
+
+    // 2. vite 独有的钩子：在解析 vite 配置后调用。使用这个钩子读取和存储最终解析的配置。当插件需要根据运行的命令做一些不同的事情时，它很有用。
+    configResolved(resolvedConfig) {},
+
+    // 4. vite 独有的钩子：主要用来配置开发服务器，为 dev-server (connect 应用程序) 添加自定义的中间件
+    configureServer(server) {},
+
+    // 18的前面. vite 独有的钩子：转换 index.html 的专用钩子。钩子接收当前的 HTML 字符串和转换上下文
+    transformIndexHtml(html) {},
+
+    // vite 独有的钩子: 执行自定义HMR更新，可以通过ws往客户端发送自定义的事件
+    handleHotUpdate({ file, server }) {},
+
+    // 3. 构建阶段的通用钩子：在服务器启动时被调用：获取、操纵Rollup选项
+    options(options) {},
+
+    // 5. 构建阶段的通用钩子：在服务器启动时被调用：每次开始构建时调用
+    buildStart(options) {},
+
+    // 构建阶段的通用钩子：在每个传入模块请求时被调用：创建自定义确认函数，可以用来定位第三方依赖
+    resolveId(source, importer, options) {},
+
+    // 构建阶段的通用钩子：在每个传入模块请求时被调用：可以自定义加载器，可用来返回自定义的内容
+    load(id) {},
+
+    // 构建阶段的通用钩子：在每个传入模块请求时被调用：在每个传入模块请求时被调用，主要是用来转换单个模块
+    transform(code, id) {},
+
+    // 构建阶段的通用钩子：在构建结束后被调用，此处构建只是代表所有模块转义完成
+    buildEnd() {},
+
+    // 输出阶段钩子通用钩子：接受输出参数
+    outputOptions(options) {},
+
+    // 输出阶段钩子通用钩子：每次bundle.generate 和 bundle.write调用时都会被触发。
+    renderStart(outputOptions, inputOptions) {},
+
+    // 输出阶段钩子通用钩子：用来给chunk增加hash
+    augmentChunkHash(chunkInfo) {},
+
+    // 输出阶段钩子通用钩子：转译单个的chunk时触发。rollup输出每一个chunk文件的时候都会调用。
+    renderChunk(code, chunk, options) {
+      return null;
+    },
+
+    // 输出阶段钩子通用钩子：在调用 bundle.write 之前立即触发这个hook
+    generateBundle(options, bundle, isWrite) {},
+
+    // 输出阶段钩子通用钩子：在调用 bundle.write后，所有的chunk都写入文件后，最后会调用一次 writeBundle
+    writeBundle(options, bundle) {},
+
+    // 通用钩子：在服务器关闭时被调用
+    closeBundle() {},
+  };
+}
+```
+
+以下表示得是钩子的生命周期：
+
+![vite插件开发钩子函数 (1).png](vue.assets/a951108fd62d44f88b1489d7906c9482tplv-k3u1fbpfcp-zoom-in-crop-mark1304000.awebp)
+
+
 
 ---
 
