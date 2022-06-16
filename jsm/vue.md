@@ -614,6 +614,8 @@ export default function vitePluginTemplate(): PluginOption {
 
 ![image-20220613181351730](vue.assets/image-20220613181351730.png)
 
+
+
 ---
 
 ### vite-electron项目构建
