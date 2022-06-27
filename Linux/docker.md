@@ -109,8 +109,35 @@ COPY ${base_path} ${path_nginx}
 + nodered/node-red
 
   + ``docker run -it -p 1880:1880 -v myNodeREDdata:/data --name mynodered nodered/node-red``
+  
++ cm2network/steamcmd
 
+  + ``docker pull cm2network/steamcmd``
 
+  + 以七日杀服务器为例：
+
+    1. 开启容器，绑定端口26900等，并且映射目录，steamcmd的游戏安装默认目录在容器的/Steam/common下
+
+    2. 先匿名登录steam``./steamcmd.sh``然后``login anonymous``
+
+    3. 安装``app_update 294420 validate``
+
+    4. 启动``./startserver.sh -configfile=serverconfig.xml``
+
+    5. ```shell
+       admin add <玩家名> <权限级别>	# 给予玩家管理权限（最高级别为0）
+       admin remove <玩家名>	# 移除玩家的管理权限
+       admin update <玩家名> <权限等级>	#提高管理权限级别
+       dm	#打开或关闭debug模式
+       ban <玩家名> <时间>	# 禁止玩家登陆服务器一段时间(minutes, hours, days, weeks, months, years)
+       kill <id/name>	# 杀死指定玩家
+       listplayers lp	# 获取在线玩家信息
+       give <id/name> <物品> <数量>	# 给玩家刷某样东西
+       shutdown	# 关闭服务器
+       say <信息>	# 以server的名义广播一条信息
+       ```
+
++ 
 
 ---
 
