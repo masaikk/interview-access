@@ -206,6 +206,24 @@ app.use(cors({
 app.use(router.routes())
 ```
 
+或者直接使用三方库
+
+```shell
+npm install @koa/cors --save
+```
+
+然后使用
+
+```javascript
+const Koa = require('koa');
+const cors = require('@koa/cors');
+
+const app = new Koa();
+app.use(cors());
+```
+
+参考[@koa/cors - npm (npmjs.com)](https://www.npmjs.com/package/@koa/cors)
+
 ---
 
 

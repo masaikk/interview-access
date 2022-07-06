@@ -201,6 +201,8 @@ docker run -it --volumes-from daa --name db1 ubuntu
 
 注意，在把全部的数据卷容器删除之后，数据卷还在，需要手动删除。比如使用``docker volume prune``删除多余的数据卷。
 
+``docker inspect +ID``查看信息，例如UpperDir字段就是数据位置
+
 ---
 
 ## Kubernetes
