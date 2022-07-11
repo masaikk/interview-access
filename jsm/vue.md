@@ -2695,6 +2695,121 @@ function patch(global: Window) {
 
 ![image.png](vue.assets/6278fba7c1354278aa82b3dd1767cdc5tplv-k3u1fbpfcp-zoom-in-crop-mark3024000.awebp)
 
+#### 代码记录
+
+记录vue3项目的main.js
+
+```javascript
+import './public-path';
+import { createApp } from 'vue';
+import { createRouter, createWebHistory } from 'vue-router';
+import App from './App.vue';
+import routes from './router';
+import store from './store';
+
+let router = null;
+let instance = null;
+let history = null;
+
+
+function render(props = {}) {
+  const { container } = props;
+  history = createWebHistory(window.__POWERED_BY_QIANKUN__ ? '/vue3' : '/');
+  router = createRouter({
+    history,
+    routes,
+  });
+
+  instance = createApp(App);
+  instance.use(router);
+  instance.use(store);
+  instance.mount(container ? container.querySelector('#app') : '#app');
+}
+
+if (!window.__POWERED_BY_QIANKUN__) {
+  render();
+}
+
+export async function bootstrap() {
+  console.log('%c%s', 'color: green;', 'vue3.0 app bootstraped');
+}
+
+function storeTest(props) {
+  props.onGlobalStateChange &&
+    props.onGlobalStateChange(
+      (value, prev) => console.log(`[onGlobalStateChange - ${props.name}]:`, value, prev),
+      true,
+    );
+  props.setGlobalState &&
+    props.setGlobalState({
+      ignore: props.name,
+      user: {
+        name: props.name,
+      },
+    });
+}
+
+export async function mount(props) {
+  storeTest(props);
+  render(props);
+  instance.config.globalProperties.$onGlobalStateChange = props.onGlobalStateChange;
+  instance.config.globalProperties.$setGlobalState = props.setGlobalState;
+}
+
+export async function unmount() {
+  instance.unmount();
+  instance._container.innerHTML = '';
+  instance = null;
+  router = null;
+  history.destroy();
+}
+```
+
+注意上述代码，qiankun要求实现子应用的三个生命周期``bootstrap``、``mount``、 ``unmount``。
+
+```javascript
+/**
+ * bootstrap 只会在微应用初始化的时候调用一次，下次微应用重新进入时会直接调用 mount 钩子，不会再重复触发 bootstrap。
+ * 通常我们可以在这里做一些全局变量的初始化，比如不会在 unmount 阶段被销毁的应用级别的缓存等。
+ */
+export async function bootstrap() {
+
+}
+
+
+/**
+ * 应用每次进入都会调用 mount 方法，通常我们在这里触发应用的渲染方法
+ */
+export async function mount(props) {
+
+}
+
+
+/**
+ * 应用每次 切出/卸载 会调用的方法，通常在这里我们会卸载微应用的应用实例
+ */
+export async function unmount(props) {
+
+}
+
+
+/**
+ * 可选生命周期钩子，仅使用 loadMicroApp 方式加载微应用时生效
+ */
+export async function update(props) {
+
+}
+```
+
+并且添加了文件``public-path.js``
+
+```javascript
+if (window.__POWERED_BY_QIANKUN__) {
+  // eslint-disable-next-line no-undef
+  __webpack_public_path__ = window.__INJECTED_PUBLIC_PATH_BY_QIANKUN__;
+}
+```
+
 ---
 
 
