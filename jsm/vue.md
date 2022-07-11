@@ -2408,3 +2408,296 @@ const vite = require('vite');
 
 ```
 
+---
+
+### 微前端-qiankun
+
+参考官网[qiankun - qiankun (umijs.org)](https://qiankun.umijs.org/)。微前端--组合各个前端项目并且使用同一个路由。
+
+技术难点：样式隔离，localStorge等参考[【微前端】qiankun 到底是个什么鬼 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/379744976)
+
+从最简单的微前端的解决方案开始：nginx路由代理[微前端学习系列(一)：微前端介绍 - 掘金 (juejin.cn)](https://juejin.cn/post/6955341801381167112)但是带来了很多缺点。**路由转发模式**、**iframe 模式**尽管可以实现**微前端**，但是体验不好。我们每次切换回已经访问过的子应用时，都需要重新加载子应用，对性能有很大的影响。基于以上问题，所以考虑使用single-spa技术或者二次封装的qiankun框架。
+
+#### demo
+
+参考官方demo[umijs/qiankun: 📦 🚀 Blazing fast, simple and complete solution for micro frontends. (github.com)](https://github.com/umijs/qiankun)
+
+![image-20220711194125567](vue.assets/image-20220711194125567.png)
+
+![image-20220711194158033](vue.assets/image-20220711194158033.png)
+
+#### 使用
+
+**qiankun 基座应用**的改造和 **single-spa** 基本相同，即**构建一个路由注册表**，然后根据**路由注册表**使用 **qiankun** 提供的 **registerMicroApps** 方法**注册子应用**，最后执行 **start** 方法来启动 **qiankun**。
+
+参考[qiankun/index.js at master · umijs/qiankun (github.com)](https://github.com/umijs/qiankun/blob/master/examples/main/index.js)代码
+
+```javascript
+import 'zone.js'; // for angular subapp
+import { initGlobalState, registerMicroApps, runAfterFirstMounted, setDefaultMountApp, start } from '../../es';
+import './index.less';
+/**
+ * 主应用 **可以使用任意技术栈**
+ * 以下分别是 React 和 Vue 的示例，可切换尝试
+ */
+import render from './render/ReactRender';
+
+// import render from './render/VueRender';
+
+/**
+ * Step1 初始化应用（可选）
+ */
+render({ loading: true });
+
+const loader = (loading) => render({ loading });
+
+/**
+ * Step2 注册子应用
+ */
+
+registerMicroApps(
+  [
+    {
+      name: 'react16',
+      entry: '//localhost:7100',
+      container: '#subapp-viewport',
+      loader,
+      activeRule: '/react16',
+    },
+    {
+      name: 'react15',
+      entry: '//localhost:7102',
+      container: '#subapp-viewport',
+      loader,
+      activeRule: '/react15',
+    },
+    {
+      name: 'vue',
+      entry: '//localhost:7101',
+      container: '#subapp-viewport',
+      loader,
+      activeRule: '/vue',
+    },
+    {
+      name: 'angular9',
+      entry: '//localhost:7103',
+      container: '#subapp-viewport',
+      loader,
+      activeRule: '/angular9',
+    },
+    {
+      name: 'purehtml',
+      entry: '//localhost:7104',
+      container: '#subapp-viewport',
+      loader,
+      activeRule: '/purehtml',
+    },
+    {
+      name: 'vue3',
+      entry: '//localhost:7105',
+      container: '#subapp-viewport',
+      loader,
+      activeRule: '/vue3',
+    },
+  ],
+  {
+    beforeLoad: [
+      (app) => {
+        console.log('[LifeCycle] before load %c%s', 'color: green;', app.name);
+      },
+    ],
+    beforeMount: [
+      (app) => {
+        console.log('[LifeCycle] before mount %c%s', 'color: green;', app.name);
+      },
+    ],
+    afterUnmount: [
+      (app) => {
+        console.log('[LifeCycle] after unmount %c%s', 'color: green;', app.name);
+      },
+    ],
+  },
+);
+
+const { onGlobalStateChange, setGlobalState } = initGlobalState({
+  user: 'qiankun',
+});
+
+onGlobalStateChange((value, prev) => console.log('[onGlobalStateChange - master]:', value, prev));
+
+setGlobalState({
+  ignore: 'master',
+  user: {
+    name: 'master',
+  },
+});
+
+/**
+ * Step3 设置默认进入的子应用
+ */
+setDefaultMountApp('/react16');
+
+/**
+ * Step4 启动应用
+ */
+start();
+
+runAfterFirstMounted(() => {
+  console.log('[MainApp] first app mounted');
+});
+```
+
+其次是对于子目录的改进，**入口文件 index.js 添加生命周期方法 - mount、unmount、update 等**；
+
+#### 加载js的隔离机制
+
+![image.png](vue.assets/bd977e76749a41a0a3218681f5ffaa11tplv-k3u1fbpfcp-zoom-in-crop-mark3024000.awebp)
+
+#### 沙箱机制
+
+不同于对加载全局window对象中single-spa技术中添加前缀的方法执行代码，qiankun使用了类似于沙箱的技术，即对于每个子项目中创建独特的window对象，然后使用eval方法调用
+
+```javascript
+var fakeWindowA = { name: 'appA'}; // 子应用 appA 对应的类 window 对象
+var fakeWindowB = { name: 'appB'}; // 子应用 appB 对应的类 window 对象
+var jsStr = 'console.log(name)'; // 子应用 appA、appB 的都有的脚本字符串
+var codeA = `(function(window){with(window){${jsStr}}})(fakeWindowA)`; 
+var codeB = `(function(window){with(window){${jsStr}}})(fakeWindowB)`;
+eval(codeA); // appA
+eval(codeB); // appB
+```
+
+这种机制在es6中的实现为
+
+```javascript
+class ProxySandbox {
+    ...
+    name: string;  // 沙盒的名称
+    proxy: WindowProxy; // 沙盒对应的 proxy 对象
+    sandboxRunning: boolean; // 判断沙盒是否激活
+    
+    // 沙盒的激活方法，当子应用挂载时，要先通过 active 方法将沙盒激活
+    active() {
+        ...
+        this.sandboxRunning = true;
+    }
+    
+    // 沙盒的失活方法。当子应用卸载以后，要执行 inactive 方法将沙盒失活
+    inactive() {
+        ...
+        this.sandboxRunning = false;
+    }
+    
+    constructor(name) {
+        // 以子应用的名称作为沙盒的名称
+        this.name = name;
+        const self = this;
+        // 获取原生的 window 对象
+        const rawWindow = window;
+        // 假的 window 对象
+        const fakeWindow = {};
+        // 在这里，qiankun 之所以要使用 proxy，主要是想拦截 fakeWindow 的读写等操作
+        // 比如，子应用中要使用 setTimeout 方法，fakeWindow 中并没有，就需要从 rawWindow 获取
+        this.proxy = new Proxy(fakeWindow, {
+            set(target, key, value) {
+                if (self.sandboxRunning) { // 沙盒已经激活
+                    ...
+                    // 子应用新增/修改的全局变量都保存到对应的fakeWindow
+                    target[key] = value;
+                }
+            },
+            get(target, key) {
+                ...
+                // 读取属性时，先从 fakeWindow 中获取，如果没有，就从 rawWindow 中获取
+                return key in target ? target[key] : rawWindow[key];
+            },
+            ...
+        });        
+    }
+}
+```
+
+#### css隔离
+
+具体的方式有两种：**严格样式隔离**和 **scoped 样式隔离**。
+
+严格模式需要设置
+
+```javascript
+import { start } from 'qiankun';
+
+start({
+    sandbox: {
+       strictStyleIsolation: true 
+    }
+})
+```
+
+并且，qiankun对于类似于vue框架中动态添加class的方式使用了类劫持以保证在动态类添加方式的时候还能进行css隔离。
+
+为了能获知**子应用动态添加 style 的操作**，**qiankun** 对 **document.head.appendChild** 方法进行了**劫持操作**，具体如下：
+
+```javascript
+// 原生的 appendChild 方法
+const rawHeadAppendChild = document.head.appendChild;
+// 重写原生方法
+document.head.appendChild = function(newChild) {
+    if (newChild.tagName === 'STYLE') {
+        // 对 style 节点做处理
+        ...
+    
+    }
+    ...
+    // 找到子应用对应的 html 片段的根 dom 节点
+    const mountDOM = ....;
+    // 通过原生的 appendChild 将动态 style 添加到子应用对应的 html 片段中
+    rawHeadAppendChild.call(mountDOM, newChild);
+}
+```
+
+#### 子应用的卸载
+
+由于沙箱机制，对于window等全局变量的卸载很容易。
+
+关于 **setInterval** 引发的副作用，**qiankun** 是通过**劫持**原生的 **setInterval** 方法来解决的，具体代码如下：
+
+```javascript
+const rawWindowInterval = window.setInterval;
+const rawWindowClearInterval = window.clearInterval;
+
+function patch(global: Window) {
+  // 收集子应用定义的定时器
+  let intervals: number[] = [];
+  // 重写原生的 clearInterval
+  global.clearInterval = (intervalId: number) => {
+    intervals = intervals.filter((id) => id !== intervalId);
+    return rawWindowClearInterval(intervalId);
+  };
+  // 重写原生的 setInterval
+  global.setInterval = (handler: Function, timeout?: number, ...args: any[]) => {
+    const intervalId = rawWindowInterval(handler, timeout, ...args);
+    intervals = [...intervals, intervalId];
+    return intervalId;
+  };
+  // free 函数在子应用卸载时调用
+  return function free() {
+    intervals.forEach((id) => global.clearInterval(id));
+    global.setInterval = rawWindowInterval;
+    global.clearInterval = rawWindowClearInterval;
+
+    return noop;
+  };
+}
+
+```
+
+#### 整体运行流程
+
+![image.png](vue.assets/6278fba7c1354278aa82b3dd1767cdc5tplv-k3u1fbpfcp-zoom-in-crop-mark3024000.awebp)
+
+---
+
+
+
+
+
