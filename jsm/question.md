@@ -246,4 +246,20 @@
        console.log(result) //  [1, 2, 3, 4]
     ```
 
-18. 
+18. 实现一个方法，能在一个对象中取值并组成一个新的对象
+
+    参考only库的代码
+
+    ```javascript
+    module.exports = function(obj, keys){
+      obj = obj || {};
+      if ('string' == typeof keys) keys = keys.split(/ +/);
+      return keys.reduce(function(ret, key){
+        if (null == obj[key]) return ret;
+        ret[key] = obj[key];
+        return ret;
+      }, {});
+    };
+    ```
+
+19. 

@@ -839,6 +839,20 @@ class UserAdmin(admin.ModelAdmin):
 
 ![image-20220602133649724](basic.assets/image-20220602133649724.png)
 
+### 简述
+
+在v8中，负责内存回收的只有两个部分New Space 和 Old Space。
+
+Large Object Space的意义是，如果一个对象在定义了之后，大小大于了定义的大小，就不会进入New Space而是进入Large Object Space。
+
+Code Space为JIT的空间，JIT在这里存储已编译的代码块。
+
+如果一个对象被指针引用或者指向了其他对象的话，那么这个对象会放在老生代的Old Pointer Space中。如果是原始对象，没有指针引用，就放在Old Data Space。
+
+![image-20220725190002841](basic.assets/image-20220725190002841.png)
+
+### 垃圾回收
+
 
 
 ---
@@ -952,4 +966,7 @@ console.log('Inside Global Execution Context');
 - 创建**词法环境**
 - 创建**变量环境**
 
-在 ES6 中，**词法环境**和**变量环境**的一个不同就是前者被用来存储函数声明和变量（let 和 const）绑定，而后者只用来存储 var 变量绑定。
+在 ES6 中，**词法环境**和**变量环境**的一个不同就是前者被用来存储函数声明和变量（``let`` 和`` const``）绑定，而后者只用来存储`` var ``变量绑定。
+
+---
+
