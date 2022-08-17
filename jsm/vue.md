@@ -3033,3 +3033,43 @@ function render(props) {
 }
 ```
 
+![image-20220817204007211](vue.assets/image-20220817204007211.png)
+
+修改值的操作，详细查看官方文档。
+
+#### 全局变量
+
+```javascript
+import {registerMicroApps, start, initGlobalState} from 'qiankun';
+
+const state = {
+    globalMsg: 'global message'
+}
+
+const actions = initGlobalState(state)
+
+actions.onGlobalStateChange((state, prev) => {
+    console.log(state, prev)
+})
+
+actions.offGlobalStateChange()
+```
+
+在这里可以设置全局的状态。
+
+*[qiankun] globalState tools will be removed in 3.0, pls don't use it!*
+
+#### 接入vue3
+
+添加第三个子应用micro-app3，目前qiankun官网上说只支持webpack，所以创建一个webpack的vue3应用，并且修改端口
+
+```javascript
+const {defineConfig} = require('@vue/cli-service')
+module.exports = defineConfig({
+    transpileDependencies: true,
+    devServer: {
+        port: 3003
+    }
+})
+```
+
