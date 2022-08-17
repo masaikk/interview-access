@@ -2818,5 +2818,218 @@ if (window.__POWERED_BY_QIANKUN__) {
 
 
 
+首先在主应用中安装qiankun依赖，如果子应用中无嵌套子应用，则不需要在子应用中安装qiankun。
 
+```shell
+npm install qiankun -S
+```
+
+设置各个子应用以及主应用不会占用端口，在react项目中使用.env文件，在vue项目中使用vue.config.js文件。在demo项目中，主应用为3000，micro-app1为3001，micro-app2为3002。两个子应用的内容稍作修改。
+
+在主应用中注册子应用的信息并且启动，参考如下：
+
+```javascript
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+
+import {registerMicroApps, start} from 'qiankun';
+
+registerMicroApps([
+    {
+        name: 'react app1', // app name registered
+        entry: '//localhost:3001',
+        container: '#micro-app1',
+        activeRule: '/r1',
+    },
+    {
+        name: 'react app2',
+        entry: '//localhost:3002',
+        container: '#micro-app2',
+        activeRule: '/r2',
+    },
+]);
+
+start();
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+    <React.StrictMode>
+        <App/>
+    </React.StrictMode>
+);
+
+```
+
+这里对应的是在app.js中的两个挂载点，app的代码参考如下：
+
+```jsx
+import './App.css';
+
+function App() {
+    return (
+        <div className="App">
+            <p>
+                Qiankun main Application
+            </p>
+            <div id='micro-app1'></div>
+            <div id='micro-app2'></div>
+        </div>
+    );
+}
+
+export default App;
+```
+
+但是这样是不能启动子应用的，必须在子应用中添加生命周期，并且还需要修改webpack的配置等操作，这里参考[官方文档](https://qiankun.umijs.org/zh/guide/tutorial#%E4%B8%BB%E5%BA%94%E7%94%A8)。
+
+首先在每个子应用的根目录下添加public-path.js，参考为：
+
+```javascript
+if (window.__POWERED_BY_QIANKUN__) {
+    // eslint-disable-next-line
+    __webpack_public_path__ = window.__INJECTED_PUBLIC_PATH_BY_QIANKUN__;
+}
+```
+
+这里的意义是全路径加载资源
+
+添加生命周期函数，参考：
+
+```javascript
+import './public-path';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css'
+import App from './App';
+
+function render(props) {
+    const {container} = props;
+    ReactDOM.render(<App/>, container ? container.querySelector('#root') : document.querySelector('#root'));
+}
+
+if (!window.__POWERED_BY_QIANKUN__) {
+    render({});
+}
+
+export async function bootstrap() {
+    console.log('[react18] react app bootstraped');
+}
+
+export async function mount(props) {
+    console.log('[react18] props from main framework', props);
+    render(props);
+}
+
+export async function unmount(props) {
+    const {container} = props;
+    ReactDOM.unmountComponentAtNode(container ? container.querySelector('#root') : document.querySelector('#root'));
+}
+```
+
+修改 `webpack` 配置
+
+安装插件 `@rescripts/cli`，当然也可以选择其他的插件，例如 `react-app-rewired`。
+
+```dash
+npm i -D @rescripts/cli
+```
+
+根目录新增 `.rescriptsrc.js`：
+
+```javascript
+const { name } = require('./package');
+
+module.exports = {
+    webpack: (config) => {
+        config.output.library = `${name}-[name]`;
+        config.output.libraryTarget = 'umd';
+        config.output.jsonpFunction = `webpackJsonp_${name}`;
+        config.output.globalObject = 'window';
+        return config;
+    },
+
+    devServer: (_) => {
+        const config = _;
+
+        config.headers = {
+            'Access-Control-Allow-Origin': '*',
+        };
+        config.historyApiFallback = true;
+        config.hot = false;
+        config.watchContentBase = false;
+        config.liveReload = false;
+
+        return config;
+    },
+};
+```
+
+以上的代码中：
+
+```javascript
+config.headers = {
+            'Access-Control-Allow-Origin': '*',
+        };
+```
+
+是用来设置跨域，这样子应用中的资源就能被访问得到。
+
+修改 `package.json`：
+
+```diff
+-   "start": "react-scripts start",
++   "start": "rescripts start",
+-   "build": "react-scripts build",
++   "build": "rescripts build",
+-   "test": "react-scripts test",
++   "test": "rescripts test",
+-   "eject": "react-scripts eject"
+```
+
+依次启动两个子应用和主应用，就能得到如下效果：
+
+![image-20220817185944729](vue.assets/image-20220817185944729.png)
+
+这里表示环境搭建成功。
+
+在注册子应用的时候可以添加props的对象来传递信息给子应用：
+
+```javascript
+registerMicroApps([
+    {
+        name: 'react app1', // app name registered
+        entry: '//localhost:3001',
+        container: '#micro-app1',
+        activeRule: '/r1',
+        props:{
+            msg:'hello micro app1!'
+        }
+    },
+    {
+        name: 'react app2',
+        entry: '//localhost:3002',
+        container: '#micro-app2',
+        activeRule: '/r2',
+        props:{
+            msg:'hello micro app2!'
+        }
+    },
+]);
+```
+
+这里的props会在子应用的mount阶段中被使用到：
+
+```javascript
+export async function mount(props) {
+    console.log('[react18] props from main framework', props);
+    render(props);
+}
+
+function render(props) {
+    const {container} = props;
+    ReactDOM.render(<App/>, container ? container.querySelector('#root') : document.querySelector('#root'));
+}
+```
 
