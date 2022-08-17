@@ -2810,7 +2810,11 @@ if (window.__POWERED_BY_QIANKUN__) {
 }
 ```
 
----
+#### Demo演示
+
+展示使用一个react应用当成主应用，取名为micro-main，并且使用两个react应用当子应用并且分别取名为micro-app1和micro-app2，项目的结构如下：
+
+![image-20220817172403935](vue.assets/image-20220817172403935.png)
 
 
 
