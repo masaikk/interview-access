@@ -2814,7 +2814,7 @@ if (window.__POWERED_BY_QIANKUN__) {
 
 展示使用一个react应用当成主应用，取名为micro-main，并且使用两个react应用当子应用并且分别取名为micro-app1和micro-app2，项目的结构如下：
 
-![image-20220817172403935](vue.assets/image-20220817172403935.png)
+<img src="vue.assets/image-20220817172403935.png" alt="image-20220817172403935" style="zoom:50%;" />
 
 
 
@@ -2990,9 +2990,9 @@ config.headers = {
 
 依次启动两个子应用和主应用，就能得到如下效果：
 
-![image-20220817185944729](vue.assets/image-20220817185944729.png)
+<img src="vue.assets/image-20220817185944729.png" alt="image-20220817185944729" style="zoom:50%;" />
 
-这里表示环境搭建成功。
+*这里表示环境搭建成功。*
 
 在注册子应用的时候可以添加props的对象来传递信息给子应用：
 
@@ -3072,4 +3072,91 @@ module.exports = defineConfig({
     }
 })
 ```
+
+首先讨论不使用子路由的情况 ，在main.js中添加子应用的生命周期
+
+```javascript
+import {createApp} from 'vue'
+import App from './App.vue'
+import './public-path.js'
+
+
+let instance = null;
+
+function render(props = {}) {
+    const {container} = props;
+    instance = createApp(App)
+    instance.mount(container ? container.querySelector('#app') : '#app');
+}
+
+// 独立运行时
+if (!window.__POWERED_BY_QIANKUN__) {
+    render();
+}
+
+export async function bootstrap() {
+    console.log('[vue] vue app bootstraped');
+}
+
+export async function mount(props) {
+    console.log('[vue] props from main framework', props);
+    render(props);
+    instance.config.globalProperties.$onGlobalStateChange=props.onGlobalStateChange
+    instance.config.globalProperties.$setGlobalStateChange=props.setGlobalStateChange
+}
+export async function unmount() {
+    instance.$destroy();
+    instance.$el.innerHTML = '';
+    instance = null;
+}
+```
+
+同时，为了保证静态资源的加载，也要添加public-path.js
+
+```javascript
+if (window.__POWERED_BY_QIANKUN__) {
+    // eslint-disable-next-line
+    __webpack_public_path__ = window.__INJECTED_PUBLIC_PATH_BY_QIANKUN__;
+}
+```
+
+最后，还需要修改的vue.config.js的内容
+
+```javascript
+const { defineConfig } = require('@vue/cli-service')
+const { name } = require('./package');
+module.exports = defineConfig({
+    transpileDependencies: true,
+    devServer: {
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+        },
+        port: 3003
+    },
+    configureWebpack: {
+        output: {
+            library: `${name}-[name]`,
+            libraryTarget: 'umd', // 把微应用打包成 umd 库格式
+            chunkLoadingGlobal: `webpackJsonp_${name}`,
+        },
+    },
+})
+```
+
+在主应用中的注册和react子应用无太大差异
+
+```javascript
+    {
+        name: 'vue app1',
+        entry: '//localhost:3003',
+        container: '#micro-app3',
+        activeRule: '/v1',
+    },
+```
+
+运行各个子应用再运行主应用，显示如下:
+
+<img src="vue.assets/image-20220818093103447.png" alt="image-20220818093103447" style="zoom:50%;" />
+
+这里表示子应用也加载成功。
 
