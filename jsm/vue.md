@@ -2430,7 +2430,7 @@ const vite = require('vite');
 
 **qiankun 基座应用**的改造和 **single-spa** 基本相同，即**构建一个路由注册表**，然后根据**路由注册表**使用 **qiankun** 提供的 **registerMicroApps** 方法**注册子应用**，最后执行 **start** 方法来启动 **qiankun**。
 
-参考[qiankun/index.js at master · umijs/qiankun (github.com)](https://github.com/umijs/qiankun/blob/master/examples/main/index.js)代码
+参考[qiankun/index.js at master · umijs/qiankun (github.com)](https://github.com/umijs/qiankun/blob/master/examples/main/index.js)代码，以下是官方代码的截取：
 
 ```javascript
 import 'zone.js'; // for angular subapp
@@ -2547,7 +2547,7 @@ runAfterFirstMounted(() => {
 });
 ```
 
-其次是对于子目录的改进，**入口文件 index.js 添加生命周期方法 - mount、unmount、update 等**；
+其次是对于子目录的改进，**入口文件 index.js 添加生命周期方法 - mount、unmount、update 等**；对于webpack的项目来说，这几个生命周期函数是类似的。
 
 #### 加载js的隔离机制
 
@@ -2555,7 +2555,7 @@ runAfterFirstMounted(() => {
 
 #### 沙箱机制
 
-不同于对加载全局window对象中single-spa技术中添加前缀的方法执行代码，qiankun使用了类似于沙箱的技术，即对于每个子项目中创建独特的window对象，然后使用eval方法调用
+不同于对加载全局window对象中single-spa技术中添加前缀的方法执行代码，qiankun使用了类似于沙箱的技术，即对于每个子项目中创建独特的window对象，然后使用eval方法调用：
 
 ```javascript
 var fakeWindowA = { name: 'appA'}; // 子应用 appA 对应的类 window 对象
@@ -2567,7 +2567,7 @@ eval(codeA); // appA
 eval(codeB); // appB
 ```
 
-这种机制在es6中的实现为
+这种机制在es6中的实现为如下代码所示：
 
 ```javascript
 class ProxySandbox {
@@ -2621,7 +2621,7 @@ class ProxySandbox {
 
 具体的方式有两种：**严格样式隔离**和 **scoped 样式隔离**。
 
-严格模式需要设置
+严格模式需要设置，如下：
 
 ```javascript
 import { start } from 'qiankun';
@@ -2811,6 +2811,8 @@ if (window.__POWERED_BY_QIANKUN__) {
 ```
 
 #### Demo演示
+
+参考视频[链接](https://www.bilibili.com/video/BV16T4y1e7TC)
 
 展示使用一个react应用当成主应用，取名为micro-main，并且使用两个react应用当子应用并且分别取名为micro-app1和micro-app2，项目的结构如下：
 
@@ -3105,8 +3107,8 @@ export async function mount(props) {
     instance.config.globalProperties.$setGlobalStateChange=props.setGlobalStateChange
 }
 export async function unmount() {
-    instance.$destroy();
-    instance.$el.innerHTML = '';
+    instance.unmount();
+    instance._container.innerHTML = '';
     instance = null;
 }
 ```
@@ -3159,4 +3161,133 @@ module.exports = defineConfig({
 <img src="vue.assets/image-20220818093103447.png" alt="image-20220818093103447" style="zoom:50%;" />
 
 这里表示子应用也加载成功。
+
+#### react子应用路由
+
+修改index.js的内容，判断这个应用是独立打开的还是由qiankun打开的，即判断`window.__POWERED_BY_QIANKUN__`。
+
+```javascript
+import {BrowserRouter} from "react-router-dom";
+
+function render(props) {
+    const {container} = props;
+    ReactDOM.render(
+        <BrowserRouter
+            basename={window.__POWERED_BY_QIANKUN__ ? "/r2" : undefined}
+        >
+            <App/>
+        </BrowserRouter>
+        , container ? container.querySelector('#root') : document.querySelector('#root'));
+}
+
+if (!window.__POWERED_BY_QIANKUN__) {
+    render({});
+}
+```
+
+#### vue3子应用路由
+
+首先应该在main.js文件中引入和use路由对象
+
+```javascript
+import {createApp} from 'vue'
+import App from './App.vue'
+import './public-path.js'
+import router from "./router";
+
+
+let instance = null;
+
+function render(props = {}) {
+    const {container} = props;
+    instance = createApp(App)
+    instance.use(router)
+    instance.mount(container ? container.querySelector('#app') : '#app');
+}
+
+// 独立运行时
+if (!window.__POWERED_BY_QIANKUN__) {
+    render();
+}
+
+export async function bootstrap() {
+    console.log('[vue] vue app bootstraped');
+}
+
+export async function mount(props) {
+    console.log('[vue] props from main framework', props);
+    render(props);
+    instance.config.globalProperties.$onGlobalStateChange=props.onGlobalStateChange
+    instance.config.globalProperties.$setGlobalStateChange=props.setGlobalStateChange
+}
+export async function unmount() {
+    instance.unmount();
+    instance._container.innerHTML = '';
+    instance = null;
+}
+```
+
+并且，对于router文件来说，与普通的vue3项目不同的是，需要在创建router对象的时候判断当前应用是否是独立运行的还是由qiankun当做子应用的。判断的代码为：
+
+```javascript
+const router = createRouter({
+    history: createWebHistory(window.__POWERED_BY_QIANKUN__ ? '/v1' : '/'),
+    routes
+})
+```
+
+整个router代码的参考如下所示
+
+```javascript
+import {createRouter, createWebHistory} from "vue-router";
+import SonComp1 from "@/pages/SonComp1";
+import SonComp2 from "@/pages/SonComp2";
+
+const routes = [
+    {
+        path: '/s1',
+        component: SonComp1
+    },
+    {
+        path: '/s2',
+        component: SonComp2
+    }
+]
+const router = createRouter({
+    history: createWebHistory(window.__POWERED_BY_QIANKUN__ ? '/v1' : '/'),
+    routes
+})
+export default router;
+```
+
+最后不要忘记在这个子应用的app.vue中添加`<router-view>`等标签以渲染路由内容。
+
+```vue
+<template>
+  <router-link to="/s1">son1</router-link>|
+  <router-link to="/s2">son2</router-link>|
+  <router-view></router-view>
+  <img alt="Vue logo" src="./assets/logo.png">
+  <HelloWorld msg="Welcome to Your Vue.js App"/>
+</template>
+
+<script>
+import HelloWorld from './components/HelloWorld.vue'
+
+export default {
+  name: 'App',
+  components: {
+    HelloWorld
+  }
+}
+</script>
+```
+
+启动项目的效果如下：
+
+<img src="vue.assets/image-20220818142741361.png" alt="image-20220818142741361" style="zoom:50%;" />
+
+<img src="vue.assets/image-20220818142803321.png" alt="image-20220818142803321" style="zoom:50%;" />
+
+这里表示子应用的路由已经可以正常渲染。
 
