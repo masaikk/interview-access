@@ -262,4 +262,36 @@
     };
     ```
 
-19. 
+19. 介绍一下计算机网络中的SYN攻击
+
+    SYN攻击即利用TCP协议缺陷，通过发送大量的半连接请求，占用半连接队列，耗费CPU和内存资源。
+
+    优化方式：
+
+    1. 缩短SYN Timeout时间
+    2. 记录IP，若连续受到某个IP的重复SYN报文，从这个IP地址来的包会被一概丢弃。
+
+20. TCP连接中四次挥手是怎么样的？
+
+    1. 第一次挥手：客户端发送一个FIN，用来关闭客户端到服务端的[数据](https://www.nowcoder.com/jump/super-jump/word?word=数据)传送，客户端进入fin_wait_1状态。
+    2. 第二次挥手：服务端收到FIN后，发送一个ACK给客户端，确认序号为收到序号+1，服务端进入Close_wait状态。此时TCP连接处于半关闭状态，即客户端已经没有要发送的[数据](https://www.nowcoder.com/jump/super-jump/word?word=数据)了，但服务端若发送[数据](https://www.nowcoder.com/jump/super-jump/word?word=数据)，则客户端仍要接收。
+    3. 第三次挥手：服务端发送一个FIN，用来关闭服务端到客户端的[数据](https://www.nowcoder.com/jump/super-jump/word?word=数据)传送，服务端进入Last_ack状态。
+    4. 第四次挥手：客户端收到FIN后，客户端进入Time_wait状态，接着发送一个ACK给服务端，确认后，服务端进入Closed状态，完成四次挥手。
+
+    *追问：为什么要确定四次？*
+
+    主要原因是当服务端收到客户端的 FIN [数据](https://www.nowcoder.com/jump/super-jump/word?word=数据)包后，服务端可能还有[数据](https://www.nowcoder.com/jump/super-jump/word?word=数据)没发完，不会立即close。
+
+    所以服务端会先将 ACK 发过去告诉客户端我收到你的断开请求了，但请再给我一点时间，这段时间用来发送剩下的[数据](https://www.nowcoder.com/jump/super-jump/word?word=数据)报文，发完之后再将 FIN 包发给客户端表示现在可以断了。之后客户端需要收到 FIN 包后发送 ACK 确认断开信息给服务端。
+
+21. 解释一下Https连接的过程？
+
+    1. 浏览器将支持的加密[算法](https://www.nowcoder.com/jump/super-jump/word?word=算法)信息发给服务器
+    2. 服务器选择一套浏览器支持的加密[算法](https://www.nowcoder.com/jump/super-jump/word?word=算法)，以证书的形式回发给浏览器
+    3. 客户端(SSL/TLS)解析证书验证证书合法性，生成对称加密的密钥，我们将该密钥称之为client key，即客户端密钥，用服务器的公钥对客户端密钥进行非对称加密。
+    4. 客户端会发起HTTPS中的第二个HTTP请求，将加密之后的客户端对称密钥发送给服务器
+    5. 服务器接收到客户端发来的密文之后，会用自己的私钥对其进行非对称解密，解密之后的明文就是客户端密钥，然后用客户端密钥对[数据](https://www.nowcoder.com/jump/super-jump/word?word=数据)进行对称加密，这样[数据](https://www.nowcoder.com/jump/super-jump/word?word=数据)就变成了密文。
+    6. 服务器将加密后的密文发送给客户端
+    7. 客户端收到服务器发送来的密文，用客户端密钥对其进行对称解密，得到服务器发送的[数据](https://www.nowcoder.com/jump/super-jump/word?word=数据)。这样HTTPS中的第二个HTTP请求结束，整个HTTPS传输完成
+
+22. 
