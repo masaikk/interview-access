@@ -310,6 +310,16 @@
 
     这里问的是在scoped的style标签里面渲染某个外面的样式。参考scss的做法，使用``父元素 /deep/ 子元素``的方法选取到那个标签。
 
+22. 讨论一下vue2中的数据劫持实现原理？
+
+    参考视频[链接](https://www.bilibili.com/video/BV1mf4y1Q7mg?spm_id_from=333.337.search-card.all.click&vd_source=36542d6c49bf487d8a18d22be404b8d2)
+
+    
+
+22. 讨论一下vue3中的数据劫持实现原理？
+
+    参考视频[链接](https://www.bilibili.com/video/BV1Wy4y1y7vb?p=2&vd_source=36542d6c49bf487d8a18d22be404b8d2)
+
 22. 
 
     

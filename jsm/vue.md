@@ -3291,3 +3291,35 @@ export default {
 
 这里表示子应用的路由已经可以正常渲染。
 
+---
+
+vue2的数据劫持
+
+首先安装webpack等依赖，新建webpack.config.js的文件，内容参考
+
+```javascript
+const path=require('path')
+const HtmlWebpackPlugin=require('html-webpack-plugin')
+
+module.exports={
+    entry:'./src/index.js',
+    output:{
+        filename:'bundle.js',
+        path:path.resolve(__dirname,'dist')
+    },
+    resolve:{
+      modules:[
+          path.resolve(__dirname,''),
+          path.resolve(__dirname,'node_modules')
+      ]
+    },
+    devtool:'source-map',
+    plugins:[
+        new HtmlWebpackPlugin({
+            template:path.resolve(__dirname,'public/index.html')
+        })
+    ],
+    mode:"development"
+}
+```
+
