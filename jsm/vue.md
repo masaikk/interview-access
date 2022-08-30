@@ -2555,6 +2555,9 @@ runAfterFirstMounted(() => {
 
 #### 沙箱机制
 
+- 第一步，为每一个子应用创建一个**唯一**的**类 window 对象**；
+- 第二步，**手动执行**子应用的 js 脚本，将**类 window 对象**作为**全局变量**，对全局变量的读写都作用在**类 window 对象**上；
+
 不同于对加载全局window对象中single-spa技术中添加前缀的方法执行代码，qiankun使用了类似于沙箱的技术，即对于每个子项目中创建独特的window对象，然后使用eval方法调用：
 
 ```javascript
@@ -2633,7 +2636,28 @@ start({
 })
 ```
 
-并且，qiankun对于类似于vue框架中动态添加class的方式使用了类劫持以保证在动态类添加方式的时候还能进行css隔离。
+**严格样式隔离**，是基于 **Web Component** 的 **[shadow Dom](https://link.juejin.cn/?target=https%3A%2F%2Fdeveloper.mozilla.org%2Fzh-CN%2Fdocs%2FWeb%2FWeb_Components%2FUsing_shadow_DOM)** 实现的。通过 **shadow Dom**, 我们可以将一个**隐藏的、独立的 dom** 附加到一个另一个 dom 元素上，保证**元素的私有化**，不用担心与文档的其他部分发生冲突。
+
+```javascript
+
+  if (appElement.attachShadow) {
+    shadow = appElement.attachShadow({ mode: 'open' });
+  } else {
+    // createShadowRoot was proposed in initial spec, which has then been deprecated
+    shadow = (appElement as any).createShadowRoot();
+  }
+  shadow.innerHTML = innerHTML;
+```
+
+而对于scoped的样式隔离来说，是对于每个的dom节点添加了一层div，再对于css进行了一次选择，就像如下所示。
+
+```css
+div["data-qiankun=vue"] div {
+    background-color: green;
+}
+```
+
+并且，qiankun对于类似于vue框架中动态添加class的方式使用了类劫持以保证在动态类添加方式的时候还能进行css隔离，下面将对此进行讨论。
 
 为了能获知**子应用动态添加 style 的操作**，**qiankun** 对 **document.head.appendChild** 方法进行了**劫持操作**，具体如下：
 
@@ -2654,6 +2678,8 @@ document.head.appendChild = function(newChild) {
     rawHeadAppendChild.call(mountDOM, newChild);
 }
 ```
+
+当子应用调用 **document.head.appendChild** 动态添加 **style** 时，会被 **qiankun** 劫持，然后将 **style** 添加到**子应用对应的 html 片段**中。此时如果 **qiankun** 配置了**严格样式隔离**，新增的 **style** 是添加到 **shadow dom** 中的，**css 隔离**自然生效；如果 **qiankun** 配置了 **scoped 样式隔离**，在将 style 添加到子应用对应的 html 片段之前，会先获取到**样式内容**，然后为**样式内容**添加 **div["data-qiankun=xxx"] 前缀**，**css 隔离**也生效。
 
 #### 子应用的卸载
 

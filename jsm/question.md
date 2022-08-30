@@ -336,7 +336,130 @@
     </pre>
     </details>
 
-29. 
+29. 解释一下es6新增的proxy和reflect语法？
+
+    使用`new Proxy(target, handler)`创建代理，并且，handler表示的是捕获器。
+
+    proxy的基本方法
+
+    ```javascript
+     const obj = {
+        name: "copyer",
+        age: 12,
+     };
+     
+     const objProxy = new Proxy(obj, {
+         /**
+          * @param {*} target :目标对象
+          * @param {*} key : 键值
+          * @param {*} receiver ：代理对象
+          */
+         get: function (target, key, receiver) {
+           console.log("get捕捉器");
+           return target[key];
+         },
+     });
+     
+     console.log(objProxy.name); // copyer
+    ```
+
+    以上的receiver为代理对象objProxy的this的值。可以在操作的时候的使用到这个对象。
+
+    同理，对于proxy的set方法为：
+
+    ```javascript
+     const obj = {
+       name: "copyer",
+       age: 12,
+     };
+     ​
+     const objProxy = new Proxy(obj, {
+       /**
+        * @param {*} target : 目标对象
+        * @param {*} key ：键值
+        * @param {*} newValue ：新增
+        * @param {*} receiver ：代理对象
+        */
+       set: function (target, key, newValue, receiver) {
+         console.log("set捕捉器");
+         target[key] = newValue;
+       },
+     });
+     
+     objProxy.age = 23;
+     console.log(obj.age); // 23
+    ```
+
+    它们两个配合使用
+
+    ```javascript
+     const obj = {
+       name: "copyer",
+       age: 12,
+     };
+     const objProxy = new Proxy(obj, {
+       get: function (target, key, receiver) {
+         console.log("get捕捉器");
+         return target[key];
+       },
+     });
+     console.log(objProxy.name); // copyer
+    ```
+
+    ```javascript
+     const obj = {
+       name: "copyer",
+       age: 12,
+     };
+     ​
+     const objProxy = new Proxy(obj, {
+       get: function (target, key, receiver) {
+         console.log("get捕获器");
+         return Reflect.get(target, key);
+       },
+       set: function (target, key, newValue, receiver) {
+         console.log("set捕获器");
+         return Reflect.set(target, key, newValue);
+       },
+       has: function (target, key) {
+         console.log("has捕获器");
+         return Reflect.has(target, key);
+       },
+       deleteProperty: function (target, key) {
+         console.log("deleteProperty捕获器");
+         return Reflect.deleteProperty(target, key);
+       },
+       getPrototypeOf: function (target) {
+         console.log("getPrototypeOf捕获器");
+         return Reflect.getPrototypeOf(target);
+       },
+       setPrototypeOf: function (target, newObj) {
+         return Reflect.setPrototypeOf(target, newObj);
+       },
+       isExtensible: function (target) {
+         console.log("isExtensible捕获器");
+         return Reflect.isExtensible(target);
+       },
+       preventExtensions: function (target) {
+         console.log("preventExtensions捕捉器");
+         return Reflect.preventExtensions(target);
+       },
+       getOwnPropertyDescriptor: function (target) {
+         console.log("getOwnPropertyDescriptor捕捉器");
+         return Reflect.getOwnPropertyDescriptor(target);
+       },
+       defineProperty: function (target, key, obj) {
+         console.log("defineProperty捕捉器");
+         return Reflect.defineProperty(target, key, obj);
+       },
+       ownKeys: function (target, key) {
+         console.log("ownKeys捕捉器");
+         return Reflect.ownKeys(target, key);
+       },
+     });
+    ```
+
+    
 
 30. 
 
