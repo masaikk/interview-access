@@ -19,3 +19,8 @@ fn main() {
 
 在这个语言中，`println!`是宏的意思，因为有`!`。
 
+在rust中，变量默认是不可变的，是immutable的，需要使用mut关键字来修饰才可变。如上面的`let mut guess = String::new();`。
+
+`String::new()`这里表示String类型的关联函数`new()`。`pub const fn new() -> String`
+
+`read_line(&mut guess)`中的&表示参数是一个引用。前面加上mut也是表示这个是可变的变量。
