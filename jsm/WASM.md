@@ -105,3 +105,76 @@ fn main() {
 }
 ```
 
+**请注意`print!()`和`println!()`的区别。现在使用的是`println!()`。**
+
+对于复合类型，rust提供了元组和数组两种方式，可以类似于JavaScript的解析变量，同时，对于元组，也可以下标取值。
+
+```javascript
+let t:(i32,f64,u8)=(123,5.6,3);
+let (a,b,c)=t;
+```
+
+![image-20220918193235822](WASM.assets/image-20220918193235822.png)
+
+并且，编译器会自动推导类型。
+
+对于数组来说，每个类型都是相同的。
+
+其中，`let a=[3;5]`与`let a=[3,3,3,3,3]`等价。
+
+---
+
+## rust构建WASM
+
+可以参考[WebAssembly 与 Rust 编程系列05 Rust编写wasm模块_austindev的博客-CSDN博客_rust wasm](https://blog.csdn.net/austindev/article/details/107093013#:~:text=我们需要把rust代码编译成wasm目标模块%2C必须安装 rust WebAssembly 对应的target,我们可以通过 rustup 的target命令%2C 了解可用的target 以及是否安装)
+
+首先初始化项目
+
+```shell
+cargo new --lib hello-wasm
+```
+
+注意这里要``--lib``
+
+然后可以在lib.rs中输入示例代码
+
+```rust
+extern crate wasm_bindgen;
+use wasm_bindgen::prelude::*;
+
+#[wasm_bindgen]
+extern {
+    pub fn alert(s: &str);
+}
+
+#[wasm_bindgen]
+pub fn greet(name: &str){
+    alert(&format!("hello {} !",name));
+}
+```
+
+其次，在cargo.toml中引入依赖
+
+```toml
+[package]
+name = "hello-wasm"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen = "0.2"
+
+```
+
+然后需要安装在编译的依赖，根据以上引用的文章，安装 `wasm32-unknown-unknown`
+
+```shell
+rustup target add wasm32-unknown-unknown
+```
+
+之后使用`cargo build --release --target wasm32-unknown-unknown`可以进行编译，在target下面可以找到wasm文件。
