@@ -178,3 +178,6 @@ rustup target add wasm32-unknown-unknown
 ```
 
 之后使用`cargo build --release --target wasm32-unknown-unknown`可以进行编译，在target下面可以找到wasm文件。
+
+---
+
