@@ -551,3 +551,27 @@ public:
 };
 ```
 
+[只出现一次的数字](https://leetcode.cn/problems/single-number/)
+
+一开始我还在想对于这个题目中使用每个元素进行遍历，得到那个与众不同的数字，但是这样的时间复杂度是O(n*n)。
+
+然后我又想到了对于一个数列来说，应该是先排序之后，看看有没有元素与前后的元素都不相同，这样的时间复杂度是O(nlogn)。
+
+最后，发现了异或的操作，可以达到O(n)的时间复杂度。
+
+![image-20220829222033646](kishiki.assets/image-20220829222033646.png)
+
+所以对于这个题目来说直接遍历整个数列对于每个元素都求一下异或就可以了。这里可以借助JavaScript的reduce运算符。
+
+```javascript
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var singleNumber = function(nums) {
+    return nums.reduce((a,b)=>{
+        return a^b
+    })
+};
+```
+

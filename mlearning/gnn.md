@@ -546,3 +546,6 @@ Graph Transformer Network
 ### Edge embedding in Heterogeneous  Graph
 
 如果使用同构图中的embedding方式，比如说随机游走，可能会导致同种节点出现的次数过大。
+
+---
+

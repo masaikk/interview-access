@@ -320,6 +320,147 @@
 
     参考视频[链接](https://www.bilibili.com/video/BV1Wy4y1y7vb?p=2&vd_source=36542d6c49bf487d8a18d22be404b8d2)
 
-22. 
+22. 谈谈vue2中对于数组的劫持？
+
+    数组就是使用` object.defineProperty` 重新定义数组的每一项，那能引起数组变化的方法我们都是知道的，` pop` 、` push` 、` shift` 、` unshift` 、` splice` 、` sort` 、` reverse` 这七种，只要这些方法执行改了数组内容，我就更新内容就好了，是不是很好理解。
+    
+    1. 是用来函数劫持的方式，重写了数组方法，具体呢就是更改了数组的原型，更改成自己的，用户调数组的一些方法的时候，走的就是自己的方法，然后通知视图去更新。
+    2. 数组里每一项可能是对象，那么我就是会对数组的每一项进行观测，（且只有数组里的对象才能进行观测，观测过的也不会进行观测）
+    
+28. vue组件中的data为什么是函数？
+
+    <details>
+    <summary>展开查看</summary>
+    <pre>
+    避免组件中的数据互相影响。同一个组件被复用多次会创建多个实例，如果<code>data</code>是一个对象的话，这些实例用的是同一个构造函数。为了保证组件的数据独立，要求每个组件都必须通过<code>data</code>函数返回一个对象作为组件的状态。
+    </pre>
+    </details>
+
+29. 解释一下es6新增的proxy和reflect语法？
+
+    使用`new Proxy(target, handler)`创建代理，并且，handler表示的是捕获器。
+
+    proxy的基本方法
+
+    ```javascript
+     const obj = {
+        name: "copyer",
+        age: 12,
+     };
+     
+     const objProxy = new Proxy(obj, {
+         /**
+          * @param {*} target :目标对象
+          * @param {*} key : 键值
+          * @param {*} receiver ：代理对象
+          */
+         get: function (target, key, receiver) {
+           console.log("get捕捉器");
+           return target[key];
+         },
+     });
+     
+     console.log(objProxy.name); // copyer
+    ```
+
+    以上的receiver为代理对象objProxy的this的值。可以在操作的时候的使用到这个对象。
+
+    同理，对于proxy的set方法为：
+
+    ```javascript
+     const obj = {
+       name: "copyer",
+       age: 12,
+     };
+     ​
+     const objProxy = new Proxy(obj, {
+       /**
+        * @param {*} target : 目标对象
+        * @param {*} key ：键值
+        * @param {*} newValue ：新增
+        * @param {*} receiver ：代理对象
+        */
+       set: function (target, key, newValue, receiver) {
+         console.log("set捕捉器");
+         target[key] = newValue;
+       },
+     });
+     
+     objProxy.age = 23;
+     console.log(obj.age); // 23
+    ```
+
+    它们两个配合使用
+
+    ```javascript
+     const obj = {
+       name: "copyer",
+       age: 12,
+     };
+     const objProxy = new Proxy(obj, {
+       get: function (target, key, receiver) {
+         console.log("get捕捉器");
+         return target[key];
+       },
+     });
+     console.log(objProxy.name); // copyer
+    ```
+
+    ```javascript
+     const obj = {
+       name: "copyer",
+       age: 12,
+     };
+     ​
+     const objProxy = new Proxy(obj, {
+       get: function (target, key, receiver) {
+         console.log("get捕获器");
+         return Reflect.get(target, key);
+       },
+       set: function (target, key, newValue, receiver) {
+         console.log("set捕获器");
+         return Reflect.set(target, key, newValue);
+       },
+       has: function (target, key) {
+         console.log("has捕获器");
+         return Reflect.has(target, key);
+       },
+       deleteProperty: function (target, key) {
+         console.log("deleteProperty捕获器");
+         return Reflect.deleteProperty(target, key);
+       },
+       getPrototypeOf: function (target) {
+         console.log("getPrototypeOf捕获器");
+         return Reflect.getPrototypeOf(target);
+       },
+       setPrototypeOf: function (target, newObj) {
+         return Reflect.setPrototypeOf(target, newObj);
+       },
+       isExtensible: function (target) {
+         console.log("isExtensible捕获器");
+         return Reflect.isExtensible(target);
+       },
+       preventExtensions: function (target) {
+         console.log("preventExtensions捕捉器");
+         return Reflect.preventExtensions(target);
+       },
+       getOwnPropertyDescriptor: function (target) {
+         console.log("getOwnPropertyDescriptor捕捉器");
+         return Reflect.getOwnPropertyDescriptor(target);
+       },
+       defineProperty: function (target, key, obj) {
+         console.log("defineProperty捕捉器");
+         return Reflect.defineProperty(target, key, obj);
+       },
+       ownKeys: function (target, key) {
+         console.log("ownKeys捕捉器");
+         return Reflect.ownKeys(target, key);
+       },
+     });
+    ```
+
+    
+
+30. 
 
     

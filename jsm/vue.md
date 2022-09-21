@@ -2555,6 +2555,9 @@ runAfterFirstMounted(() => {
 
 #### 沙箱机制
 
+- 第一步，为每一个子应用创建一个**唯一**的**类 window 对象**；
+- 第二步，**手动执行**子应用的 js 脚本，将**类 window 对象**作为**全局变量**，对全局变量的读写都作用在**类 window 对象**上；
+
 不同于对加载全局window对象中single-spa技术中添加前缀的方法执行代码，qiankun使用了类似于沙箱的技术，即对于每个子项目中创建独特的window对象，然后使用eval方法调用：
 
 ```javascript
@@ -2633,7 +2636,28 @@ start({
 })
 ```
 
-并且，qiankun对于类似于vue框架中动态添加class的方式使用了类劫持以保证在动态类添加方式的时候还能进行css隔离。
+**严格样式隔离**，是基于 **Web Component** 的 **[shadow Dom](https://link.juejin.cn/?target=https%3A%2F%2Fdeveloper.mozilla.org%2Fzh-CN%2Fdocs%2FWeb%2FWeb_Components%2FUsing_shadow_DOM)** 实现的。通过 **shadow Dom**, 我们可以将一个**隐藏的、独立的 dom** 附加到一个另一个 dom 元素上，保证**元素的私有化**，不用担心与文档的其他部分发生冲突。
+
+```javascript
+
+  if (appElement.attachShadow) {
+    shadow = appElement.attachShadow({ mode: 'open' });
+  } else {
+    // createShadowRoot was proposed in initial spec, which has then been deprecated
+    shadow = (appElement as any).createShadowRoot();
+  }
+  shadow.innerHTML = innerHTML;
+```
+
+而对于scoped的样式隔离来说，是对于每个的dom节点添加了一层div，再对于css进行了一次选择，就像如下所示。
+
+```css
+div["data-qiankun=vue"] div {
+    background-color: green;
+}
+```
+
+并且，qiankun对于类似于vue框架中动态添加class的方式使用了类劫持以保证在动态类添加方式的时候还能进行css隔离，下面将对此进行讨论。
 
 为了能获知**子应用动态添加 style 的操作**，**qiankun** 对 **document.head.appendChild** 方法进行了**劫持操作**，具体如下：
 
@@ -2654,6 +2678,8 @@ document.head.appendChild = function(newChild) {
     rawHeadAppendChild.call(mountDOM, newChild);
 }
 ```
+
+当子应用调用 **document.head.appendChild** 动态添加 **style** 时，会被 **qiankun** 劫持，然后将 **style** 添加到**子应用对应的 html 片段**中。此时如果 **qiankun** 配置了**严格样式隔离**，新增的 **style** 是添加到 **shadow dom** 中的，**css 隔离**自然生效；如果 **qiankun** 配置了 **scoped 样式隔离**，在将 style 添加到子应用对应的 html 片段之前，会先获取到**样式内容**，然后为**样式内容**添加 **div["data-qiankun=xxx"] 前缀**，**css 隔离**也生效。
 
 #### 子应用的卸载
 
@@ -3322,4 +3348,284 @@ module.exports={
     mode:"development"
 }
 ```
+
+对于vue的index文件来说，它的形式应该是这样的
+
+```javascript
+function Vue(options) {
+
+}
+
+export default Vue;
+```
+
+调用原型，添加`_init`方法，并且将示例this保存到变量vm中，再保存`options`
+
+```javascript
+function Vue(options) {
+    this._init(options)
+}
+
+Vue.prototype._init = function () {
+    var vm = this;
+    vm.$options = options
+}
+
+export default Vue;
+```
+
+在此之后，需要设置initState方法，用于初始化状态，类似这样：
+
+```javascript
+function initState(vm) {
+
+}
+
+export {
+    initState
+}
+```
+
+调用的时候为：
+
+```javascript
+import {initState} from "./init";
+
+function Vue(options) {
+    this._init(options)
+}
+
+Vue.prototype._init = function () {
+    var vm = this;
+    vm.$options = options;
+    initState(vm)
+}
+
+export default Vue;
+```
+
+对于`initState`方法来说，首先需要获取到实例vm里面的options，如果存在data字段，就需要`initData`。
+
+```javascript
+function initState(vm) {
+    var options = vm.$options;
+    if(options.data){
+        initData(vm)
+    }
+}
+```
+
+判断类型，执行data方法，获取状态
+
+```javascript
+function initData(vm) {
+    var data = vm.$options.data;
+    data = vm._data = typeof data === 'function' ? data.call(vm) : data || {};
+}
+```
+
+对于vm里面的状态，在vue2中，使用的是es5的`Object.defineProperty`，使得可以使用`vm._data.属性名`来获取数据。
+
+```javascript
+function proxyData(vm, target, key) {
+    Object.defineProperty(vm, key, {
+        get() {
+            console.log('use proxyData : ' + vm[target][key]);
+            return vm[target][key];
+        },
+        set(v) {
+            vm[target][key] = v;
+        }
+    })
+}
+
+export default proxyData;
+```
+
+在使用的时候
+
+```javascript
+function initData(vm) {
+    var data = vm.$options.data;
+    data = vm._data = typeof data === 'function' ? data.call(vm) : data || {};
+
+    for (var key in data) {
+        proxyData(vm, '_data', key);
+    }
+}
+```
+
+在src下的index文件里面加入如下测试的代码
+
+```javascript
+import Vue from '../vue'
+
+let vm = new Vue({
+    el: '#app',
+    data() {
+        return {
+            msg: 'This is a message'
+        }
+    }
+})
+
+console.log(vm.msg)
+console.log(vm._data.msg)
+
+```
+
+均有显示：
+
+![image-20220825141749686](vue.assets/image-20220825141749686.png)
+
+
+
+到此时，已经实现了对于一个对象方法的代理。下面需要实现对于这个对象中变化的观察者。
+
+首先设置观察
+
+```javascript
+function initData(vm) {
+    var data = vm.$options.data;
+    data = vm._data = typeof data === 'function' ? data.call(vm) : data || {};
+
+    for (var key in data) {
+        proxyData(vm, '_data', key);
+    }
+    observe(vm._data)
+}
+```
+
+在observe文件中，首先判断数据的类型，如果是object就继续观察，创建观察者。
+
+```javascript
+import Observer from './observer'
+
+function observe (data){
+    if (typeof data !== 'object'|| data===null){
+        console.log(typeof data)
+        return data;
+    }
+
+    return new Observer(data);
+}
+
+export default observe;
+```
+
+observer内容如下
+
+```javascript
+import defineReactiveData from "./reactive";
+
+function Observer(data) {
+    if (Array.isArray(data)) {
+
+    } else {
+        this.walk(data)
+    }
+}
+
+Observer.prototype.walk = function (data) {
+    var keys = Object.keys(data);
+    console.log(keys);
+    for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        var value = data[key];
+        defineReactiveData(data,key,value)
+    }
+}
+
+export default Observer;
+```
+
+遍历这个对象的各个key，设置响应数据，在`defineReactiveData`中定义如下：
+
+```javascript
+function defineReactiveData(data, key, value) {
+    Object.defineProperty(data, key, {
+        get() {
+            console.log('响应式数据获取 ' + value);
+            return value;
+        },
+        set(newValue) {
+            console.log('设置响应式数据 ' + newValue);
+            if (newValue === value)
+                return;
+            else
+                value = newValue;
+        }
+    })
+}
+
+export default defineReactiveData;
+```
+
+这里同样使用到了`Object.defineProperty`来重写get和set方法。
+
+在测试代码中将vm.msg设置为11122233之后，可以得到这样的输出：
+
+![image-20220825151156136](vue.assets/image-20220825151156136.png)
+
+但是这种情况只处理了单层对象的情况，如果在`defineReactiveData`中出现的value是对象的话，就还需要进一步判断，这里也需要观察。所以最终的代码如下所示：
+
+```javascript
+import observe from "./observe";
+
+function defineReactiveData(data, key, value) {
+    observe(value)
+    Object.defineProperty(data, key, {
+        get() {
+            console.log('响应式数据获取 ' + value);
+            return value;
+        },
+        set(newValue) {
+            console.log('设置响应式数据 ' + newValue);
+            if (newValue === value)
+                return;
+            else
+                value = newValue;
+        }
+    })
+}
+
+export default defineReactiveData;
+```
+
+测试代码为
+
+```javascript
+import Vue from '../vue'
+
+let vm = new Vue({
+    el: '#app',
+    data() {
+        return {
+            msg: 'This is a message',
+            myObj:{
+                a:1,
+                b:{
+                    c:2
+                }
+            }
+        }
+    }
+})
+
+console.log(vm.msg)
+console.log(vm._data.msg)
+vm.msg='11122233'
+console.log(vm.myObj);
+
+```
+
+结果为:
+
+![image-20220825151840063](vue.assets/image-20220825151840063.png)
+
+以上情况只针对于对象的情况，下面讨论数组的处理方式，这里需要对数组的方法进行重写：
+
+
+
+
 
