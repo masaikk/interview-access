@@ -3293,7 +3293,7 @@ export default {
 
 ---
 
-vue2的数据劫持
+### vue2的数据劫持
 
 首先安装webpack等依赖，新建webpack.config.js的文件，内容参考
 
