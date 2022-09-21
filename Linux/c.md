@@ -91,7 +91,61 @@ SOCKET startServer(const char *ip, unsigned short port) {
 在这里需要注意小端大端的区别。在电脑上使用的是小端，在网络传输上使用的是大端。所以在这里需要转换大端再绑定端口`serAddr.sin_port = htons(port);`
 
 ```c
+SOCKET startServer(const char *ip, unsigned short port) {
+    // create socket
+    SOCKET fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (fd == INVALID_SOCKET) {
+        printf("Create socket failed.\n");
+        return INVALID_SOCKET;
+    }
+
+    SOCKADDR_IN serAddr;
+    serAddr.sin_family = AF_INET;
+    serAddr.sin_port = htons(port);
+    serAddr.sin_addr.S_un.S_addr = inet_addr(ip);
+    // bind IP & port
+    int bindFlag = bind(fd, (const struct sockaddr *) &serAddr, sizeof(serAddr));
+    if (SOCKET_ERROR == bindFlag) {
+        printf("Bind failed. %d\n", WSAGetLastError());
+        return INVALID_SOCKET;
+    }
+
+    listen(fd, 5);
+    return fd;
+}
 ```
+
+在main函数中创建server，监听本地5668端口。
+
+```c
+SOCKET serfd = startServer("0.0.0.0", 5668);
+```
+
+循环向服务器发送bytes
+
+```c
+int main() {
+    init_socket();
+    SOCKET serfd = startServer("0.0.0.0", 80);
+    printf("start successfully\n");
+    while (true) {
+        SOCKET clifd = accept(serfd, NULL, NULL);
+        char buf[] = "<h1>Hello SOCKET</h1>";
+        send(clifd, buf, strlen(buf), 0);
+    }
+    
+    close_socket();
+    printf("Hello, World!\n");
+    return 0;
+}
+
+```
+
+注意c语言没有bool，需要引入头文件`#include <stdbool.h>`
+
+打开本地localhost:80
+
+![image-20220921211749919](c.assets/image-20220921211749919.png)
 
 
 
