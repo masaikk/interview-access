@@ -72,5 +72,28 @@ void close_socket() {
 }
 ```
 
+在运行一个服务器的时候，先初始化一个socket，使用了TCP的协议。并且加上错误的代码。
+
+```c
+SOCKET startServer(const char *ip, unsigned short port) {
+    //create socket
+    SOCKET fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (fd == INVALID_SOCKET) {
+        printf("create socket failed\n");
+        return INVALID_SOCKET;
+    }
+    return 0;
+}
+```
+
+然后就需要绑定ip和port，查看`bind()`这里需要声明一个结构体`SOCKADDR_IN serAddr;`。
+
+在这里需要注意小端大端的区别。在电脑上使用的是小端，在网络传输上使用的是大端。所以在这里需要转换大端再绑定端口`serAddr.sin_port = htons(port);`
+
+```c
+```
+
+
+
 
 
