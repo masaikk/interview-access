@@ -121,6 +121,12 @@ SOCKET startServer(const char *ip, unsigned short port) {
 SOCKET serfd = startServer("0.0.0.0", 5668);
 ```
 
+接受客户端（在这里是浏览器）
+
+```c
+SOCKET clifd = accept(serfd, NULL, NULL);
+```
+
 循环向服务器发送bytes
 
 ```c
@@ -147,7 +153,42 @@ int main() {
 
 ![image-20220921211749919](c.assets/image-20220921211749919.png)
 
-这个循环的操作就相当于一直接电话。
+这个循环的操作就相当于一直接电话（接通了之后就给客户端发送HTML的代码）。
 
+同时，这里也能够接收客户端发来的代码，如下：
 
+```c
+void requestHanding(SOCKET fd) {
+    char buf[BUFSIZ] = {0};
+    if (0 >= recv(fd, buf, sizeof(buf), 0)) {
+        // 如果接受客户端信息失败了
+        printf("Receive failed. %d\n", WSAGetLastError());
+        return;
+    }
+    // 如果成功接受客户端信息
+    puts(buf);
+}
+
+int main() {
+    init_socket();
+    SOCKET serfd = startServer("0.0.0.0", 80);
+    printf("start successfully\n");
+    while (true) {
+        SOCKET clifd = accept(serfd, NULL, NULL);
+        char buf[] = "<h1>Hello SOCKET</h1>";
+        send(clifd, buf, strlen(buf), 0);
+        requestHanding(clifd);
+    }
+
+    close_socket();
+    printf("Server closed!\n");
+    return 0;
+}
+```
+
+上面的`puts(buf);`打印如下信息：
+
+![image-20220922125859231](c.assets/image-20220922125859231.png)
+
+在上图中可以看到请求行等信息。
 
