@@ -1,7 +1,5 @@
 # react学习笔记
 
----
-
 ## 基本知识
 
 参考[masaikk/react-pc-doc (gitee.com)](https://gitee.com/masaikk/react-pc-doc)
@@ -917,5 +915,31 @@ export default About
 
 ---
 
-## mobx
+## Nextjs
+
+可以使用`yarn create next-app`来新建一个next项目，并且如果带上`--template`则可以使用typescript语法编写，参考课程[react ssr nextjs从入门到放弃_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1V44y1K7Zz/?spm_id_from=333.337.search-card.all.click&vd_source=36542d6c49bf487d8a18d22be404b8d2)
+
+---
+
+由于nextjs的理念也是约定大于配置，所以在pages创建页面即可相当于新建一个路由。示例的模板如下，其中，命名规范也相当于react，首字母大写：
+
+```tsx
+import React from "react";
+
+function About() {
+
+    return (
+        <>
+            <h1>about</h1>
+            <h2>msg</h2>
+        </>
+    )
+}
+
+export default About;
+```
+
+使用react的语法，也能很自然得渲染出页面：
+
+![image-20220925202039939](react.assets/image-20220925202039939.png)
 
