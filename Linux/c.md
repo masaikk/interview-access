@@ -202,3 +202,97 @@ printf("%d================================", _stat32(url, &stat));
 ```
 
 如果函数`_stat32()`第一个参数是路径读取成功，就返回0，否则返回-1。这个文件的信息保存在stat中。
+
+创建两个文件index.html和404.html。
+
+![image-20220925183948310](c.assets/image-20220925183948310.png)
+
+需要注意的是，html的路径是相对于生成的二进制文件而言的。
+
+并且，如果文件不存在的话，就返回404页面，代码类似于：
+
+```c
+void requestHanding(SOCKET fd) {
+    char buf[BUFSIZ] = {0};
+    if (0 >= recv(fd, buf, sizeof(buf), 0)) {
+        // 如果接受客户端信息失败了
+        printf("Receive failed. %d\n", WSAGetLastError());
+        return;
+    }
+    // 如果成功接受客户端信息
+
+    // 解析
+    char method[10] = {0};
+    char url[128] = {0};
+    char urlBackup[128] = {0};
+    int index = 0;
+    char *p = NULL;
+    for (p = buf; *p != ' '; p++) {
+        method[index++] = *p;
+    }
+    p++;//跳过空格
+
+    index = 0;
+    for (; *p != ' '; p++) {
+        url[index++] = *p;
+    }
+    strcpy(urlBackup, url);
+    if (strcmp(method, "GET") == 0) {
+        printf("GET requestHanding\n");
+//        strcpy(url,rootPath);
+//        strcat(url, (strcmp(url, "/") == 0 ? "/ index.html" : url));
+        sprintf(url, "%s%s", rootPath, (strcmp(urlBackup, "/") == 0 ? "/index.html" : urlBackup));
+        puts(url);
+        // 判断文件是否存在
+        struct _stat32 stat;
+//        printf("%d================================", _stat32(url, &stat));
+        if (-1 == _stat32(url, &stat)) {
+            // 这里返回404
+            char file[128] = {0};
+            sprintf(file, "%s%s", rootPath, "404.html");
+            sendFile(fd, file);
+        } else {
+            sendFile(fd, url);
+        }
+    } else if (strcmp(method, "POST") == 0) {
+        printf("POST requestHanding");
+    }
+}
+```
+
+之后就是补全读取和发送文件的函数`sendFile()`。
+
+在这个函数中，选择是否读取到文件的结尾可以通过函数`feof()`来判断
+
+```c
+    char buf[BUFSIZ] = {0};
+    if (!feof(file)) {
+        int len = fread(buf, sizeof(buf), BUFSIZ, file);
+        send(fd, buf, len, 0);
+    }
+```
+
+最后，read并且发送文件的函数如下所示：
+
+```c
+void sendFile(SOCKET fd, const char *filename) {
+    printf("Sending file: %s\n", filename);
+    FILE *file = fopen(filename, "rb");
+
+    if (!file) {
+        perror("Failed to open file ");
+        return;
+    }
+    char buf[BUFSIZ] = {0};
+    while (!feof(file)) {
+        int len = fread(buf, sizeof(char), BUFSIZ, file);
+        send(fd, buf, len, 0);
+    }
+    fclose(file);
+}
+```
+
+在浏览器运行http:localhost之后，可以得到index.html的页面
+
+![image-20220925184118958](c.assets/image-20220925184118958.png)
+
