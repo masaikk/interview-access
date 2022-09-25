@@ -249,7 +249,7 @@ void requestHanding(SOCKET fd) {
         if (-1 == _stat32(url, &stat)) {
             // 这里返回404
             char file[128] = {0};
-            sprintf(file, "%s%s", rootPath, "404.html");
+            sprintf(file, "%s%s", rootPath, "/404.html");
             sendFile(fd, file);
         } else {
             sendFile(fd, url);
@@ -295,4 +295,140 @@ void sendFile(SOCKET fd, const char *filename) {
 在浏览器运行http:localhost之后，可以得到index.html的页面
 
 ![image-20220925184118958](c.assets/image-20220925184118958.png)
+
+输入错误的路由也可以展示404页面
+
+![image-20220925185725712](c.assets/image-20220925185725712.png)
+
+整体代码如下所示，之后可以考虑添加响应头信息等操作。
+
+```c
+#include <stdio.h>
+#include <WinSock2.h>
+#include <stdbool.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#pragma comment(lib, "ws2_32.lib")
+
+char rootPath[128] = "../testWeb";
+
+void sendFile(SOCKET fd, const char *filename) {
+    printf("Sending file: %s\n", filename);
+    FILE *file = fopen(filename, "rb");
+
+    if (!file) {
+        perror("Failed to open file ");
+        return;
+    }
+    char buf[BUFSIZ] = {0};
+    while (!feof(file)) {
+        int len = fread(buf, sizeof(char), BUFSIZ, file);
+        send(fd, buf, len, 0);
+    }
+    fclose(file);
+}
+
+// open socket
+void init_socket() {
+    // 确定version socket
+    WSADATA wsaData;
+    int WSASCode = WSAStartup(MAKEWORD(2, 2), &wsaData);
+//    printf("WSAStartup code : %d\n", WSASCode);
+    if (WSAEINVAL == WSASCode) {
+        printf("WSAStartup failed. %d\n", WSAGetLastError());
+        exit(1);
+    };
+}
+
+// close socket
+void close_socket() {
+    WSACleanup();
+}
+
+SOCKET startServer(const char *ip, unsigned short port) {
+    // create socket
+    SOCKET fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (fd == INVALID_SOCKET) {
+        printf("Create socket failed.\n");
+        return INVALID_SOCKET;
+    }
+
+    SOCKADDR_IN serAddr;
+    serAddr.sin_family = AF_INET;
+    serAddr.sin_port = htons(port);
+    serAddr.sin_addr.S_un.S_addr = inet_addr(ip);
+    // bind IP & port
+    int bindFlag = bind(fd, (const struct sockaddr *) &serAddr, sizeof(serAddr));
+    if (SOCKET_ERROR == bindFlag) {
+        printf("Bind failed. %d\n", WSAGetLastError());
+        return INVALID_SOCKET;
+    }
+
+    listen(fd, 5);
+    return fd;
+}
+
+void requestHanding(SOCKET fd) {
+    char buf[BUFSIZ] = {0};
+    if (0 >= recv(fd, buf, sizeof(buf), 0)) {
+        // 如果接受客户端信息失败了
+        printf("Receive failed. %d\n", WSAGetLastError());
+        return;
+    }
+    // 如果成功接受客户端信息
+
+    // 解析
+    char method[10] = {0};
+    char url[128] = {0};
+    char urlBackup[128] = {0};
+    int index = 0;
+    char *p = NULL;
+    for (p = buf; *p != ' '; p++) {
+        method[index++] = *p;
+    }
+    p++;//跳过空格
+
+    index = 0;
+    for (; *p != ' '; p++) {
+        url[index++] = *p;
+    }
+    strcpy(urlBackup, url);
+    if (strcmp(method, "GET") == 0) {
+        printf("GET requestHanding\n");
+//        strcpy(url,rootPath);
+//        strcat(url, (strcmp(url, "/") == 0 ? "/ index.html" : url));
+        sprintf(url, "%s%s", rootPath, (strcmp(urlBackup, "/") == 0 ? "/index.html" : urlBackup));
+        puts(url);
+        // 判断文件是否存在
+        struct _stat32 stat;
+//        printf("%d================================", _stat32(url, &stat));
+        if (-1 == _stat32(url, &stat)) {
+            // 这里返回404
+            char file[128] = {0};
+            sprintf(file, "%s%s", rootPath, "/404.html");
+            sendFile(fd, file);
+        } else {
+            sendFile(fd, url);
+        }
+    } else if (strcmp(method, "POST") == 0) {
+        printf("POST requestHanding");
+    }
+}
+
+
+int main() {
+    init_socket();
+    SOCKET serfd = startServer("0.0.0.0", 80);
+    printf("start successfully\n");
+    while (true) {
+        SOCKET clifd = accept(serfd, NULL, NULL);
+        requestHanding(clifd);
+    }
+    close_socket();
+    printf("Server closed!\n");
+    return 0;
+}
+
+```
 
