@@ -968,3 +968,35 @@ function Count(){
 export default Count;
 ```
 
+### 动态路由设置
+
+在pages设置动态路由，示例如下：
+
+![image-20220926141520206](react.assets/image-20220926141520206.png)
+
+变量由`[]`包括，之后可以使用`useRouter()`来获取路由的参数。
+
+例如如下代码：
+
+```tsx
+import React from "react";
+import {useRouter} from "next/router";
+
+const IndexUser = () => {
+    const router = useRouter();
+    const indexNumber = router.query.id;
+
+    return (
+        <div>
+            <h1>Index : {indexNumber}</h1>
+        </div>
+    )
+}
+
+export default IndexUser;
+```
+
+可以正常渲染并且展示:
+
+![image-20220926141726211](react.assets/image-20220926141726211.png)
+
