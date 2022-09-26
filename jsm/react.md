@@ -917,7 +917,7 @@ export default About
 
 ## Nextjs
 
-可以使用`yarn create next-app`来新建一个next项目，并且如果带上`--template`则可以使用typescript语法编写，参考课程[react ssr nextjs从入门到放弃_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1V44y1K7Zz/?spm_id_from=333.337.search-card.all.click&vd_source=36542d6c49bf487d8a18d22be404b8d2)
+可以使用`yarn create next-app`来新建一个next项目，并且如果带上`--typescript`则可以使用typescript语法编写，参考课程[react ssr nextjs从入门到放弃_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1V44y1K7Zz/?spm_id_from=333.337.search-card.all.click&vd_source=36542d6c49bf487d8a18d22be404b8d2)
 
 ---
 
@@ -939,7 +939,32 @@ function About() {
 export default About;
 ```
 
-使用react的语法，也能很自然得渲染出页面：
+使用react的语法，能很自然地渲染出页面：
 
 ![image-20220925202039939](react.assets/image-20220925202039939.png)
+
+使用`useState()`
+
+```tsx
+import React,{useState} from "react";
+// import type { NextPage } from 'next'
+function Count(){
+    let [count,setCount]=useState(1);
+    const addCountHandler=()=>{
+        setCount(count+1);
+    }
+
+    return(
+        <>
+            <h2>Counter page</h2>
+            <div>
+                <button onClick={addCountHandler}>click</button>
+                <h3>now count is {count}</h3>
+            </div>
+        </>
+    )
+}
+
+export default Count;
+```
 
