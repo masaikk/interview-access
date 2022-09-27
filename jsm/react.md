@@ -915,6 +915,67 @@ export default About
 
 ---
 
+## React ssr
+
+在掘金上花了一杯奶茶钱买了一个小课[SSR 实战：官网开发指南 - 祯民 - 掘金小册 (juejin.cn)](https://juejin.cn/book/7137945369635192836)，这里记录笔记。在这里的主要内容是包括搭建eslint、typescript、react的SSR项目。
+
+---
+
+首先在空项目里安装eslint依赖，注意使用了typescript。
+
+```shell
+npm install eslint eslint-plugin-react @typescript-eslint/eslint-plugin @typescript-eslint/parser  --save-dev
+```
+
+之后使用`npx eslint --init`预设项目里面的eslint。在初始化之后，就会生成一个.eslintrc.js文件
+
+```javascript
+// .eslintrc.js
+module.exports = {
+  env: {
+    browser: true,
+    commonjs: true, // ADD, 支持对commonjs全局变量的识别
+    es2021: true,
+    node: true,
+  },
+  extends: [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended",
+  ],
+  parser: "@typescript-eslint/parser",
+  parserOptions: {
+    ecmaFeatures: {
+      jsx: true,
+    },
+    ecmaVersion: "latest",
+  },
+  plugins: ["react", "@typescript-eslint"],
+  rules: {
+    "react/jsx-uses-react": "off",
+    "react/react-in-jsx-scope": "off",
+    "@typescript-eslint/no-var-requires": "off", 
+  },
+};
+```
+
+然后安装commit lint插件`npm install --save-dev @commitlint/config-conventional @commitlint/cli`。
+
+之后就是配置*commitlint.config.js*
+
+```javascript
+// commitlint.config.js
+module.exports = {
+  extends: ["@commitlint/config-conventional"],
+  rules: {
+    "type-enum": [2, "always", ["feat", "fix", "revert"]],
+    "subject-max-length": [1, "always", 30],
+  },
+};
+```
+
+
+
 ## Nextjs
 
 可以使用`yarn create next-app`来新建一个next项目，并且如果带上`--typescript`则可以使用typescript语法编写，参考课程[react ssr nextjs从入门到放弃_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1V44y1K7Zz/?spm_id_from=333.337.search-card.all.click&vd_source=36542d6c49bf487d8a18d22be404b8d2)
