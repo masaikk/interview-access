@@ -1061,3 +1061,113 @@ export default IndexUser;
 
 ![image-20220926141726211](react.assets/image-20220926141726211.png)
 
+### next Link
+
+类似于vue的router-link，也可以使用next的Link实现跳转
+
+```tsx
+import React from "react";
+import Link from 'next/link'
+
+function About() {
+    const userIndexList: number[] = [1, 2, 3, 4, 5];
+
+    return (
+        <>
+            <h1>about</h1>
+            <h2>msg</h2>
+            <div>
+                <ul>
+                    {
+                        userIndexList.map((value) => {
+                            return (
+                                <li key={value}>
+                                    <Link href={`user/${value}`}><a>{`user ID : ${value}`}</a></Link>
+                                </li>
+                            )
+                        })
+                    }
+                </ul>
+            </div>
+        </>
+    )
+}
+
+export default About;
+
+```
+
+渲染的结果如下所示：
+
+![image-20220928105333697](react.assets/image-20220928105333697.png)
+
+与vue3的router不同的是，Link不能嵌套多个根节点，如果有，应该嵌套在一个div中。
+
+```tsx
+<ul>
+                    {
+                        userIndexList.map((value) => {
+                            return (
+                                <li key={value}>
+                                    <Link
+                                        href={`user/${value}`}>
+                                        <div>
+                                            <a>{`user ID : ${value}`}</a>
+                                            <h6>{`user ID : ${value}`}</h6>
+                                        </div>
+                                    </Link>
+                                </li>
+                            )
+                        })
+                    }
+                </ul>
+```
+
+### 执行第三方script
+
+由于没有index.html，如果要执行第三方JavaScript库，可以使用Script节点。在这里还可以设置JavaScript文件执行的四个模式，区别如下：
+
+There are four different loading strategies that can be used:
+
+- `beforeInteractive`: Load before the page is interactive
+- `afterInteractive`: (**default**) Load immediately after the page becomes interactive
+- `lazyOnload`: Load during idle time
+- `worker`: (experimental) Load in a web worker
+
+JavaScript文件放在public文件夹下面。
+
+具体使用可以参考，即可正常执行。
+
+```tsx
+<Script src="/staticJs.js" strategy="lazyOnload"></Script>
+```
+
+### api路由
+
+因为nextjs使用nodejs，所以可以用到类似express的后端特性。
+
+在api文件夹下创建ts文件apple.ts，写下示例内容：
+
+```typescript
+import type {NextApiRequest, NextApiResponse} from "next";
+
+type Data = {
+    mess: string
+}
+
+export default function handler(
+    req:NextApiRequest,
+    res:NextApiResponse<Data>
+){
+    res.status(200).json({
+        mess:"this is api router response"
+    })
+}
+
+```
+
+浏览器打开[localhost:3000/api/apple](http://localhost:3000/api/apple)
+
+可以查看到返回值，之后还需要考虑cors
+
+![image-20220928125228996](react.assets/image-20220928125228996.png)
