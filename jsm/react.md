@@ -974,6 +974,128 @@ module.exports = {
 };
 ```
 
+开始正常的项目开设，首先安装express。
+
+创建src/index.js，用node运行，不再赘述。
+
+```javascript
+const express = require("express");
+const childProcess = require("child_process");
+
+const app = express();
+
+app.get("*", (req, res) => {
+  res.send(`
+    <html
+      <body>
+        <div>hello-ssr</div>
+      </body>
+    </html>
+  `);
+});
+
+app.listen(3000, () => {
+  console.log("ssr-server listen on 3000");
+});
+
+childProcess.exec("start http://127.0.0.1:3000");
+```
+
+最后面`childProcess.exec("start http://127.0.0.1:3000");`作用是用浏览器打开这个网址。
+
+之后导入webpack，首先安装loader`npm install @babel/preset-env babel-loader ts-loader webpack webpack-merge webpack-cli --save-dev`
+
+配置webpack.base.js和webpack.server.js两个文件，并且使用webpack-merge来merge配置
+
+```javascript
+// webpack.base.js
+const path = require("path");
+
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /.js$/,
+        loader: "babel-loader",
+        exclude: /node_modules/,
+        options: {
+          presets: ["@babel/preset-env"],
+        },
+      },
+      {
+        test: /.(ts|tsx)?$/,
+        use: "ts-loader",
+        exclude: /node_modules/,
+      },
+    ],
+  },
+  resolve: {
+    extensions: [".tsx", ".ts", ".js"],
+    alias: {
+      "@": path.resolve(process.cwd(), "./src"),
+    },
+  },
+};
+```
+
+```javascript
+// webpack.server.js
+
+const path = require("path");
+const { merge } = require("webpack-merge");
+const baseConfig = require("./webpack.base");
+
+module.exports = merge(baseConfig, {
+  mode: "development",
+  entry: "./src/server/index.tsx",
+  target: "node",
+  output: {
+    filename: "bundle.js",
+    path: path.resolve(process.cwd(), "server_build"),
+  },
+});
+```
+
+以上完成了webpack的设置。
+
+将express改写成typescript，并且安装express的typescript依赖`npm install @types/express --save-dev`。
+
+初始化tsconfig.json
+
+```json
+{
+  "compilerOptions": {
+    "module": "CommonJS",
+    "types": ["node"], // 声明类型，使得ts-node支持对tsx的编译
+    "jsx": "react-jsx", // 全局导入, 不再需要每个文件定义react
+    "target": "es6",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*"]
+}
+```
+
+使用`npx webpack build --config ./webpack.server.js --watch`编译，即可得到webpack配置内容下的打包的bundle.js，可以使用nodemon来运行。
+
+最后得到的页面：
+
+![image-20220928151007083](react.assets/image-20220928151007083.png)
+
+
+
 
 
 ## Nextjs
