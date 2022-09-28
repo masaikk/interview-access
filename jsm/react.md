@@ -1094,13 +1094,207 @@ module.exports = merge(baseConfig, {
 
 ![image-20220928151007083](react.assets/image-20220928151007083.png)
 
+之后导入react，安装相关依赖
 
+```shell
+npm install react react-dom --save
+npm install @types/react @types/react-dom --save-dev
+```
+
+创建Home的组件
+
+```tsx
+// ./src/pages/Home/index.tsx
+const Home = () => {
+  return (
+    <div>
+      <h1>hello-ssr</h1>
+      <button
+        onClick={(): void => {
+          alert("hello-ssr");
+        }}
+      >
+        alert
+      </button>
+    </div>
+  );
+};
+
+export default Home;
+```
+
+类似于vue-ssr，在此时也是考虑使用react自带的parser将jsx或者tsx文件渲染成HTML，在这里，使用`renderToString()`
+
+修改server/index.tsx
+
+```tsx
+// ./src/server/index.tsx
+import express from "express";
+import childProcess from "child_process";
+import { renderToString } from "react-dom/server";
+import Home from "@/pages/Home";
+
+const app = express();
+const content = renderToString(<Home />);
+
+app.get("*", (req, res) => {
+  res.send(`
+    <html
+      <body>
+        <div>${content}</div>
+      </body>
+    </html>
+  `);
+});
+
+app.listen(3000, () => {
+  console.log("ssr-server listen on 3000");
+});
+
+childProcess.exec("start http://127.0.0.1:3000");
+```
+
+重新用webpack打包并运行，可以得到正常页面，但是发现button的函数无法绑定。
+
+这里运用课程原文：
+
+掘金服务端返回的 HTML 文本中包括一组打包过后的 JS，这个其实就是这个页面所对应的相关事件和脚本，我们只需要打包过后将 JS 绑定在 HTML 中就可以。
+
+**这个也叫“同构”，是服务器端渲染的核心概念**，同一套 React 代码在服务器端渲染一遍，然后在客户端再执行一遍。服务端负责静态 dom 的拼接，而客户端负责事件的绑定，不仅是模板页面渲染，后面的路由，数据的请求都涉及到同构的概念。可以理解成，服务器端渲染都是基于同构去展开的。
+
+这里就需要`hydrateRoot()`给按钮绑定事件函数。
+
+```tsx
+// src/client/index.tsx
+
+import { hydrateRoot } from "react-dom/client";
+import Home from "@/pages/Home";
+
+hydrateRoot(document.getElementById("root") as Document | Element, <Home />);
+```
+
+然后需要给绑定的节点给予一个id。
+
+最后创建一套客户端的webpack配置
+
+```javascript
+// webpack.client.js
+const path = require("path");
+const { merge } = require("webpack-merge");
+const baseConfig = require("./webpack.base");
+
+module.exports = merge(baseConfig, {
+  mode: "development",
+  entry: "./src/client/index.tsx",
+  output: {
+    filename: "index.js",
+    path: path.resolve(process.cwd(), "client_build"),
+  },
+});
+```
+
+更新package.json脚本
+
+```json
+// package.json
+"scripts": {
+    "start": "npx nodemon --watch src server_build/bundle.js",
+    "build:client": "npx webpack build --config ./webpack.client.js --watch",
+    "build:server": "npx webpack build --config ./webpack.server.js --watch",
+},
+```
+
+这样就可以针对客户端进行一次打包。
+
+对于打包之后的，针对于用户端中应该进行的绑定操作的js文件，需要在server/index中进行绑定
+
+```tsx
+import express from "express";
+import childProcess from "child_process";
+import { renderToString } from "react-dom/server";
+import Home from "@/pages/Home";
+import path from "path";
+
+const app = express();
+const content = renderToString(<Home />);
+
+app.use(express.static(path.resolve(process.cwd(), "client_build")));
+
+app.get("*", (req, res) => {
+  res.send(`
+    <html
+      <body>
+        <div id="root">${content}</div>
+        <script src="/index.js"></script>
+      </body>
+    </html>
+  `);
+});
+
+app.listen(3000, () => {
+  console.log("ssr-server listen on 3000");
+});
+```
+
+这里的`<script src="/index.js"></script>`表示加载刚才打包好的，需要在客户端执行的js文件。
+
+在上面的代码中，`app.use(express.static(path.resolve(process.cwd(), "client_build")));`我们将对应的打包文件作为静态文件导入，然后在 script中引入对应的路由访问即可。
+
+于是，在经历了服务端渲染DOM以及返回一个需要在用户浏览器绑定事件的JS，然后在用户的浏览器中绑定完事件之后，鼠标对于按钮的点击事件的也可以执行了。
+
+![image-20220928185830248](react.assets/image-20220928185830248.png)
+
+单页面的渲染成功了，接下来讨论多页面的路由渲染问题。
+
+这里需要注意的是，刚才介绍了同构的概念，同构有一个原因是，客户端和服务端的返回需要保持一致，不然会有客户端的报错，页面也没办法正常匹配。所以我们需要同时为客户端和服务端的入口都加上对应的路由配置。
+
+安装依赖`npm install react-router-dom --save`
+
+创建第二个组件，取名叫Demo
+
+```tsx
+// ./src/pages/Demo/index.tsx
+import { FC } from "react";
+
+const Demo: FC = (data) => {
+  return (
+    <div>这是一个demo页面</div>
+  );
+};
+
+export default Demo;
+```
+
+再创建router文件，填写相关的接口和配置
+
+```tsx
+import Home from "@/pages/Home";
+import Demo from "@/pages/Demo";
+
+interface IRouter {
+  path: string;
+  element: JSX.Element;
+}
+
+const router: Array<IRouter> = [
+  {
+    path: "/",
+    element: <Home />,
+  },
+  {
+    path: "/demo",
+    element: <Demo />,
+  },
+];
+
+export default router;
+```
 
 
 
 ## Nextjs
 
-可以使用`yarn create next-app`来新建一个next项目，并且如果带上`--typescript`则可以使用typescript语法编写，参考课程[react ssr nextjs从入门到放弃_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1V44y1K7Zz/?spm_id_from=333.337.search-card.all.click&vd_source=36542d6c49bf487d8a18d22be404b8d2)
+可以使用`yarn create next-app`来新建一个nextjs项目，并且如果带上`--typescript`则可以使用typescript语法编写，参考课程[react ssr nextjs从入门到放弃_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1V44y1K7Zz/?spm_id_from=333.337.search-card.all.click&vd_source=36542d6c49bf487d8a18d22be404b8d2)
 
 ---
 
