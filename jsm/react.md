@@ -1290,6 +1290,134 @@ const router: Array<IRouter> = [
 export default router;
 ```
 
+为了能适配路由，所以client和server部分都需要修改，接下来是对client的index.tsx加入`BrowserRouter`
+
+```tsx
+// ./src/client/index.tsx
+import { hydrateRoot } from "react-dom/client";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import router from "@/router";
+
+const Client = (): JSX.Element => {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {router?.map((item, index) => {
+          return <Route {...item} key={index} />;
+        })}
+      </Routes>
+    </BrowserRouter>
+  );
+};
+
+hydrateRoot(document.getElementById("root") as Document | Element, <Client />);
+```
+
+对于server端进行修改
+
+```tsx
+// ./src/server/index.tsx
+import express from "express";
+import childProcess from "child_process";
+import { renderToString } from "react-dom/server";
+import path from "path";
+import router from "@/router";
+import { Route, Routes } from "react-router-dom";
+import { StaticRouter } from "react-router-dom/server";
+
+const app = express();
+
+app.use(express.static(path.resolve(process.cwd(), "client_build")));
+
+app.get("*", (req, res) => {
+  const content = renderToString(
+    <StaticRouter location={req.path}>
+      <Routes>
+        {router?.map((item, index) => {
+          return <Route {...item} key={index} />;
+        })}
+      </Routes>
+    </StaticRouter>
+  );
+
+  res.send(`
+    <html
+      <body>
+        <div id="root">${content}</div>
+        <script src="/index.js"></script>
+      </body>
+    </html>
+  `);
+});
+
+app.listen(3000, () => {
+  console.log("ssr-server listen on 3000");
+});
+```
+
+与客户端不同的是，在这里使用了`StaticRouter`而不是`BrowserRouter`。其中`StaticRouter `是无状态的路由，因为服务器端不同于客户端，客户端中，浏览器历史记录会改变状态，同时将屏幕更新，但是服务器端是不能改动到应用状态的，所以我们这里采用无状态路由。
+
+按照客户端-服务器端的顺序运行，可以展示页面
+
+![image-20220928233034828](react.assets/image-20220928233034828.png)
+
+### 修改Header
+
+对于SSR的SEO来说，很重要的一步是扫描header，但是以上的操作是对于页面的渲染，header的修改如下
+
+```shell
+npm install react-helmet --save
+npm install @types/react-helmet --save-dev
+```
+
+对于server修改
+
+```tsx
+import express from "express";
+import childProcess from "child_process";
+import { renderToString } from "react-dom/server";
+import path from "path";
+import router from "@/router";
+import { Route, Routes } from "react-router-dom";
+import { StaticRouter } from "react-router-dom/server";
+import { Helmet } from "react-helmet";
+
+const app = express();
+
+app.use(express.static(path.resolve(process.cwd(), "client_build")));
+
+app.get("*", (req, res) => {
+  const content = renderToString(
+    <StaticRouter location={req.path}>
+      <Routes>
+        {router?.map((item, index) => {
+          return <Route {...item} key={index} />;
+        })}
+      </Routes>
+    </StaticRouter>
+  );
+
+  const helmet = Helmet.renderStatic();
+
+  res.send(`
+    <html
+      <head>
+        ${helmet.title.toString()}
+        ${helmet.meta.toString()}
+      </head>
+      <body>
+        <div id="root">${content}</div>
+        <script src="/index.js"></script>
+      </body>
+    </html>
+  `);
+});
+
+app.listen(3000, () => {
+  console.log("ssr-server listen on 3000");
+});
+```
+
 
 
 ## Nextjs
