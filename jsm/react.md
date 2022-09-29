@@ -1615,3 +1615,16 @@ export default function handler(
 可以查看到返回值，之后还需要考虑cors
 
 ![image-20220928125228996](react.assets/image-20220928125228996.png)
+
+### getStaticProps
+
+用于定义在组件中用来获取props的函数。注意它是async的。
+
+If you export an `async` function called `getStaticProps` from a page, Next.js will pre-render this page at build time using the props returned by `getStaticProps`.
+
+示例如下
+
+```tsx
+
+```
+

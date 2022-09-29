@@ -354,7 +354,7 @@ x出现错误，调用catch
 */
 ```
 
-** 顺序 **
+**顺序**
 先执行promise里面的的同步代码，然后再执行then里面的异步代码，可以使用事件循环来解释。
 
 ```javascript
@@ -375,10 +375,13 @@ new Promise((resolve, reject) => {
 ```
 
 以上代码输出
-after resolve
+
+```shell
 then 
 111argu
 finally
+after resolve
+```
 
 ---
 
