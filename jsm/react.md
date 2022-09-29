@@ -1625,6 +1625,65 @@ If you export an `async` function called `getStaticProps` from a page, Next.js w
 示例如下
 
 ```tsx
+interface post {
+    id: number,
+    msg: string
+}
+
+const Blog = ({posts}: { posts: post[] }) => {
+    return (
+        <>
+            <ol>
+                {
+                    posts.map((p) => {
+                        return (
+                            <li key={p.id}>
+                                {
+                                    `post ID: ${p.id} | msg: ${p.msg}`
+                                }
+                            </li>
+                        )
+                    })
+                }
+            </ol>
+        </>
+    )
+}
+
+export async function getStaticProps() {
+    let postList: post[] = [];
+
+    let getPostListData = new Promise<post[]>((resolve) => {
+        let postList: post[] = [];
+        setTimeout(() => {
+            for (let i = 0; i < 15; i++) {
+                postList.push({
+                    id: i,
+                    msg: `This is post ${i}`
+                })
+                // console.log(`This is post ${i}`)
+            }
+            resolve(postList);
+        }, 1000)
+
+    })
+
+    postList = await getPostListData;
+
+    return {
+        props: {
+            posts: postList
+        }
+    }
+}
+
+export default Blog;
 
 ```
+
+这里的`getStaticProps()`是固定的名字。返回值为一个对象里面有一个props对象。
+
+在组件中使用props解构，之后渲染。展示如下：
+
+![image-20220929183045420](react.assets/image-20220929183045420.png)
 
