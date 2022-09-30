@@ -1687,3 +1687,63 @@ export default Blog;
 
 ![image-20220929183045420](react.assets/image-20220929183045420.png)
 
+### 404页面
+
+对于默认的404界面来说，只需要在pages下创建一个404.tsx写上内容就可以。
+
+![image-20220930130251195](react.assets/image-20220930130251195.png)
+
+展示如下：
+
+![image-20220930130315143](react.assets/image-20220930130315143.png)
+
+
+
+### 添加ant design
+
+在安装完依赖之后，需要首先在styles/globals.css引入antd的css。
+
+```css
+@import "~antd/dist/antd.css";
+```
+
+添加.babelrc
+
+```json
+{
+  "presets": ["next/babel"],
+  "plugins": [
+    [
+      "import",
+      {
+        "libraryName":"antd"
+      }
+    ]
+  ]
+}
+```
+
+就可以在组件中引入了
+
+```tsx
+import React from "react";
+import {Button} from "antd";
+
+
+const UseAnt1: React.FC = () => {
+    return (
+        <>
+            <Button type="primary">
+                primary button
+            </Button>
+        </>
+    )
+}
+
+export default UseAnt1;
+```
+
+展示如下：
+
+![image-20220930165928357](react.assets/image-20220930165928357.png)
+
