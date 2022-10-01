@@ -1493,21 +1493,80 @@ const Demo: FC = (data) => {
 
   useEffect(() => {
     axios
-      .post("/api/getDemoData", {
-        content: "这是一个demo页面",
-      })
-      .then((res: any) => {
-        setContent(res.data?.data?.content);
-      });
+        .post("/api/getDemoData", {
+          content: "这是一个demo页面的数据",
+        })
+        .then((res: any) => {
+          setContent(res.data?.data?.content);
+            console.log(res.data?.data?.content)
+        });
   }, []);
 
   return <div>{content}</div>;
 };
 
 export default Demo;
+
 ```
 
 数据请求成功了，不过，不对的是，我们可以在 network 中看到对应的请求，数据也没在服务器端请求的时候塞入 HTML，也就是说走的是客户端渲染，而不是服务端渲染，和我们预期的不一样，看来是不能直接用 hook 来常规请求的。**在客户端部分请求数据，没有重新渲染上去。**我们来回忆之前静态页面的思路，是在服务器端拼凑好 HTML 并返回，所以请求的话，咱们应该也是获取到每个模板页面初始化的请求，并在服务器端请求好，进行 HTML 拼凑，在这之前我们需要建立一个全局的 store，使得服务端请求的数据可以提供到模板页面来进行操作。
+
+安装`npm install @reduxjs/toolkit redux-thunk react-redux --save`
+
+其中 @reduxjs/toolkit 是 redux 最新提供的工具包，可以用于状态的统一管理，提供了更多 hook 的能力，相对代码更为简易，至于 redux-thunk 是一个 redux 的中间件，提供了 dispatch 和 getState 与异步方法交互的能力。
+
+创建demo页面的redux
+
+```typescript
+// ./src/pages/Demo/store/demoReducer.ts
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+
+const getDemoData = createAsyncThunk(
+  "demo/getData",
+  async (initData: string) => {
+    const res = await axios.post("http://127.0.0.1:3000/api/getDemoData", {
+      content: initData,
+    });
+    return res.data?.data?.content;
+  }
+);
+
+const demoReducer = createSlice({
+  name: "demo",
+  initialState: {
+    content: "默认数据",
+  },
+  // 同步reducer
+  reducers: {},
+  // 异步reducer
+  extraReducers(build) {
+    build
+      .addCase(getDemoData.pending, (state, action) => {
+        state.content = "pending";
+      })
+      .addCase(getDemoData.fulfilled, (state, action) => {
+        state.content = action.payload;
+      })
+      .addCase(getDemoData.rejected, (state, action) => {
+        state.content = "rejected";
+      });
+  },
+});
+
+export { demoReducer, getDemoData };
+```
+
+以及
+
+```typescript
+// ./src/pages/Demo/store/index.ts
+import { demoReducer } from "./demoReducer";
+
+export { demoReducer };
+```
+
+
 
 ## Nextjs
 
