@@ -1751,7 +1751,7 @@ import { useRoute } from 'vue-router'
 
 #### 用代码跳转路由
 
-注意\$router和\$route区别
+注意`\$router`和`\$route`区别
 
 ```javascript
   methods:{
@@ -1777,7 +1777,7 @@ setup(){
   }
 ```
 
-### 动态添加路由
+#### 动态添加路由
 
 添加顶级路由，可以使用router对象的``addRoute``方法。
 

@@ -399,3 +399,5 @@ declare function fun(): void
 
 ### import & export
 
+`export {}`
+

@@ -814,7 +814,7 @@ upstream todj{
 
 ---
 
-#### django admin
+### django admin
 
 可以使用admin对于model层的数据进行可视化操作。（感觉比pycharm好看一些）
 
@@ -1002,6 +1002,4 @@ console.log('Inside Global Execution Context');
 在 ES6 中，**词法环境**和**变量环境**的一个不同就是前者被用来存储函数声明和变量（``let`` 和`` const``）绑定，而后者只用来存储`` var ``变量绑定。
 
 ---
-
-### 
 
