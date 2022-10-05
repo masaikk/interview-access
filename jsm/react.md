@@ -913,6 +913,98 @@ export default About
 
 ![image-20220520170705051](react.assets/image-20220520170705051.png)
 
+### redux
+
+#### 基础redux
+
+对于一个项目来说，action和reducer不止一个，为了方便管理，所以在src下创建action和reducer目录并且创建相应的index.js。
+
+对于一个发送action的函数来说，它的返回值是一个action，即有type字段，例如：
+
+```javascript
+const sendAction = () => {
+    return {
+        type: "masaikk_action1",
+        msg: "this is a action"
+    }
+}
+
+module.exports = {
+    sendAction
+}
+```
+
+对于reducer来说，它是一个函数，并且接受两个参数，第一个参数是state当前值，第二个参数是一个action，函数体中通过判断action的type进行状态更新，然后返回一个新的state。并且，如果没有当前的state，就可以指定一个初始化的state。
+
+```javascript
+const initState = {
+    msg: 'init'
+}
+const aReducer = (state = initState, action) => {
+    switch (action.type) {
+        case "masaikk_action1": {
+            return {
+                msg: 'thank you masaikk'
+            }
+        }
+        default: {
+            return state
+        }
+    }
+}
+
+module.exports = {
+    aReducer
+}
+```
+
+之后创建store，从redux中导入，注意原来的函数被废弃了。`import {legacy_createStore as createStore} from "redux";`
+
+导入刚才定义的reducer，再使用`createStore`，最后导出。
+
+```javascript
+import {legacy_createStore as createStore} from "redux";
+import {aReducer} from "../reducer";
+
+const store = createStore(aReducer)
+export default store;
+```
+
+在页面中使用的时候通过store来进行监听器的注册，最后需要注销监听。
+
+在组件中，导入store和action，对于store来发送一个action，可以通过`store.subscribe()`来监听变动，并且使用hook来进行值的渲染更改。
+
+```jsx
+import React, {useState} from "react";
+import store from "../../store";
+import {sendAction} from "../../action";
+
+const Home = () => {
+    const handlerClick = () => {
+        const masaikkAction = sendAction();
+        store.dispatch(masaikkAction)
+    }
+
+    const [msg, setMsg] = useState(store.getState().msg);
+
+    store.subscribe(() => {
+        console.log('subscriber:', store.getState());
+        setMsg(store.getState().msg)
+    })
+
+    return (
+        <>
+            <button onClick={handlerClick}>click</button>
+            <h2>{msg}</h2>
+        </>
+    )
+}
+
+export default Home
+```
+
+![image-20221006002310009](react.assets/image-20221006002310009.png)
+
 ---
 
 ## React ssr
