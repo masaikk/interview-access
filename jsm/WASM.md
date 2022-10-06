@@ -236,5 +236,91 @@ rustup target add wasm32-unknown-unknown
 
 之后使用`cargo build --release --target wasm32-unknown-unknown`可以进行编译，在target下面可以找到wasm文件。
 
+参考[博客](https://blog.csdn.net/weixin_47723549/article/details/126161165)
+
+在clion中创建一个rust的lib项目，在这里可以看到src下是lib.rs
+
+![image-20221006111701313](WASM.assets/image-20221006111701313.png)
+
+在Cargo.toml中写依赖：
+
+```toml
+[package]
+name = "rustlibDemo1"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen = "0.2.78"
+base64 = "0.13.0"
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false
+
+```
+
+在lib.rs里面写示例代码，定义两个函数，这里的函数名之后在js中也能用到
+
+```rust
+use wasm_bindgen::prelude::*;
+use base64::decode;
+
+//解析base64
+#[wasm_bindgen]
+pub fn my_str(s:String) -> String{
+    let s = base64::decode(s).unwrap();
+    return String::from_utf8(s.clone()).unwrap();
+}
+//计算两个数相加
+#[wasm_bindgen]
+pub fn add(a:i32, b:i32) -> i32{
+    return a+b;
+}
+```
+
+配置build，主要是设置target为web
+
+![image-20221006111939843](WASM.assets/image-20221006111939843.png)
+
+按照clion的提示安装相关依赖，使用clion进行build操作之后，可以看到这里有文件在pkg里面。
+
+![image-20221006112307192](WASM.assets/image-20221006112307192.png)
+
+创建一个html文件，导入js文件
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="module">
+        import init, {add, my_str} from "./pkg/rustlibDemo1.js";
+
+        init().then(() => {
+            console.log(add(1, 2))
+            console.log(my_str("6ams6LWb5p+v5p+v"))
+        });
+    </script>
+</head>
+<body>
+
+</body>
+</html>
+```
+
+可以成功运行，在控制台中打出如下信息：
+
+![image-20221006113043517](WASM.assets/image-20221006113043517.png)
+
+
+
+
+
 ---
 
