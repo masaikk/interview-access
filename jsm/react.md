@@ -1005,6 +1005,208 @@ export default Home
 
 ![image-20221006002310009](react.assets/image-20221006002310009.png)
 
+#### react-redux
+
+主要包括两个组件，provider和connect:
+
+![image-20221006161917090](react.assets/image-20221006161917090.png)
+
+provider包裹整个子组件，以便让全部的子组件都拿到state，它一个接受一个store作为自己的props，这样子组件就可以通过context拿到store。
+
+内部的组件如果需要拿到state的数据，就必须要使用connect来拿到数据。
+
+同样需要建立reducer和store文件，然后在store/index.js导入，创建store。
+
+```javascript
+import {legacy_createStore as createStore} from "redux";
+import {aReducer} from "../reducer";
+
+let store = createStore(aReducer)
+export default store;
+```
+
+之后需要在app.js里面导入这个store。创建两个子组件用于测试，在app中。导入Provider，包裹着App，并且要输入store作为props。
+
+测试的两个子组件如下所示：
+
+```jsx
+const CompA=()=>{
+    return(
+        <>
+            <button>click</button>
+        </>
+    )
+}
+
+export default CompA;
+```
+
+```jsx
+const CompB = () => {
+    return (
+        <>
+            <h2>
+                h2
+            </h2>
+        </>
+    )
+}
+
+export default CompB;
+```
+
+app.js中导入如下：
+
+```jsx
+class App extends React.Component {
+    render() {
+        return (
+            
+            <Provider store={store}>
+                <CompA></CompA>
+                <CompB></CompB>
+            </Provider>
+        )
+    }
+}
+
+export default App;
+```
+
+之后使用connect，方法说明如下：
+
+<img src="react.assets/image-20221006170451756.png" alt="image-20221006170451756" style="zoom:50%;" />
+
+对于需要接受数据更改的组件compB来说，需要实现第一个参数，而发送信息的compA来说，需要实现的是第二个参数。
+
+对于compA来说，需要实现这个方法，再使用connect包装，加强compA。
+
+```jsx
+function mapDispatchToProps(dispatch) {
+    return {
+        sendAction: () => {
+            // 传递一个action对象
+            dispatch({
+                type: "send_action_masaikk1"
+            })
+        }
+    }
+}
+
+export default connect(null, mapDispatchToProps)(CompA);
+```
+
+之后可以在props里面使用方法来发送action。
+
+最后的compA如下所示：
+
+```jsx
+import {connect} from "react-redux";
+
+
+const CompA = (props) => {
+    const clickHandler = () => {
+        props.sendAction();
+    }
+
+    return (
+        <>
+            <button onClick={clickHandler}>click</button>
+        </>
+    )
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        sendAction: () => {
+            // 传递一个action对象
+            dispatch({
+                type: "send_action_masaikk1"
+            })
+        }
+    }
+}
+
+export default connect(null, mapDispatchToProps)(CompA);
+```
+
+在reducer中打印action测试：
+
+```javascript
+const aReducer = (state, action) => {
+    console.log(action);
+    return state
+};
+
+module.exports = {
+    aReducer
+}
+
+```
+
+可以打印出来：
+
+![image-20221006173600763](react.assets/image-20221006173600763.png)
+
+同样的，对于compB来说，需要实现第一个用来接受参数的函数，并且使用connect加强。
+
+```jsx
+function mapStateToProps(state) {
+    return state
+}
+
+export default connect(mapStateToProps, null)(CompB);
+```
+
+这里的state会加载到props里面，可以使用JavaScript渲染。现在CompB的代码如下：
+
+```jsx
+import {connect} from "react-redux";
+
+const CompB = (props) => {
+    return (
+        <>
+            <h2>
+                {props.count}
+            </h2>
+        </>
+    )
+}
+
+function mapStateToProps(state) {
+    return state
+}
+
+export default connect(mapStateToProps, null)(CompB);
+```
+
+对于reducer来说，它也可以加入相应的数据判断是否修改state。
+
+```javascript
+const initState = {
+    count: 1
+}
+
+const aReducer = (state = initState, action) => {
+    console.log(action);
+    if (action.type === "send_action_masaikk1") {
+        return {
+            count: state.count + 1
+        }
+    }
+    return state
+};
+
+module.exports = {
+    aReducer
+}
+
+```
+
+最终可以实现效果：
+
+![image-20221006174618032](react.assets/image-20221006174618032.png)
+
 ---
 
 ## React ssr
