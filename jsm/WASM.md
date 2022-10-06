@@ -320,7 +320,53 @@ pub fn add(a:i32, b:i32) -> i32{
 
 
 
+对于vue3项目来说，可以考虑在onMounted阶段导入init函数，然后异步await。
 
+示例代码如下
+
+```vue
+<template>
+  <div>
+    <h1>
+      {{ msg }}
+    </h1>
+    <button @click="clickHandler">click</button>
+  </div>
+</template>
+
+<script lang="ts">
+import {onBeforeMount, Ref, ref} from "vue";
+import init, {my_str, add} from "./pkg";
+import {onMounted} from "vue";
+
+export default {
+  name: "WasmComp1",
+
+  setup() {
+    let msg: Ref<string> = ref('initial');
+    onBeforeMount(async () => {
+      await init();
+    })
+    const clickHandler = () => {
+      alert(my_str('6ams6LWb5p+v5p+v'))
+    }
+    onMounted(() => {
+      console.log(add(114, 514))
+    })
+
+    return {
+      msg,
+      clickHandler
+    }
+  }
+
+}
+</script>
+```
+
+绑定了按钮点击事件，能正常展示：
+
+![image-20221006143736237](WASM.assets/image-20221006143736237.png)
 
 ---
 
