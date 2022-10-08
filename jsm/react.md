@@ -1225,6 +1225,8 @@ root.render(
 
 ```
 
+##### 同步组件
+
 recoil的同步钩子如下所示：
 
 ![image-20221008105038673](react.assets/image-20221008105038673.png)
@@ -1337,6 +1339,10 @@ export default CompB;
 ![image-20221008113740817](react.assets/image-20221008113740817.png)
 
 `useResetRecoilState()`钩子可以用于重置state。
+
+##### 异步组件
+
+与其他的状态管理工具不同的是，recoil是可以在selector的get方法中使用网络请求接口的。
 
 ---
 
