@@ -1207,6 +1207,137 @@ module.exports = {
 
 ![image-20221006174618032](react.assets/image-20221006174618032.png)
 
+#### recoil
+
+相比于redux，recoil是使用了分组的状态管理，并且只支持hook。在recoil中，有atom和selector两个概念，其中atom对应状态，selector用于计算状态，它是一个纯函数。并且，值得注意的是，与redux不同，recoil的state是immutable的。因为这样可以降低mutable的复杂度，节约内存空间。对于atom或者selector来说，他们都需要有一个key，并且这里的key都不应该重复。
+
+首先需要使用RecoilRoot将根节点包起来：
+
+```tsx
+const root = ReactDOM.createRoot(
+    document.getElementById('root') as HTMLElement
+);
+root.render(
+    <RecoilRoot>
+        <App/>
+    </RecoilRoot>
+);
+
+```
+
+recoil的同步钩子如下所示：
+
+![image-20221008105038673](react.assets/image-20221008105038673.png)
+
+以上几种钩子在使用的时候根据功能做取舍。以下是对于同步hook的示例，代码位于[masaikk/rectr - Gitee.com](https://gitee.com/masaikk/rectr/tree/v18/myreact2)
+
+首先创建两个组件，分别是CompA，包含一个按钮；然后是CompB，包含一个h2标签。
+
+```tsx
+import React from "react";
+import CompA from "./compA";
+import CompB from "./compB";
+
+const Home: React.FC = () => {
+    return (
+        <>
+            <CompA></CompA>
+            <CompB></CompB>
+        </>
+    )
+}
+
+export default Home;
+```
+
+其次定义atom，如下
+
+```typescript
+import {atom, selector} from "recoil";
+
+export const countState = atom({
+    key: "countState",
+    default: 1
+})
+
+export const countMsgState = selector({
+    key: "msgState",
+    get: ({get}) => {
+        const count: string = JSON.stringify(get(countState))
+        return `this counter is ${count}`
+    }
+})
+
+```
+
+这里使用到了selector，用于计算atom。
+
+对于CompA组件来说，它只使用修改状态而不是使用状态，所以只需要使用`useSetRecoilState()`，如下所示：
+
+```tsx
+import React, {useEffect} from "react";
+import {useSetRecoilState} from "recoil";
+import {countState} from "../../store/atom/countMsg";
+
+
+const CompA: React.FC = () => {
+    const setCounter = useSetRecoilState(countState)
+
+    useEffect(() => {
+        console.log('compA rendering...');
+    })
+
+    const clickHandler = () => {
+        console.log('counter ++');
+        setCounter(counter => {
+            return counter + 1
+        })
+    }
+
+    return (
+        <>
+            <button onClick={clickHandler}>click</button>
+        </>
+    )
+}
+
+export default CompA;
+```
+
+而对于CompB来说，这里是只需要使用state就可以了，所以使用`useRecoilValue()`方法即可，并且这里两个组件都使用了`useEffect()`钩子来看是否进行了重新渲染。
+
+```tsx
+import React, {useEffect} from "react";
+import {countMsgState} from "../../store/atom/countMsg";
+import {useRecoilValue} from "recoil";
+
+const CompB: React.FC = () => {
+    const countMSG: string = useRecoilValue(countMsgState)
+
+    useEffect(() => {
+        console.log('CompB rendering');
+    })
+
+    return (
+        <>
+            <h2>{countMSG}</h2>
+        </>
+    )
+}
+
+export default CompB;
+```
+
+可以看到，点击按钮就可以进行state的修改。
+
+![image-20221008113633599](react.assets/image-20221008113633599.png)
+
+并且对于CompA来说，没有进行重新渲染，如果在这个CompA组件中使用useRecoilState来说，就会一遍一遍重新渲染CompA：
+
+![image-20221008113740817](react.assets/image-20221008113740817.png)
+
+`useResetRecoilState()`钩子可以用于重置state。
+
 ---
 
 ## React ssr
