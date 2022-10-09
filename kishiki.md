@@ -227,7 +227,7 @@ JavaScript库函数参考[JavaScript 标准内置对象 - JavaScript | MDN (mozi
 
 ## 力扣题实录
 
-[1. 两数之和 - 力扣（LeetCode） (leetcode-cn.com)](https://leetcode-cn.com/problems/two-sum/)
+[1. 两数之和 - 力扣（LeetCode）](https://leetcode.cn/problems/two-sum/)
 
 给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出 和为目标值 target  的那 两个 整数，并返回它们的数组下标。
 
@@ -272,7 +272,9 @@ public:
 };
 ```
 
-[力扣 (leetcode-cn.com)](https://leetcode-cn.com/problems/valid-parentheses/)给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串 s ，判断字符串是否有效。
+[20. 有效的括号 - 力扣（LeetCode）](https://leetcode.cn/problems/valid-parentheses/)
+
+给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串 s ，判断字符串是否有效。
 
 有效字符串需满足：
 
@@ -377,7 +379,7 @@ public:
 };
 ```
 
-[Loading Question... - 力扣（LeetCode） (leetcode-cn.com)](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
+[21. 合并两个有序链表 - 力扣（LeetCode）](https://leetcode.cn/problems/merge-two-sorted-lists/)
 
 将两个升序链表合并为一个新的 升序 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
 
@@ -511,8 +513,6 @@ public:
 
 子数组 是数组中的一个连续部分。
 
- 
-
 示例 1：
 
 输入：nums = [-2,1,-3,4,-1,2,1,-5,4]
@@ -535,10 +535,6 @@ public:
 
 
 进阶：如果你已经实现复杂度为 O(n) 的解法，尝试使用更为精妙的 分治法 求解。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/maximum-subarray
-著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 
 ```c++
 class Solution {
@@ -582,10 +578,6 @@ public:
 提示：
 
 1 <= n <= 45
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/climbing-stairs
-著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 
 ```c++
 class Solution {
@@ -633,7 +625,7 @@ public:
 };
 ```
 
-[只出现一次的数字](https://leetcode.cn/problems/single-number/)
+[136. 只出现一次的数字 - 力扣（LeetCode）](https://leetcode.cn/problems/single-number/)
 
 一开始我还在想对于这个题目中使用每个元素进行遍历，得到那个与众不同的数字，但是这样的时间复杂度是O(n*n)。
 
@@ -655,5 +647,48 @@ var singleNumber = function(nums) {
         return a^b
     })
 };
+```
+
+[3. 无重复字符的最长子串 - 力扣（LeetCode）](https://leetcode.cn/problems/longest-substring-without-repeating-characters/) 
+
+给定一个字符串 `s` ，请你找出其中不含有重复字符的 **最长子串** 的长度。
+
+![image-20221009124813182](kishiki.assets/image-20221009124813182.png)
+
+这是一个滑动窗口的问题，这里需要使用set来建立一个lookup表，但是一开始我做不出。在题解中，用到了`while (lookUp.has(s[i]))`感觉很不错，如果有新的元素，就一直从left处开始删除元素。代码如下
+
+```javascript
+/**
+ * @param {string} s
+ * @return {number}
+ */
+var lengthOfLongestSubstring = function (s) {
+    let maxLength = 0;
+    let currentLength = 0;
+    let left = 0;
+
+    let lookUp = new Set();
+    let nums = s.length;
+    if (nums === 0) {
+        return 0;
+    }
+    for (let i = 0; i < nums; i++) {
+        while (lookUp.has(s[i])) {
+            lookUp.delete(s[left]);
+            left += 1;
+            currentLength -= 1;
+        }
+        lookUp.add(s[i]);
+        currentLength += 1;
+        if (maxLength < currentLength) {
+            maxLength = currentLength;
+        }
+
+    }
+    return maxLength;
+};
+
+soemtarget = 'aabsda';
+console.log(lengthOfLongestSubstring(soemtarget))
 ```
 
