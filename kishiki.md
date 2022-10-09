@@ -1,5 +1,52 @@
 # 算法
 
+## 算法记录
+
+### 二叉树的层序遍历
+
+#### 分析
+
+参考[JavaScript——二叉树层序遍历_庸人°的博客-CSDN博客_二叉树层序遍历js](https://blog.csdn.net/wuxian_wj/article/details/121006926)
+
+第一步判断root是否是null，如果为空我们直接返回空数组即可，如果不为空继续我们的代码运行
+第二步声明了两个变量result用来承接最后的数组，并作为最后的结果返回。deep用来表示当前节点的层级，方便我们向result对应数组中添加元素。
+然后就到了我们的递归方法recursion，recursion的参数是当前节点。在recursion中现实节点深度加一，我们要注意这个深度的流程是，对于二叉树的结构，向下递归一层deep加一，向上return一层deep减一。
+判断result对应该层的数组元素是否存在，如果不存在直接等于[root]，如果存在则选择push方式添加当前root。
+添加完当前节点就需要判断，当前节点的左节点是否存在，如果存在将当前节点的左节点作为参数递归调用当前recursion函数，如果不存在则跳过
+当前节点的右节点是否存在，如果存在将当前节点的右节点作为参数递归调用当前recursion函数，如果不存在则跳过
+当左节点右节点都不存在则深度减一并向上返回，或者节点的左节点右节点都已经遍历完毕也是同样深度减一并向上返回。
+当全部执行完毕，返回result。
+
+#### 代码
+
+```javascript
+  var levelOrder = function(root) {
+    if (root === null)
+        return []
+    let result = [];
+    let deep = 0;
+    recursion(root);
+
+    function recursion(root) {
+        deep++;
+        if (result[deep - 1])
+            result[deep - 1].push(root)
+        else
+            result[deep - 1] = [root]
+        if (root.left != null)
+            recursion(root.left)
+        if (root.right !== null)
+            recursion(root.right)
+        deep--
+        return
+    }
+    return result;
+};
+
+```
+
+
+
 ## C++基本STL
 
 ### 参考链接
@@ -688,7 +735,5 @@ var lengthOfLongestSubstring = function (s) {
     return maxLength;
 };
 
-soemtarget = 'aabsda';
-console.log(lengthOfLongestSubstring(soemtarget))
 ```
 
