@@ -1,6 +1,6 @@
-# C++算法
+# 算法
 
-## 基本STL
+## C++基本STL
 
 ### 参考链接
 
@@ -140,6 +140,88 @@ http://c.biancheng.net/java/
 http://c.biancheng.net/python/
 http://c.biancheng.net/stl/
 ```
+
+---
+
+## JavaScript库函数
+
+JavaScript库函数参考[JavaScript 标准内置对象 - JavaScript | MDN (mozilla.org)](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects)
+
+### Array函数
+
+[Array - JavaScript | MDN (mozilla.org)](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array)需要注意JavaScript中的，对于列表添加或者去除元素的四个函数，即`unshift()`,`shift()`以及`push()`,`pop()`注意这几个函数是相对应的。
+
+#### 主要函数举例
+
++ `Array.prototype.includes()`
+
+  用于判断某个元素是否存在于这个列表中，返回一个bool值。
+
++ `Array.prototype.findIndex()`
+
+  返回一个符合测试函数的元素的坐标，如果没有，就返回-1。这个测试函数需要符合`function(element, index, array){ /* … */ }`形式。
+
++ `Array.prototype.reduce()`
+
+  回调函数需要满足`function(previousValue, currentValue, currentIndex, array) { /* … */ }`形式
+
++ `Array.prototype.sort()`
+
+  **这是一个原地函数**
+
+  - 如果 `compareFn(a, b)` 大于 0，b 会被排列到 a 之前。
+  - 如果 `compareFn(a, b)` 小于 0，那么 a 会被排列到 b 之前；
+  - 如果 `compareFn(a, b)` 等于 0，a 和 b 的相对位置不变。
+
++ `Array.prototype.forEach()`
+
+  用于遍历，参数为`function(element, index, array){ /* … */ }`
+
++ `Array.prototype.includes()`
+
+  `includes()` 方法用来判断一个数组是否包含一个指定的值，根据情况，如果包含则返回 `true`，否则返回 `false`。它还有一个可选参数用于从这个坐标开始，`includes(searchElement, fromIndex)`中从`fromIndex` 索引处开始查找 `valueToFind`。如果为负值，则按升序从 `array.length + fromIndex` 的索引开始搜（即使从末尾开始往前跳 `fromIndex` 的绝对值个索引，然后往后搜寻）。默认为 0。
+
++ `Array.prototype.splice()`
+
+  **这是一个原地函数**
+
+  它用来删除一部分数据，然后如果第三个参数不为空，就把第三个参数之后的参数加到Array里面。并以数组形式返回被修改的内容。`splice(start, deleteCount, item1)`里面的deleteCount表示删除元素的个数。
+
++ `Array.prototype.slice()`
+
+  `slice()` 方法返回一个新的数组对象，这一对象是一个由 `begin` 和 `end` 决定的原数组的**浅拷贝**（包括 `begin`，不包括`end`）。原始数组不会被改变。
+
++ `Array.length`
+
+  获取数组长度。
+
+对于`Array`类型的函数中，需要注意的是区分`splice()`和`slice()`的参数区别，splice是传入一个坐标，一个个数。slice是传入两个坐标而且不改变数组。
+
+### Set函数
+
+[Set - JavaScript | MDN (mozilla.org)](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Set)
+
+#### 主要函数举例
+
++ `Set.prototype.add()`
+
+  添加一个元素。
+
++ `Set.prototype.delete()`
+
+  删除一个元素
+
++ `Set.prototype.has()`
+
+  返回一个布尔值来指示对应的值是否存在于 Set 对象中。
+
++ `Set.prototype.size`
+
+  这个属性，获取set的大小。
+
++ `Set.prototype.forEach()`
+
+  用于遍历整个set，回调函数需要满足`function(value, key, set) { /* ... */ }`形式。因为 `Set` 中没有键，所以 `value` 会被共同传递给这两个参数。
 
 ---
 
