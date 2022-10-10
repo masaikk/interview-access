@@ -548,13 +548,9 @@ public:
     }
 };
 
-/作者：loyios
-链接：https://leetcode-cn.com/problems/merge-two-sorted-lists/solution/shi-yong-di-gui-by-loyelee-tacu/
-来源：力扣（LeetCode）
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 ```
 
-[Loading Question... - 力扣（LeetCode） (leetcode-cn.com)](https://leetcode-cn.com/problems/maximum-subarray/)
+[53. 最大子数组和 - 力扣（LeetCode）](https://leetcode.cn/problems/maximum-subarray/)
 
 给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
 
@@ -602,8 +598,6 @@ public:
 假设你正在爬楼梯。需要 n 阶你才能到达楼顶。
 
 每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？
-
- 
 
 示例 1：
 
@@ -737,7 +731,7 @@ var lengthOfLongestSubstring = function (s) {
 
 ```
 
-https://leetcode.cn/problems/longest-palindromic-substring/
+[5. 最长回文子串 - 力扣（LeetCode）](https://leetcode.cn/problems/longest-palindromic-substring/)
 
 寻找最短的子回文序列并且返回这个序列
 
@@ -860,6 +854,63 @@ var longestPalindrome = function (s) {
 
     }
     return s.slice(returnLeft, returnLeft + maxLength)
+};
+```
+
+[11. 盛最多水的容器 - 力扣（LeetCode）](https://leetcode.cn/problems/container-with-most-water/)
+
+这道题用两个for固然可以做出来，但是可以采取双指针法。从头和尾部进行遍历，对于两个指针，先算出他们之间的容量，再将更小的数据向中间移动，直到两个指针重合，最后比较得出最大的数据作为输出。
+
+```javascript
+/**
+ * @param {number[]} height
+ * @return {number}
+ */
+var maxArea = function (height) {
+    let left = 0;
+    let right = height.length - 1;
+    let allWeight = []
+    while (left + 1 <= right) {
+        if (height[left] < height[right]) {
+            allWeight.push(height[left] * (right - left));
+            left++;
+        } else {
+            allWeight.push(height[right] * (right - left));
+            right--;
+        }
+    }
+    allWeight.sort((a, b) => {
+        return a - b
+    })
+    return allWeight[allWeight.length - 1]
+};
+```
+
+这里需要注意的就是，数组的sort函数，即便是数字作为元素，都是返回字典序。如果需要返回大小序，应该按上图类似写法进行。
+
+然后我发现根本不需要把全部数据存起来再比较，只需要比较最大的就可以了。
+
+```javascript
+/**
+ * @param {number[]} height
+ * @return {number}
+ */
+var maxArea = function (height) {
+    let left = 0;
+    let right = height.length - 1;
+    let maxWeight = 0
+    while (left + 1 <= right) {
+        let nowWeight = Math.min(height[left], height[right]) * (right - left);
+        if (maxWeight < nowWeight) {
+            maxWeight = nowWeight
+        }
+        if (height[left] < height[right]) {
+            left++;
+        } else {
+            right--;
+        }
+    }
+    return maxWeight;
 };
 ```
 
