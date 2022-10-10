@@ -737,3 +737,129 @@ var lengthOfLongestSubstring = function (s) {
 
 ```
 
+https://leetcode.cn/problems/longest-palindromic-substring/
+
+寻找最短的子回文序列并且返回这个序列
+
+题目给出了两个题解，其中之一是使用了动态规划的方法，对于搜索的dp数组来说，分别用i和j来表示搜索的左边和右边，分以下几种条件进行讨论：
+
+1. 如果i比j大，直接false
+2. i==j，是true
+3. i+1=j，就需要判断这两个元素是否相等，返回s[i]==s[j]
+4. 判断s[i+1]到s[j-1]是否为回文序列，再判断收尾两个元素是否相等。
+
+我自己的做法差点超时，而且其实没有用到dp而是用到的递归，在这里记录一下：
+
+```javascript
+/**
+ * @param {string} s
+ * @return {string}
+ */
+var longestPalindrome = function (s) {
+    const TOTAL_LENGTH = s.length;
+    // let lookUp = [];
+    let left = 0;
+    let right = 0;
+    let maxLength = 0
+    // for (let i = 0; i < TOTAL_LENGTH; i++) {
+    //     lookUp.push([]);
+    // }
+    for (let i = 0; i < TOTAL_LENGTH; i++) {
+        for (let j = 0; j < TOTAL_LENGTH; j++) {
+            // lookUp[i][j] = calculateIfPalindrome(s, i, j)
+            if (calculateIfPalindrome(s, i, j) && j - i > maxLength) {
+                maxLength = j - i;
+                left = i;
+                right = j;
+            }
+        }
+    }
+    return s.slice(left, right + 1);
+};
+
+/**
+ *
+ * @param {string} s
+ * @param {number} i
+ * @param {number} j
+ * @return {boolean}
+ */
+var calculateIfPalindrome = function (s, i, j) {
+    if (i > j) {
+        return false
+    }
+    if (i === j) {
+        return true;
+    } else if (i + 1 === j) {
+        return s[i] === s[j]
+    } else {
+        return s[i] === s[j] && calculateIfPalindrome(s, i + 1, j - 1);
+    }
+}
+
+```
+
+使用动态规划的时候需要注意的点：
+
++ 实际上，一个字符串至少有一个长度为1的子串符合条件，所以maxlength可以从1开始。
+
++ 如果s的长度小于2,可以直接返回
+
++ 最后需要判断以下代码，不然会导致过多的undefine。
+
+  ```javascript
+  if (right - left < 3) {
+                      lookUp[left][right] = true;
+                  } else {
+                      lookUp[left][right] = lookUp[left + 1][right - 1]
+                  }
+  ```
+
+最终的代码如下所示
+
+```javascript
+/**
+ * @param {string} s
+ * @return {string}
+ */
+var longestPalindrome = function (s) {
+    const TOTAL_LENGTH = s.length;
+    let lookUp = [];
+    let returnLeft = 0;
+    let maxLength = 1
+    if (TOTAL_LENGTH <= 1) {
+        return s;
+    }
+    for (let i = 0; i < TOTAL_LENGTH; i++) {
+        lookUp.push([]);
+    }
+    for (let i = 0; i < TOTAL_LENGTH; i++) {
+        lookUp[i][i] = true;
+    }
+
+    for (let L = 2; L < TOTAL_LENGTH + 1; L++) {
+        for (let left = 0; left < TOTAL_LENGTH; left++) {
+            let right = left + L - 1;
+            if (right >= TOTAL_LENGTH) {
+                break;
+            }
+            if (s[left] !== s[right]) {
+                lookUp[left][right] = false;
+            } else {
+                if (right - left < 3) {
+                    lookUp[left][right] = true;
+                } else {
+                    lookUp[left][right] = lookUp[left + 1][right - 1]
+                }
+            }
+            if (lookUp[left][right] && L > maxLength) {
+                returnLeft = left;
+                maxLength = L;
+            }
+        }
+
+    }
+    return s.slice(returnLeft, returnLeft + maxLength)
+};
+```
+

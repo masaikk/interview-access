@@ -179,6 +179,12 @@ fn main() {
 + 把一个值赋值给其他变量的时候就会发生移动
 + 当一个包含heap数据的变量离开作用域的时候，它的值就会被drop函数清理掉，除非数据的所有权移动到另一个函数变量上面了。
 
+在rust中，&表示引用，表示引用某些值而不取得所有权。
+
+<img src="WASM.assets/image-20221010203605416.png" alt="image-20221010203605416" style="zoom:50%;" />
+
+如上图，可以看出s是s1的一个引用。
+
 ---
 
 ## rust构建WASM
@@ -368,5 +374,24 @@ export default {
 
 ![image-20221006143736237](WASM.assets/image-20221006143736237.png)
 
----
+为了使得整个app可以加载一次wasm模块而不是每次挂载组件都init一次，可以把init函数在app组件中使用
 
+```vue
+<script setup lang="ts">
+import HelloWorld from './components/HelloWorld.vue'
+import init from "./components/comp/wasmComp1/pkg";
+import {onBeforeMount} from "vue";
+onBeforeMount(async ()=>{
+  console.log('use init function');
+  await init()
+})
+</script>
+
+<template>
+  <HelloWorld msg="Hello Demo4 + Vite" />
+</template>
+```
+
+也可以达到上图效果。
+
+---
