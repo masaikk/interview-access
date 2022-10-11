@@ -914,3 +914,87 @@ var maxArea = function (height) {
 };
 ```
 
+[15. 三数之和 - 力扣（LeetCode）](https://leetcode.cn/problems/3sum/)
+
+花了很多时间讨论边界情况，需要注意的点：
+
+1. 因为这个是返回一个二维数组，所以需要判断数据里面的数据元素是否是相等的，但是用set是不行的，需要自己写一个比较：
+
+   ```javascript
+                   let addFlag = true;
+                   triples.forEach((value) => {
+                       addFlag = addFlag && !isEqual(value, aTri)
+                   })
+                   if (addFlag) {
+                       triples.push(aTri);
+                   }
+   ```
+
+2. 应该选定一个小于0的位置作为index1，并且注意多个0的情况
+
+我的解答如下：
+
+```javascript
+/**
+ * @param {number[]} nums
+ * @return {object[]}
+ */
+var threeSum = function (nums) {
+    nums.sort((a, b) => {
+        return a - b;
+    })
+    let maxLength = nums.length;
+    let noZeroNumber = 0;
+    let triples = [];
+    nums.forEach((value, index) => {
+        if (value < 0) {
+            noZeroNumber = index;
+        }
+    })
+
+    for (let index1 = 0; index1 <= noZeroNumber + 1; index1++) {
+        let index2 = index1 + 1;
+        let index3 = maxLength - 1;
+        while (index2 < index3) {
+            let sumOf3 = nums[index1] + nums[index2] + nums[index3];
+            if (sumOf3 === 0) {
+                let aTri = [];
+                // console.log(`add ${index1} ${index2} ${index3}`);
+                aTri.push(nums[index1], nums[index2], nums[index3]);
+                let addFlag = true;
+                triples.forEach((value) => {
+                    addFlag = addFlag && !isEqual(value, aTri)
+                })
+                if (addFlag) {
+                    triples.push(aTri);
+                }
+                index2++;
+            } else {
+                if (sumOf3 > 0) {
+                    index3--;
+                } else {
+                    index2++;
+                }
+            }
+        }
+    }
+    return triples
+};
+
+/**
+ *
+ * @param {number[]} a
+ * @param {number[]} b
+ * @returns {boolean}
+ */
+function isEqual(a, b) {
+    return a[0] === b[0] && a[1] === b[1] && a[2] === b[2]
+}
+
+let target =
+    [-4, -2, 1, -5, -4, -4, 4, -2, 0, 4, 0, -2, 3, 1, -5, 0]
+
+console.log(threeSum(target));
+
+```
+
