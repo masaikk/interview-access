@@ -998,3 +998,86 @@ console.log(threeSum(target));
 
 ```
 
+[1790. 仅执行一次字符串交换能否使两个字符串相等 - 力扣（LeetCode）](https://leetcode.cn/problems/check-if-one-string-swap-can-make-strings-equal/)
+
+我的做法是先字典序排序，先看看里面的元素是否相同，若是不同，就直接返回false。
+
+如果相同，就从首尾开始，找一下哪里两个元素不同，再交换回去，最后比较两个数组。代码如下所示：
+
+```javascript
+/**
+ * @param {string} s1
+ * @param {string} s2
+ * @return {boolean}
+ */
+var areAlmostEqual = function (s1, s2) {
+    let maxLength = s1.length;
+    let sortedS1 = Array.from(s1);
+    sortedS1.sort();
+    let sortedS2 = Array.from(s2);
+    sortedS2.sort();
+    for (let i = 0; i < maxLength; i++) {
+        if (sortedS1[i] !== sortedS2[i]) {
+            return false;
+        }
+    }
+    s1 = s1.split('')
+    s2 = s2.split('')
+    let left1 = 0;
+    let left2 = 0;
+    let right1 = maxLength - 1;
+    let right2 = maxLength - 1;
+
+    while (s1[left1] === s2[left2] && left1 < right1) {
+        left1++;
+        left2++;
+    }
+    while (s1[right1] === s2[right2] && left1 < right1) {
+        right1--;
+        right2--;
+    }
+    let temp = s1[left1];
+    s1[left1] = s1[right1];
+    s1[right1] = temp;
+    for (let i = 0; i < maxLength; i++) {
+        if (s1[i] !== s2[i]) {
+            return false;
+        }
+    }
+    return true;
+
+};
+
+let src1 = 'abcd'
+let src2 = 'dcba'
+console.log(areAlmostEqual(src1, src2));
+
+```
+
+但是耗时太多。
+
+官方的题解是不需要排序的：
+
+```javascript
+var areAlmostEqual = function(s1, s2) {
+    const n = s1.length;
+    const diff = [];
+    for (let i = 0; i < n; ++i) {
+        if (s1[i] !== s2[i]) {
+            if (diff.length >= 2) {
+                return false;
+            }
+            diff.push(i);
+        }
+    }
+    if (diff.length === 0) {
+        return true;
+    }
+    if (diff.length !== 2) {
+        return false;
+    }
+    return s1[diff[0]] === s2[diff[1]] && s1[diff[1]] === s2[diff[0]];
+};
+
+```
+
