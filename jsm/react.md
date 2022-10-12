@@ -2266,6 +2266,49 @@ export default Blog;
 
 ![image-20220929183045420](react.assets/image-20220929183045420.png)
 
+### CSS
+
+对于nextjs的css表示，nextjs默认对于index.tsx这里有文件styles.module.scss就能读取。
+
+在文件中使用的例子：
+
+```tsx
+import React from "react";
+import {useRouter} from "next/router";
+import styles from "./styles.module.scss";
+
+const IndexUser = () => {
+    const router = useRouter();
+    const indexNumber = router.query.id;
+
+    return (
+        <div className={styles.main}>
+            <h1 className={styles.te}>Index : {indexNumber}</h1>
+        </div>
+    )
+}
+
+export default IndexUser;
+
+```
+
+示例的scss文件为：
+
+```scss
+.main {
+  color: red;
+}
+
+.te {
+  border: 1px dashed black;
+}
+
+```
+
+可以正常进行css的展示：
+
+![image-20221012141524025](react.assets/image-20221012141524025.png)
+
 ### 404页面
 
 对于默认的404界面来说，只需要在pages下创建一个404.tsx写上内容就可以。
