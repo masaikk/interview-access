@@ -394,4 +394,60 @@ onBeforeMount(async ()=>{
 
 也可以达到上图效果。
 
+类似的，在nextjs这种SSR框架中，也可以使用以上的操作。在_app.tsx中导入init函数并且异步await。
+
+可以使用react的钩子函数`useEffect()`不过需要注意的是，这个hook里面不能直接使用async函数，示例如下：
+
+```tsx
+import '../styles/globals.css'
+import type {AppProps} from 'next/app'
+import init from "@/components/UseWASMComp1/pkg";
+import {useEffect} from "react";
+
+function MyApp({Component, pageProps}: AppProps) {
+    useEffect(() => {
+        async function initAsync() {
+            await init();
+            console.log('initial WASM pkg');
+        }
+        initAsync();
+    }, [])
+
+    return <Component {...pageProps} />
+}
+
+export default MyApp
+
+```
+
+具体在页面中，用法相似：
+
+```tsx
+import React, {useEffect} from "react";
+import {Button} from "antd";
+import init, {add, my_str} from "@/components/UseWASMComp1/pkg";
+
+const UseWASMComp1: React.FC = () => {
+
+    const clickHandler = () => {
+        console.log(my_str('6ams6LWb5p+v5p+v'));
+        console.log(add(114, 514));
+    }
+
+    return (
+        <>
+            <Button onClick={clickHandler}>use wasm</Button>
+        </>
+    )
+}
+
+export default UseWASMComp1;
+```
+
+可以得到一样的效果。
+
+![image-20221012211916136](WASM.assets/image-20221012211916136.png)
+
+
+
 ---
