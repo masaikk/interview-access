@@ -179,11 +179,107 @@ fn main() {
 + 把一个值赋值给其他变量的时候就会发生移动
 + 当一个包含heap数据的变量离开作用域的时候，它的值就会被drop函数清理掉，除非数据的所有权移动到另一个函数变量上面了。
 
+```rust
+fn main() {
+    let s1 = String::from("Hello");
+    let len = calculate_length(&s1);
+    println!("{} len is {}", s1, len);
+}
+
+fn calculate_length(s: &String) -> usize {
+    return s.len();
+}
+
+```
+
 在rust中，&表示引用，表示引用某些值而不取得所有权。
 
 <img src="WASM.assets/image-20221010203605416.png" alt="image-20221010203605416" style="zoom:50%;" />
 
 如上图，可以看出s是s1的一个引用。
+
+在以上函数`calculate_length(s: &String) -> usize`的作用域范围内，离开了作用域，s指向的值也不能被销毁，因为s只是一个引用，并没有获得字符串的所有权，这种情况叫做“借用”。借用的东西默认是不能修改的。如果想要修改，必须在函数的声明中加入关键字`mut`
+
+```rust
+fn main() {
+    let mut s1 = String::from("Hello");
+    let len = calculate_length(&mut s1);
+    println!("{} len is {}", s1, len);
+}
+
+fn calculate_length(s: &mut String) -> usize {
+    s.push_str(" world!");
+    return s.len();
+}
+
+```
+
+可变引用的一个限制：**在特定作用域内，对每一块数据，只能有一个可变的引用。**
+
+例如如下代码
+
+```rust
+fn main() {
+    let mut s1 = String::from("Hello");
+    let pr1 = &mut s1;
+    let pr2 = &mut s1;
+    pr1.push_str("ptr1");
+    pr2.push_str("ptr2");
+    println!("{}", s1);
+}
+```
+
+会报错，因为对于可变变量s1进行了两次可变引用。
+
+![image-20221013113228353](WASM.assets/image-20221013113228353.png)
+
+还有一个限制是不能把一个可变变量同时给一个可变引用和一个不可变引用。
+
+```rust
+fn main() {
+    let mut   s1 = String::from("Hello");
+    let pr1 = &mut s1;
+    let pr2 = & s1;
+    pr1.push_str("ptr1");
+    // pr2.push_str("ptr2");
+    println!("{}", s1);
+}
+```
+
+![image-20221013113454961](WASM.assets/image-20221013113454961.png)
+
+悬空引用：一个引用的的值已经被销毁了，但是引用还在，之后这个引用很有可能修改与之无关的值。而在rust中，编译器会保证这种情况不会发生。
+
+例如以下的代码是不行的
+
+```rust
+fn main() {
+    let mut s2 = re_str();
+}
+
+fn re_str() -> &mut String {
+    let mut s = String::from("hello");
+    return &mut s;
+}
+```
+
+因为在出定义域之外s已经被销毁了。
+
+rust中还有一个不持有所有权的数据结构，切片(slice)
+
+```rust
+fn main() {
+    let  s2 = String::from("hello world");
+    let fac1=&s2[0..5];
+    let fac2 = &s2[6..s2.len()];
+    println!("{} {}", fac1,fac2);
+}
+
+```
+
+在切片中，0和`s2.len()`都可以省略，这里的切片坐标是左闭右开的。实际上，字符串字面值就是切片。并且，对于函数的参数来说，建议使用字符串切片来当作参数，即`&str`。如果是字符串，就转化为切片的形式使用。
+
+
 
 ---
 
