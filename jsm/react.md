@@ -401,7 +401,35 @@ class InputComponent extends React.Component {
 
 `useRef()`可以以hook的形式来获取Dom里面的组件。
 
+可以传入null值，然后在组件的ref中进行绑定，之后可以通过current字段获取到dom。如下所示：
 
+```tsx
+import React, {MutableRefObject, useRef, useState} from "react";
+
+const CompE: React.FC = () => {
+    const [msg, setMsg] = useState("default");
+    const infoRef: MutableRefObject<any> = useRef(null);
+    const clickHandler = () => {
+        console.log(infoRef.current.value);
+    }
+    const changeMsg = (e: any) => {
+        console.log(e);
+        setMsg(e.target.value)
+    }
+    return (
+        <>
+            <button onClick={clickHandler}>click</button>
+            <input onChange={changeMsg} ref={infoRef} type={"text"} value={msg}/>
+        </>
+    )
+}
+
+export default CompE;
+```
+
+例如以上的input标签，可以通过`infoRef.current.value`来获取内容。
+
+![image-20221014001926844](react.assets/image-20221014001926844.png)
 
 #### 组件通信
 
