@@ -80,6 +80,8 @@ COPY ${base_path} ${path_nginx}
   
   + 配置文件位于/etc/nginx/conf.d/default.conf
   
+  + 需要注意的是，以下写法如果代理的内容指向本地，不应该写127.0.0.1或者localhost，这样会导致循环错误。一个解决办法是使用本地的局域网ip代替localhost。
+  
   + ```shell
     server {
         listen       80;
@@ -105,6 +107,37 @@ COPY ${base_path} ${path_nginx}
     ```
     
   + uWSGI配置详见django笔记。
+  
+  使用ningx配置密码验证跳转。参考[Nginx如何设置用户登录验证 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/351256125)。
+  
+  首先需要运行一个容器，绑定好端口。
+  
+  在attach之后使用`apt update`和`apt install apache2-util`来安装包`htpasswd`
+  
+  ```shell
+  cd /etc/nginx/
+  touch .passwd    #创建生成密码的文件
+  htpasswd -c /etc/nginx/.passwd Nihao    #设置用户名和密码，并把用户名、密码保存到指定文件中
+  
+  New password:
+  Re-type new password:
+  Adding password for user masaikk
+  ```
+  
+  这里就创建了一个用户叫做masaikk
+  
+  在nginx的配置文件中，可以使用如下的写法
+  
+  ```nginx
+      location / {
+          auth_basic "Please input password";
+          auth_basic_user_file /etc/nginx/.passwd;
+          proxy_pass http://zy;
+          # proxy_redirect default;
+      }
+  ```
+  
+  
   
 + nodered/node-red
 
