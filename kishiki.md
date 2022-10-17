@@ -1081,3 +1081,47 @@ var areAlmostEqual = function(s1, s2) {
 
 ```
 
+https://leetcode.cn/problems/letter-combinations-of-a-phone-number/
+
+循环多次，不过就是要注意对于数组的forin与forof的区别。
+
+<img src="kishiki.assets/image-20221017201616027.png" alt="image-20221017201616027" style="zoom:50%;" />
+
+<img src="kishiki.assets/image-20221017201639474.png" alt="image-20221017201639474" style="zoom:50%;" />
+
+```javascript
+/**
+ * @param {string} digits
+ * @return {string[]}
+ */
+var letterCombinations = function (digits) {
+    if (digits === '') return []
+    let map = {
+        '2': ['a', 'b', 'c'],
+        '3': ['d', 'e', 'f'],
+        '4': ['g', 'h', 'i'],
+        '5': ['j', 'k', 'l'],
+        '6': ['m', 'n', 'o'],
+        '7': ['p', 'q', 'r', 's'],
+        '8': ['t', 'u', 'v'],
+        '9': ['w', 'x', 'y', 'z']
+    };
+    let totalDig = digits.split('');
+    let result = [];
+    for (let i of totalDig) {
+        if (result.length === 0) {
+            result = map[i]
+        } else {
+            let nowResult = []
+            for (const iKey of result) {
+                for (const iKeyKey of map[i]) {
+                    nowResult.push(iKey + iKeyKey)
+                }
+            }
+            result = nowResult
+        }
+    }
+    return result
+};
+```
+
