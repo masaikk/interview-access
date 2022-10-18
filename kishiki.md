@@ -1081,9 +1081,9 @@ var areAlmostEqual = function(s1, s2) {
 
 ```
 
-https://leetcode.cn/problems/letter-combinations-of-a-phone-number/
+[17. 电话号码的字母组合 - 力扣（LeetCode）](https://leetcode.cn/problems/letter-combinations-of-a-phone-number/)
 
-循环多次，不过就是要注意对于数组的forin与forof的区别。
+循环多次，不过就是要注意对于数组的forin与forof的区别。它们在遍历列表的时候，forin是只会遍历下标的。
 
 <img src="kishiki.assets/image-20221017201616027.png" alt="image-20221017201616027" style="zoom:50%;" />
 

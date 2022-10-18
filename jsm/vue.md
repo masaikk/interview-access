@@ -2311,13 +2311,39 @@ export default {
 
 ---
 
+### element
+
+#### el-image的懒加载
+
+参考[ElementUI图片懒加载失效的问题 - 清晨_Ye - 博客园 (cnblogs.com)](https://www.cnblogs.com/qq752059037/p/14206289.html)
+
+对于每一个el-image标签来说，不只是要加上lazy属性。因为默认的懒加载是针对上一级块作用域的，所以还需要在遍历之前加入div包裹一下el-image，可以看到这里的div都被附上了el-image类：
+
+![image-20221018095251859](vue.assets/image-20221018095251859.png)
+
+还需要加入css
+
+```css
+.demo-image__lazy .el-image {
+  display: block;
+  min-height: 200px;
+  margin-bottom: 10px;
+}
+```
+
+#### element排版
+
+参考[Element-Ui组件（一）页面布局_究极死胖兽的博客-CSDN博客_element页面布局](https://blog.csdn.net/sps900608/article/details/90699185)
+
+---
+
 ### Vue3 SSR
 
 ssr操作是前端的发展趋势，在此记录学习笔记。参考代码：
 
 https://github.com/jeddygong/vite-templates/tree/master/koa2-ssr-vite-vue3-ts-pinia
 
-参考博客 https://juejin.cn/post/7086467466703929358
+参考博客 [教你使用 koa2 + vite + ts + vue3 + pinia 构建前端 SSR 企业级项目 - 掘金 (juejin.cn)](https://juejin.cn/post/7086467466703929358)
 
 ---
 
