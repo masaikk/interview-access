@@ -1125,3 +1125,45 @@ var letterCombinations = function (digits) {
 };
 ```
 
+[19. 删除链表的倒数第 N 个结点 - 力扣（LeetCode）](https://leetcode.cn/problems/remove-nth-node-from-end-of-list/)
+
+就是先遍历一下看看这个链表有多少个节点，然后再分别讨论删除头，尾和中间的情况。系统题解中还包含了一个双指针的解法，用两个指针之间的间隔为n。
+
+```javascript
+//Definition for singly-linked list.
+function ListNode(val, next) {
+    this.val = (val === undefined ? 0 : val)
+    this.next = (next === undefined ? null : next)
+}
+
+/**
+ * @param {ListNode} head
+ * @param {number} n
+ * @return {ListNode}
+ */
+var removeNthFromEnd = function (head, n) {
+    let totalNum = 0;
+    let firstCurrent = head;
+    while (firstCurrent !== null) {
+        firstCurrent = firstCurrent.next;
+        totalNum++;
+    }
+    let current = head;
+    if (n === totalNum) {
+        return current.next;
+    } else {
+        let currentNum = 1;
+        while (currentNum < totalNum - n) {
+            current = current.next;
+            currentNum++;
+        }
+        if (n === 1) {
+            current.next = null;
+        } else {
+            current.next = current.next.next;
+        }
+        return head;
+    }
+};
+```
+
