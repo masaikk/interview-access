@@ -701,6 +701,8 @@ export default {
 
 这里是父向子传递数据的方式之一。
 
+#### vue2
+
 首先在自组件中声明props，如下所示：
 
 ```javascript
@@ -730,7 +732,11 @@ export default {
     </div>
 ```
 
-完整代码为``demo2/src/views/CompPage.vue``
+完整代码为`demo2/src/views/CompPage.vue`
+
+#### vue3
+
+参考[【vue3 ＜script setup＞ props 使用与讲解】defineProps、withDefaults 类型限制、默认值设置_普通网友的博客-CSDN博客](https://blog.csdn.net/m0_67401228/article/details/123304831)
 
 ---
 

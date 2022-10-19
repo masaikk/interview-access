@@ -2403,3 +2403,88 @@ export default UseAnt1;
 
 ![image-20220930165928357](react.assets/image-20220930165928357.png)
 
+### 插槽props
+
+参考如下代码可以看到对于props插槽语法定义
+
+```tsx
+// ./components/layout/index.tsx
+import { FC } from "react";
+import { IFooterProps, Footer } from "../footer/index";
+import { INavBarProps, NavBar } from "../navbar/index";
+import styles from "./styles.module.scss";
+
+export interface ILayoutProps {
+  navbarData: INavBarProps;
+  footerData: IFooterProps;
+}
+
+export const Layout: FC<ILayoutProps & { children: JSX.Element }> = ({
+  navbarData,
+  footerData,
+  children,
+}) => {
+  return (
+    <div className={styles.layout}>
+      <NavBar {...navbarData} />
+      <main className={styles.main}>{children}</main>
+      <Footer {...footerData} />
+    </div>
+  );
+};
+```
+
+使用`FC<ILayoutProps & { children: JSX.Element }>`来类型交叉，这里的children为插槽。在props处解析props，使用`<NavBar {...navbarData} />`解析子组件props。这里也可以在`_app.tsx`中可以看出来：
+
+```tsx
+function MyApp({Component, pageProps}: AppProps) {
+    return <Component {...pageProps} />
+}
+```
+
+### 数据注入
+
+区分getStaticProps、getServerSideProps 和 getInitialProps。
+
+- getStaticProps： getStaticProps 多用于静态页面的渲染，它只会在生产中执行，而不会在运行的时候再次调用，这意味着它只能用于不常编辑的部分，每次调整都需要重新构建部署，官网信息的时效性比较敏感，所以后面章节我们只会有少部分应用到 getStaticProps，但这并不意味着它没用，在一些特殊的场景下会有奇效，后面章节会具体介绍。
+
+- getServerSideProps：getServerSideProps 只会执行在服务器端，不会在客户端执行。**因为这个特性，所以客户端的脚本打包会较小，相关数据不会有在客户端暴露的问题，相对更隐蔽安全，不过逻辑集中在服务器端处理，会加重服务器的负担，服务器成本也会更高。** 我们使用服务器端渲染的初衷，还是将处理的数据直接包含在 HTML 文本中，提高 SEO，至于客户端的逻辑我们并不需要都放在服务器端执行，所以我们不使用它来作为服务器端注入方式。
+
+- getInitialProps：这个方法和我们当时自己实现的很相似，初始化的时候，**如果是服务器端路由，那么数据的注入会在服务器端执行，对** **SEO** **友好，在实际的页面操作中，相关的逻辑会在** **客户端** **执行，从而减轻了服务器端的负担。** 所以综合成本来考虑，我们后期的数据注入主要会采用 getInitialProps 来进行。
+
+不过这里需要注意的一点是，数据的注入都是针对页面的，也就是 pages 目录下的，对组件进行数据注入是不支持的，所以我们应在页面中注入对应数据后再透传给页面组件。
+
+### header 修改
+
+不同于单独使用react进行ssr操作，在nextjs中使用`import Head from "next/head";`，使用Head标签来设置。参考
+
+```tsx
+// ./pages/_app.tsx
+import "../styles/globals.css";
+import type { AppProps, AppContext } from "next/app";
+import App from "next/app";
+import { Layout, ILayoutProps } from "@/components/layout";
+import code from "@/public/code.png";
+import Head from "next/head";
+
+const MyApp = (data: AppProps & ILayoutProps) => {
+  const { Component, pageProps, navbarData, footerData } = data;
+
+  return (
+    <div>
+      <Head>
+        <title>A Demo for 《深入浅出SSR官网开发指南》</title>
+        <meta
+          name="description"
+          content="A Demo for 《深入浅出SSR官网开发指南》"
+        />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <Layout navbarData={navbarData} footerData={footerData}>
+        <Component {...pageProps} />
+      </Layout>
+    </div>
+  );
+};
+```
+
