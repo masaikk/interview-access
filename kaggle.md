@@ -5,11 +5,6 @@
 对于pytorch机器学习的模板，参考[深度学习里面，请问有写train函数的模板吗？ - 知乎 (zhihu.com)](https://www.zhihu.com/question/523869554/answer/2633479163)
 
 ```python
-作者：吃货本货
-链接：https://www.zhihu.com/question/523869554/answer/2633479163
-来源：知乎
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
-
 import os,sys,time
 import numpy as np
 import pandas as pd

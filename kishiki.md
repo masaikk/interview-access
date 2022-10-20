@@ -274,7 +274,7 @@ JavaScript库函数参考[JavaScript 标准内置对象 - JavaScript | MDN (mozi
 
 ## 力扣题实录
 
-[1. 两数之和 - 力扣（LeetCode）](https://leetcode.cn/problems/two-sum/)
+### [1. 两数之和 - 力扣（LeetCode）](https://leetcode.cn/problems/two-sum/)
 
 给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出 和为目标值 target  的那 两个 整数，并返回它们的数组下标。
 
@@ -319,7 +319,7 @@ public:
 };
 ```
 
-[20. 有效的括号 - 力扣（LeetCode）](https://leetcode.cn/problems/valid-parentheses/)
+### [20. 有效的括号 - 力扣（LeetCode）](https://leetcode.cn/problems/valid-parentheses/)
 
 给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串 s ，判断字符串是否有效。
 
@@ -426,7 +426,7 @@ public:
 };
 ```
 
-[21. 合并两个有序链表 - 力扣（LeetCode）](https://leetcode.cn/problems/merge-two-sorted-lists/)
+### [21. 合并两个有序链表 - 力扣（LeetCode）](https://leetcode.cn/problems/merge-two-sorted-lists/)
 
 将两个升序链表合并为一个新的 升序 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
 
@@ -550,7 +550,7 @@ public:
 
 ```
 
-[53. 最大子数组和 - 力扣（LeetCode）](https://leetcode.cn/problems/maximum-subarray/)
+### [53. 最大子数组和 - 力扣（LeetCode）](https://leetcode.cn/problems/maximum-subarray/)
 
 给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
 
@@ -1165,5 +1165,125 @@ var removeNthFromEnd = function (head, n) {
         return head;
     }
 };
+```
+
+### [23. 合并K个升序链表 - 力扣（LeetCode）](https://leetcode.cn/problems/merge-k-sorted-lists/)
+
+![image-20221020161412123](kishiki.assets/image-20221020161412123.png)
+
+总的来说，题意就是合并多个有序的链表。
+
+可以先思考一下如何合并两个有序链表：
+
+首先分别讨论a，b是否为空。再依次移动current指针，直到其中一个链表为空，最后加上另外一个链表剩下的值。
+
+```javascript
+/**
+ *
+ * @param {ListNode} a
+ * @param {ListNode} b
+ * @return {ListNode}
+ */
+var merge2Lists = function (a, b) {
+    if (a == null) {
+        return b;
+    }
+    if (b == null) {
+        return a;
+    }
+    let head = new ListNode();
+    let current = head;
+    while (a != null && b != null) {
+        if (a.val > b.val) {
+            current.next = b;
+            current = current.next;
+            b = b.next;
+        } else {
+            current.next = a;
+            current = current.next;
+            a = a.next;
+        }
+    }
+    if (a == null) {
+        current.next = b;
+    } else {
+        current.next = a;
+    }
+    return head.next;
+}
+```
+
+对于合并n个链表，有如下思考：
+
+1. 可以维护一个当前的结果链表resList，然后遍历链表数列中的全部链表，使用合并两个链表的方法，合并当前链表和resList，最终得到结果。
+2. 使用分治法，维护一个函数`merge()`，它的签名为`var merge = (lists, l, r)`即返回链表数列lists的第l个到第r个链表merge之后的结果，所以整道题可以化为`merge(lists, 0, lists.length - 1);`。同时讨论边界情况，如果r==l，就直接返回本身这个链表。否则就取中间值mid，使用左右两边调用merge函数得到两个链表，再使用上面的合并两个链表的函数合并这两个链表。值得注意的是，在JavaScript中，取mid可以使用`let mid = (l + r) >> 1;`。参考代码如下
+
+```javascript
+/**
+ * Definition for singly-linked list.*/
+function ListNode(val, next) {
+    this.val = (val === undefined ? 0 : val)
+    this.next = (next === undefined ? null : next)
+}
+
+/**
+ * @param {ListNode[]} lists
+ * @return {ListNode}
+ */
+var mergeKLists = function (lists) {
+    return merge(lists, 0, lists.length - 1);
+};
+
+/**
+ *
+ * @param {ListNode} a
+ * @param {ListNode} b
+ * @return {ListNode}
+ */
+var merge2Lists = function (a, b) {
+    if (a == null) {
+        return b;
+    }
+    if (b == null) {
+        return a;
+    }
+    let head = new ListNode();
+    let current = head;
+    while (a != null && b != null) {
+        if (a.val > b.val) {
+            current.next = b;
+            current = current.next;
+            b = b.next;
+        } else {
+            current.next = a;
+            current = current.next;
+            a = a.next;
+        }
+    }
+    if (a == null) {
+        current.next = b;
+    } else {
+        current.next = a;
+    }
+    return head.next;
+}
+
+/**
+ *
+ * @param {ListNode[]} lists
+ * @param {number} l
+ * @param {number} r
+ * @return {ListNode}
+ */
+var merge = (lists, l, r) => {
+    if (l === r) {
+        return lists[l];
+    } else if (l > r) {
+        return null;
+    } else {
+        let mid = (l + r) >> 1;
+        return merge2Lists(merge(lists, l, mid), merge(lists, mid + 1, r));
+    }
+}
 ```
 
