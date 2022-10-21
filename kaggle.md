@@ -157,3 +157,8 @@ dfhistory = train_model(net,
 
 
 ## 比赛纪要
+
+### https://www.kaggle.com/competitions/house-prices-advanced-regression-techniques
+
+学习代码位于https://gitee.com/masaikk/kaggle-comp/tree/master/competitions/boston
+
