@@ -2343,6 +2343,77 @@ export default {
 
 ---
 
+使用`.env`
+
+参考官方文档[环境变量和模式 {#env-variables-and-modes} | Vite中文网 (vitejs.cn)](https://vitejs.cn/guide/env-and-mode.html#env-files)
+
+针对vite项目的env配置，可以开箱即用。在官方文档中说到，可以按照模式加载.env文件（在src之外），例如：
+
+![image-20221022170243017](vue.assets/image-20221022170243017.png)
+
+在env文件中，需要加载的变量必须要以`VITE`开头，例如：
+
+```ini
+VITE_APP_FOO="bar"
+```
+
+```ini
+VITE_SERVER_IP="http://127.0.0.1"
+VITE_SERVER_PORT="8000"
+```
+
+使用不同的模型加载这些变量：
+
+```json
+  "scripts": {
+    "dev": "vite --port 44991",
+    "dev:net1": "vite --port 44991 --mode net1",
+    "dev:net2": "vite --port 44991 --mode net2",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+```
+
+在使用中可以使用`import.meta.env`，例如
+
+```javascript
+    const logEnv = () => {
+      console.log(import.meta.env);
+      console.log(import.meta.env.VITE_APP_FOO);
+    }
+```
+
+![image-20221022170538680](vue.assets/image-20221022170538680.png)
+
+在这里可以看到VITE自有的几个属性：DEV，SSR等。
+
+为了在typescript中可以提示，可以在src下面的env.d.ts定义类型：
+
+```typescript
+/// <reference types="vite/client" />
+
+declare module '*.vue' {
+    import type {DefineComponent} from 'vue'
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types
+    const component: DefineComponent<{}, {}, any>
+    export default component
+}
+
+interface ImportMetaEnv extends Readonly<Record<string, string>> {
+    readonly VITE_APP_FOO: string,
+    readonly VITE_SERVER_IP: string,
+    readonly VITE_SERVER_PORT: string
+
+    // 更多环境变量...
+}
+
+interface ImportMeta {
+    readonly env: ImportMetaEnv
+}
+```
+
+---
+
 ### Vue3 SSR
 
 ssr操作是前端的发展趋势，在此记录学习笔记。参考代码：
