@@ -2031,8 +2031,6 @@ import { demoReducer } from "./demoReducer";
 export { demoReducer };
 ```
 
-
-
 ## Nextjs
 
 可以使用`yarn create next-app`来新建一个nextjs项目，并且如果带上`--typescript`则可以使用typescript语法编写，参考课程[react ssr nextjs从入门到放弃_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1V44y1K7Zz/?spm_id_from=333.337.search-card.all.click&vd_source=36542d6c49bf487d8a18d22be404b8d2)
@@ -2487,4 +2485,10 @@ const MyApp = (data: AppProps & ILayoutProps) => {
   );
 };
 ```
+
+## strapi
+
+strapi是一个CMS框架，可以理解为一个后端框架，帮助操作数据库的。参考官网[Strapi - Open source Node.js Headless CMS 🚀](https://strapi.io/)
+
+使用`npx create-strapi-app@latest my-project`安装，默认使用sqlite作为数据库。注意，使用sqlite作为数据库的时候，安装js依赖需要有python环境。
 
