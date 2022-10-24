@@ -2505,3 +2505,5 @@ strapi是一个CMS框架，可以理解为一个后端框架，帮助操作数�
 例如实体名字取名叫做Mypost。就需要在http://localhost:1337/api/myposts获取。在header中添加了token之后，可以获取到数据：
 
 ![image-20221024000946638](react.assets/image-20221024000946638.png)
+
+可以注意到，在这里返回了过多的数据比如说createdAt等不需要的数据。
