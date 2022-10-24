@@ -162,3 +162,37 @@ dfhistory = train_model(net,
 
 学习代码位于https://gitee.com/masaikk/kaggle-comp/tree/master/competitions/boston
 
+读取和查看列名
+
+![image-20221024200211086](kaggle.assets/image-20221024200211086.png)
+
+对于某一个列来说，可以用pandas的函数来展示数据：
+
+<img src="kaggle.assets/image-20221024200309164.png" alt="image-20221024200309164" style="zoom:50%;" />
+
+seaborn库函数还能展示对于两个列的二维关系表示：
+
+<img src="kaggle.assets/image-20221024200554213.png" alt="image-20221024200554213" style="zoom:50%;" />
+
+对于一个类似于OverallQual的离散型数据来说，可以画盒子图：
+
+<img src="kaggle.assets/image-20221024201015489.png" alt="image-20221024201015489" style="zoom:50%;" />
+
+按照对于SalePrice最相关的前十个数据画了相关矩阵
+
+```python
+ns.heatmap(corrmat, vmax=.8, square=True);
+#%%
+#saleprice correlation matrix
+k = 10 #number of variables for heatmap
+cols = corrmat.nlargest(k, 'SalePrice')['SalePrice'].index
+cm = np.corrcoef(df_train[cols].values.T)
+sns.set(font_scale=1.25)
+hm = sns.heatmap(cm, cbar=True, annot=True, square=True, fmt='.2f', annot_kws={'size': 10}, yticklabels=cols.values, xticklabels=cols.values)
+plt.show()
+```
+
+![image-20221024201909880](kaggle.assets/image-20221024201909880.png)
+
+
+
