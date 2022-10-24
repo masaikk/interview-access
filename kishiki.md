@@ -1287,3 +1287,37 @@ var merge = (lists, l, r) => {
 }
 ```
 
+https://leetcode.cn/problems/next-permutation/
+
+对于这个题目来说，题解为拿出两个指针，左边的指针指向最小的逆序的数，右边是降序的，然后从这个列表的右边开始搜索，找到最小的数字（刚好大于左指针的数字），它需要被交换，再交换这两个数字。这样也可以保证左指针右边的都是完全降序的。然后为了保证交换后的列表是最小的，需要将这个列表左指针右边的数据倒排成升序的，因为升序是最小的。如果找不到左指针，那么这个列表本身全部都是降序排列的，已经是最大的，就可以直接倒排。
+
+```javascript
+/**
+ * @param {number[]} nums
+ * @return {void} Do not return anything, modify nums in-place instead.
+ */
+var nextPermutation = function(nums) {
+    if (nums.length <= 1) {
+        return;
+    }
+    let leftHand
+    for (let i = nums.length - 2; i >= 0; i--) {
+        if (nums[i] < nums[i + 1]) {
+            leftHand = i;
+            break;
+        }
+    }
+    for (let i = nums.length - 1; i > leftHand; i--) {
+        if (nums[i] > nums[leftHand]) {
+            [nums[i], nums[leftHand]] = [nums[leftHand], nums[i]]
+            let chopped = nums.splice(leftHand + 1)
+            chopped.reverse();
+            nums.push(...chopped);
+            return;
+        }
+    }
+    nums.reverse();
+};
+
+```
+
