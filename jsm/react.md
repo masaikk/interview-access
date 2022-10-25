@@ -2507,3 +2507,123 @@ strapi是一个CMS框架，可以理解为一个后端框架，帮助操作数�
 ![image-20221024000946638](react.assets/image-20221024000946638.png)
 
 可以注意到，在这里返回了过多的数据比如说createdAt等不需要的数据。
+
+构建一对多的包含关系，比如这里的一个MyData包含多个MyPost。
+
+![image-20221025094426550](react.assets/image-20221025094426550.png)
+
+在获取数据的时候，应当注意到，这里的MyData只能获取一层：
+
+![image-20221025095028815](react.assets/image-20221025095028815.png)
+
+在路由中解决这个问题，可以添加参数populate为`*`。
+
+![image-20221025095148258](react.assets/image-20221025095148258.png)
+
+以上操作只能添加一级展开，如果需要嵌套关系全部展开，就需要安装插件`npm install strapi-plugin-populate-deep --save`，并且将刚才的参数的值改为`deep`。
+
+这个操作也可以在配置文件中用改变ctx的方式完成：
+
+```typescript
+/**
+ * mydata controller
+ */
+
+import { factories } from '@strapi/strapi'
+
+export default factories.createCoreController('api::mydata.mydata',({strapi})=>{
+  return{
+    async find(ctx) {
+      ctx.query = {
+        ...ctx.query,
+        populate: "deep",
+      };
+      const { data } = await super.find(ctx);
+      return data;
+    },
+  }
+});
+```
+
+对于多余的时间以及id数据，可以写一个工具函数剔除
+
+```typescript
+/**
+ * 移除对象中自动创建的时间字段
+ * @param obj
+ * @returns
+ */
+const removeTime = (obj) => {
+  const {createdAt, publishedAt, updatedAt, ...params} = obj || {};
+  Object.getOwnPropertyNames(params).forEach((item) => {
+    if (typeof params[item] === "object") {
+      if (Array.isArray(params[item])) {
+        params[item] = params[item].map((item) => {
+          return removeTime(item);
+        });
+      } else {
+        params[item] = removeTime(params[item]);
+      }
+    }
+  });
+  return params;
+};
+
+/**
+ * 移除属性和id
+ * @param {*} obj
+ * @returns
+ */
+const removeAttrsAndId = (obj) => {
+  const {attributes, id, ...params} = obj || {};
+  const newObj = {...attributes, ...params};
+  Object.getOwnPropertyNames(newObj).forEach((item) => {
+    if (typeof newObj[item] === "object") {
+      if (Array.isArray(newObj[item])) {
+        newObj[item] = newObj[item].map((item) => {
+          return removeAttrsAndId(item);
+        });
+      } else {
+        newObj[item] = removeAttrsAndId(newObj[item]);
+      }
+    }
+  });
+  return newObj;
+};
+
+export {
+  removeTime,
+  removeAttrsAndId,
+};
+
+```
+
+使用的时候
+
+```typescript
+/**
+ * mydata controller
+ */
+
+import { factories } from '@strapi/strapi'
+import { removeTime, removeAttrsAndId } from "../../../utils";
+
+export default factories.createCoreController('api::mydata.mydata',({strapi})=>{
+  return{
+    async find(ctx) {
+      ctx.query = {
+        ...ctx.query,
+        populate: "deep",
+      };
+      const { data } = await super.find(ctx);
+      return removeTime(removeAttrsAndId(data[0]));
+    },
+  }
+});
+
+```
+
+可以看到如下效果：
+
+![image-20221025101820647](react.assets/image-20221025101820647.png)
+
