@@ -836,6 +836,24 @@ class UserAdmin(admin.ModelAdmin):
 
 以上是使用类以及装饰器的方法。
 
+### fetch
+
+使用fetch来对于django发送post方法的话，需要注意参数的序列化。参考代码
+
+```typescript
+fetch(FULL_PATH, {
+    method: "POST",
+    body: qs.stringify(data), // data can be `string` or {object}!
+    headers: new Headers({
+      "Content-Type": "application/x-www-form-urlencoded",
+      Accept: "application/json, text/plain, */*",
+    }),
+    mode: "cors",
+  });
+```
+
+这里需要注意的是不能使用Object的方法，而是需要`const qs = require("qs");`而且需要配置cors。
+
 ---
 
 ## V8引擎
