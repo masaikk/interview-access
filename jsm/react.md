@@ -772,6 +772,18 @@ useEffect(() => {
     },[msg])
 ```
 
+##### useContext
+
+参考[React Hooks 系列之3 useContext - 掘金 (juejin.cn)](https://juejin.cn/post/6844904153584500749)
+
+##### useCallback
+
+参考[React Hooks 系列之5 useCallback - 掘金 (juejin.cn)](https://juejin.cn/post/6844904162040233997)
+
+##### useMemo
+
+参考[React Hooks 系列之6 useMemo - 掘金 (juejin.cn)](https://juejin.cn/post/6844904162304458760)
+
 ### react-router
 
 #### 安装
