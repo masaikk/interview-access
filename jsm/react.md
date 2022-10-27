@@ -2465,11 +2465,11 @@ interface CompPropsInterface {
     child1Prop: Child1Prop
 }
 
-const CompWithProps: FC<CompPropsInterface & { child?: JSX.Element }> = ({
-                                                                            num,
-                                                                            child1Prop,
-                                                                            child
-                                                                        }) => {
+const CompWithProps: FC<CompPropsInterface & { children: JSX.Element }> = ({
+                                                                               num,
+                                                                               child1Prop,
+                                                                               children
+                                                                           }) => {
     return (
         <>
             <div className={styles.main}>
@@ -2484,7 +2484,7 @@ const CompWithProps: FC<CompPropsInterface & { child?: JSX.Element }> = ({
                 </div>
 
                 <div>
-                    {child}
+                    {children}
                 </div>
 
             </div>
@@ -2494,6 +2494,8 @@ const CompWithProps: FC<CompPropsInterface & { child?: JSX.Element }> = ({
 }
 export {CompWithProps};
 export type {CompPropsInterface};
+
+
 
 
 ```
@@ -2523,6 +2525,48 @@ export {
 export type { Child1Prop };
 
 ```
+
+在使用的时候，可以参考
+
+```tsx
+let compProps:CompPropsInterface={
+    num:1,
+    child1Prop:{
+        msg1:'child props from feature'
+    },
+}
+
+const feature1: React.FC = () => {
+    return (
+        <>
+            <CompWithProps   num={compProps.num} child1Prop={compProps.child1Prop} >
+                <CompSlot></CompSlot>
+            </CompWithProps>
+
+        </>
+    )
+}
+```
+
+其中插槽组件的声明如下：
+
+```tsx
+import React from "react";
+
+const CompSlot: React.FC = () => {
+    return (
+        <>
+            <h3>插槽</h3>
+        </>
+    )
+}
+
+export default CompSlot;
+```
+
+这里分别将props和slot传入，这里的`<CompSlot></CompSlot>`对应`{ children: JSX.Element }`。可以成功渲染:
+
+![image-20221027183133609](react.assets/image-20221027183133609.png)
 
 ### 数据注入
 
