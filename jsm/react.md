@@ -2452,6 +2452,78 @@ function MyApp({Component, pageProps}: AppProps) {
 }
 ```
 
+如下所示
+
+```tsx
+import React, {FC} from "react";
+import type {Child1Prop} from "@/components/CompWithProps/Child1";
+import {Child1} from "@/components/CompWithProps/Child1";
+import styles from './styles.module.scss'
+
+interface CompPropsInterface {
+    num: number,
+    child1Prop: Child1Prop
+}
+
+const CompWithProps: FC<CompPropsInterface & { child?: JSX.Element }> = ({
+                                                                            num,
+                                                                            child1Prop,
+                                                                            child
+                                                                        }) => {
+    return (
+        <>
+            <div className={styles.main}>
+                <div>
+                    <h2>
+                        {num}
+                    </h2>
+
+                </div>
+                <div className={styles.comp1}>
+                    <Child1 {...child1Prop}></Child1>
+                </div>
+
+                <div>
+                    {child}
+                </div>
+
+            </div>
+
+        </>
+    )
+}
+export {CompWithProps};
+export type {CompPropsInterface};
+
+
+```
+
+子组件
+
+```tsx
+import React, {FC} from "react";
+
+interface Child1Prop {
+    msg1: string
+}
+
+const Child1: FC<Child1Prop> = ({
+                                    msg1
+                                }) => {
+    return (
+        <>
+            <h3>{msg1}</h3>
+        </>
+    )
+}
+
+export {
+    Child1
+};
+export type { Child1Prop };
+
+```
+
 ### 数据注入
 
 区分getStaticProps、getServerSideProps 和 getInitialProps。
