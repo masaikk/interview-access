@@ -30,7 +30,7 @@ P10中详细介绍了webpack在vue-cli-service的源码解读，之后需要可�
 
 ### vite
 
-vite会将js打包成ES Module的形式，比webpack更快，并且不需要loader就可以加载css文件。
+vite会将js打包成ES Module的形式，比webpack更快，并且不需要loader就可以加载css文件。利用浏览器的es module特性，vite将import改为了网络请求的格式获取，而不是像webpack预先打包。
 
 不同于webapck搭建的本地服务器使用的express服务器，vite1是使用了koa服务器，而vite2是使用的connect服务器。
 
@@ -620,7 +620,7 @@ export default function vitePluginTemplate(): PluginOption {
 
 ### vite-electron项目构建
 
-
+`npm create electron-vite`适用官方的项目。参考[GitHub - electron-vite/electron-vite-vue: 🥳 Really simple Electron + Vite + Vue boilerplate.](https://github.com/electron-vite/electron-vite-vue)
 
 ---
 
