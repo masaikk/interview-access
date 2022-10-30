@@ -593,7 +593,7 @@ public:
 };
 ```
 
-[70. 爬楼梯 - 力扣（LeetCode） (leetcode-cn.com)](https://leetcode-cn.com/problems/climbing-stairs/)
+### [70. 爬楼梯 - 力扣（LeetCode） (leetcode-cn.com)](https://leetcode-cn.com/problems/climbing-stairs/)
 
 假设你正在爬楼梯。需要 n 阶你才能到达楼顶。
 
@@ -639,7 +639,7 @@ public:
 
 **注意递归法不能用，会超时。**
 
-[94. 二叉树的中序遍历 - 力扣（LeetCode） (leetcode-cn.com)](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
+### [94. 二叉树的中序遍历 - 力扣（LeetCode） (leetcode-cn.com)](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
 
 给定一个二叉树的根节点 `root` ，返回它的 **中序** 遍历。
 
@@ -666,7 +666,7 @@ public:
 };
 ```
 
-[136. 只出现一次的数字 - 力扣（LeetCode）](https://leetcode.cn/problems/single-number/)
+### [136. 只出现一次的数字 - 力扣（LeetCode）](https://leetcode.cn/problems/single-number/)
 
 一开始我还在想对于这个题目中使用每个元素进行遍历，得到那个与众不同的数字，但是这样的时间复杂度是O(n*n)。
 
@@ -690,7 +690,7 @@ var singleNumber = function(nums) {
 };
 ```
 
-[3. 无重复字符的最长子串 - 力扣（LeetCode）](https://leetcode.cn/problems/longest-substring-without-repeating-characters/) 
+### [3. 无重复字符的最长子串 - 力扣（LeetCode）](https://leetcode.cn/problems/longest-substring-without-repeating-characters/) 
 
 给定一个字符串 `s` ，请你找出其中不含有重复字符的 **最长子串** 的长度。
 
@@ -731,7 +731,7 @@ var lengthOfLongestSubstring = function (s) {
 
 ```
 
-[5. 最长回文子串 - 力扣（LeetCode）](https://leetcode.cn/problems/longest-palindromic-substring/)
+### [5. 最长回文子串 - 力扣（LeetCode）](https://leetcode.cn/problems/longest-palindromic-substring/)
 
 寻找最短的子回文序列并且返回这个序列
 
@@ -857,7 +857,7 @@ var longestPalindrome = function (s) {
 };
 ```
 
-[11. 盛最多水的容器 - 力扣（LeetCode）](https://leetcode.cn/problems/container-with-most-water/)
+### [11. 盛最多水的容器 - 力扣（LeetCode）](https://leetcode.cn/problems/container-with-most-water/)
 
 这道题用两个for固然可以做出来，但是可以采取双指针法。从头和尾部进行遍历，对于两个指针，先算出他们之间的容量，再将更小的数据向中间移动，直到两个指针重合，最后比较得出最大的数据作为输出。
 
@@ -914,7 +914,7 @@ var maxArea = function (height) {
 };
 ```
 
-[15. 三数之和 - 力扣（LeetCode）](https://leetcode.cn/problems/3sum/)
+### [15. 三数之和 - 力扣（LeetCode）](https://leetcode.cn/problems/3sum/)
 
 花了很多时间讨论边界情况，需要注意的点：
 
@@ -998,7 +998,7 @@ console.log(threeSum(target));
 
 ```
 
-[1790. 仅执行一次字符串交换能否使两个字符串相等 - 力扣（LeetCode）](https://leetcode.cn/problems/check-if-one-string-swap-can-make-strings-equal/)
+### [1790. 仅执行一次字符串交换能否使两个字符串相等 - 力扣（LeetCode）](https://leetcode.cn/problems/check-if-one-string-swap-can-make-strings-equal/)
 
 我的做法是先字典序排序，先看看里面的元素是否相同，若是不同，就直接返回false。
 
@@ -1081,7 +1081,7 @@ var areAlmostEqual = function(s1, s2) {
 
 ```
 
-[17. 电话号码的字母组合 - 力扣（LeetCode）](https://leetcode.cn/problems/letter-combinations-of-a-phone-number/)
+### [17. 电话号码的字母组合 - 力扣（LeetCode）](https://leetcode.cn/problems/letter-combinations-of-a-phone-number/)
 
 循环多次，不过就是要注意对于数组的forin与forof的区别。它们在遍历列表的时候，forin是只会遍历下标的。
 
@@ -1125,7 +1125,7 @@ var letterCombinations = function (digits) {
 };
 ```
 
-[19. 删除链表的倒数第 N 个结点 - 力扣（LeetCode）](https://leetcode.cn/problems/remove-nth-node-from-end-of-list/)
+### [19. 删除链表的倒数第 N 个结点 - 力扣（LeetCode）](https://leetcode.cn/problems/remove-nth-node-from-end-of-list/)
 
 就是先遍历一下看看这个链表有多少个节点，然后再分别讨论删除头，尾和中间的情况。系统题解中还包含了一个双指针的解法，用两个指针之间的间隔为n。
 
@@ -1287,7 +1287,7 @@ var merge = (lists, l, r) => {
 }
 ```
 
-https://leetcode.cn/problems/next-permutation/
+### [31. 下一个排列 - 力扣（LeetCode）](https://leetcode.cn/problems/next-permutation/)
 
 对于这个题目来说，题解为拿出两个指针，左边的指针指向最小的逆序的数，右边是降序的，然后从这个列表的右边开始搜索，找到最小的数字（刚好大于左指针的数字），它需要被交换，再交换这两个数字。这样也可以保证左指针右边的都是完全降序的。然后为了保证交换后的列表是最小的，需要将这个列表左指针右边的数据倒排成升序的，因为升序是最小的。如果找不到左指针，那么这个列表本身全部都是降序排列的，已经是最大的，就可以直接倒排。
 
