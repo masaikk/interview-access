@@ -459,8 +459,10 @@
      });
     ```
 
-    
+30. nodejs中的path.resolve和path.join区别
 
+    对于`path.resolve()`来说，是直接返回绝对路径的，并且如果参数中有'../'或者'./'开头的，就也会做拼接。而`path.join()`是直接做字符串的拼接。参考链接http://once-and-only.com/programing/javascript/path-resolve%E3%81%AE%E4%BD%BF%E3%81%84%E6%96%B9/。
+    
 30. 
 
     

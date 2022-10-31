@@ -2,6 +2,8 @@
 
 ## 参考资料
 
+### torch机器学习模板
+
 对于pytorch机器学习的模板，参考[深度学习里面，请问有写train函数的模板吗？ - 知乎 (zhihu.com)](https://www.zhihu.com/question/523869554/answer/2633479163)
 
 ```python
@@ -154,7 +156,11 @@ dfhistory = train_model(net,
     mode="max")
 ```
 
+### pandas函数
 
+#### DF.dropna()
+
+用于过滤掉nan的数据，参考https://blog.csdn.net/weixin_38168620/article/details/79596798。它默认是删除含有一个及以上的NaN数据的行。
 
 ## 比赛纪要
 
