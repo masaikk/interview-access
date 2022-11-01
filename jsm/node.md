@@ -1,6 +1,6 @@
 # node
 
-这里是node底层的学习笔记，包括v8引擎的知识
+这里是node底层的学习笔记，包括v8引擎以及node服务端的知识
 
 ## v8引擎
 
@@ -35,3 +35,14 @@ webkit调用v8的结构
 ---
 
 ## webkit
+
+## NestJS
+
+参考掘金小册[NestJS 项目实战 - CookieBoty - 掘金小册 (juejin.cn)](https://juejin.cn/book/7065201654273933316)使用`nest new mynest`创建一个叫做mynest的项目，在此之前需要安装cli工具`npm install -g @nestjs/cli`。我的代码位于[mynest: nestjs的demo (gitee.com)](https://gitee.com/masaikk/mynest)。运行之后打开http://127.0.0.1:3000/可以看到：
+
+![image-20221101164213248](node.assets/image-20221101164213248.png)
+
+
+
+
+
