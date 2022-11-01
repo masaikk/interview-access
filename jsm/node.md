@@ -42,7 +42,70 @@ webkit调用v8的结构
 
 ![image-20221101164213248](node.assets/image-20221101164213248.png)
 
+### 建立controller
 
+使用`nest g co u1`建立一个名叫u1的controller，并且这个命令会自动在app.module.ts进行注册。
+
+```typescript
+import { Module } from '@nestjs/common';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { U1Controller } from './u1/u1.controller';
+
+@Module({
+  imports: [],
+  controllers: [AppController, U1Controller],
+  providers: [AppService],
+})
+export class AppModule {}
+
+```
+
+如果不需要生成spec文件，就需要在nest-cli.json中添加属性，参考
+
+```json
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "src",
+  "generateOptions": {
+    "spec": false
+  }
+}
+
+```
+
+在对应u1的controller中修改到如下内容
+
+```typescript
+import { Controller, Get } from "@nestjs/common";
+
+@Controller("u1")
+export class U1Controller {
+  @Get()
+  getHello(): string {
+    return "hello u1";
+  }
+}
+
+```
+
+浏览器中打开[127.0.0.1:3000/u1](http://127.0.0.1:3000/u1)，可以get到字符串：
+
+![image-20221101182231234](node.assets/image-20221101182231234.png)
+
+可以使用如下命令创建一个CURD：`nest g resource user `，打开[127.0.0.1:3000/user](http://127.0.0.1:3000/user)，对应到这里
+
+```typescript
+@Get()
+  findAll() {
+    return this.userService.findAll();
+  }
+```
+
+展示：
+
+![image-20221101182936970](node.assets/image-20221101182936970.png)
 
 
 
