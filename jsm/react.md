@@ -772,6 +772,8 @@ useEffect(() => {
     },[msg])
 ```
 
+如果第二个参数为空数组，那就只会在这个组件渲染的第一次执行第一个参数的回调函数。
+
 ##### useContext
 
 参考[React Hooks 系列之3 useContext - 掘金 (juejin.cn)](https://juejin.cn/post/6844904153584500749)
