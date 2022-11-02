@@ -434,3 +434,8 @@ int main() {
 
 ---
 
+# C
+
+主要内容是来自《Unix环境高级编程》，使用的环境是WSL2 Debian。参考代码[cunix: 使用c语言在unix环境下编程的代码练习 (gitee.com)](https://gitee.com/masaikk/cunix)。
+
+其中，如果要打开wsl内部文件夹，可以在文件资源管理器中打开`\\wsl$`。
