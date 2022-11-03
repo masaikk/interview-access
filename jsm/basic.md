@@ -554,7 +554,82 @@ postman.setGlobalVariable("csrftoken", csrf_token);
 
 使用mustache语法来添加head里面的``X-CSRFToken``字段，再次对于刚才被csrf拒绝的端口进行测试，即可成功运行。
 
-**使用axios解决csrf问题** 待补充
+**使用axios解决csrf问题** 
+
+首先可以先封装一下axios
+
+```typescript
+import axios from "axios";
+
+// 创建axios实例
+const service = axios.create({
+    // axios中请求配置有baseURL选项，表示请求URL公共部分
+    baseURL: "http://127.0.0.1:8000",
+    // 超时
+    timeout: 10000,
+
+
+
+});
+
+// request拦截器
+
+service.interceptors.request.use((config:any) => {
+    config.headers['X-Requested-With'] = 'XMLHttpRequest';
+    let regex = /.*csrftoken=([^;.]*).*$/; // 用于从cookie中匹配 csrftoken值
+    config.headers['X-CSRFToken'] = document.cookie.match(regex) === null ? null : document.cookie.match(regex)[1];
+    return config
+});
+
+
+// 响应拦截器
+// service.interceptors.response.use(res => {
+// )
+
+export default service;
+```
+
+然后需要注意在axios中发送post请求需要使用qs对于参数进行序列化。这里测试的函数如下
+
+```python
+@csrf_exempt
+def get_post(request):
+    thisid = request.POST.get('myid')
+    return HttpResponse(thisid)
+```
+
+使用的方法
+
+```typescript
+import service from "./requests";
+import qs from "qs"
+
+const fetchRequest = () => {
+    return service({
+        method: "POST",
+        url: "/form/getPost/",
+        data: qs.stringify({
+            myid: 1
+        })
+    })
+}
+
+export {
+    fetchRequest
+}
+```
+
+可以得到结果，后端得到了数据myid，并且进行解析后返回：
+
+![image-20221104001814812](basic.assets/image-20221104001814812.png)
+
+如果对于后端的view函数修改装饰器，就会直接403。`@csrf_protect`
+
+![image-20221104001947342](basic.assets/image-20221104001947342.png)
+
+对于这种情况，需要将csrf_token添加到header中，这里提供了两个参考方式[django前后端分离csrf验证的解决方法_HYESC的博客-CSDN博客_ensure_csrf_cookie](https://blog.csdn.net/HYESC/article/details/80611283)
+
+后端使用`from django.middleware.csrf import get_token`方法得到token，再将token发送至前端保存在cookies中。前端需要使用拦截器拦截到request，再解析cookies得到token，加入到header中。
 
 **csrf装饰器对于视图函数的设置：**
 
