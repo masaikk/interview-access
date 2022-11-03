@@ -439,3 +439,183 @@ int main() {
 主要内容是来自《Unix环境高级编程》，使用的环境是WSL2 Debian。参考代码[cunix: 使用c语言在unix环境下编程的代码练习 (gitee.com)](https://gitee.com/masaikk/cunix)。
 
 其中，如果要打开wsl内部文件夹，可以在文件资源管理器中打开`\\wsl$`。
+
+## 代码
+
+### 3-2
+
+创建一个空洞文件
+
+```c
+#include <stdio.h>
+#include "apue.h"
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include "include/my_err.h"
+
+char buf1[] = "abcdefghij";
+char buf2[] = "ABCDEFGHIJ";
+
+int
+main(void) {
+    int fd;
+    if ((fd = creat("file.hole", FILE_MODE)) < 0)
+        err_sys("creat error");
+    if (write(fd, buf1, 10) != 10)
+        err_sys("buf1 write error");
+/* offset now = 10 */
+    if (lseek(fd, 40, SEEK_SET) == -1)
+        err_sys("lseek error");
+/* offset now = 40 */
+    if (write(fd, buf2, 10) != 10)
+        err_sys("buf2 write error");
+/* offset now = 50 */
+    exit(0);
+}
+
+```
+
+在使用lseek()设置偏移量之后，可以使文件的偏移量从10设置到40，这时再写入10，就变成50。
+
+![image-20221103115411852](c.assets/image-20221103115411852.png)
+
+使用od目录查看内容
+
+![image-20221103115952781](c.assets/image-20221103115952781.png)
+
+注意以上的my_err.h的内容为
+
+```c
+//
+// Created by masaikk on 2022/11/3.
+//
+
+#ifndef CUNIX_MY_ERR_H
+#define CUNIX_MY_ERR_H
+
+#include <errno.h> /* for definition of errno */
+#include <stdarg.h> /* ISO C variable aruments */
+#include <stdlib.h>
+
+static void err_doit(int, int, const char *, va_list);
+
+/*
+ * Nonfatal error related to a system call.
+ * Print a message and return.
+ */
+void
+err_ret(const char *fmt, ...)
+{
+    va_list ap;
+
+    va_start(ap, fmt);
+    err_doit(1, errno, fmt, ap);
+    va_end(ap);
+}
+
+
+/*
+ * Fatal error related to a system call.
+ * Print a message and terminate.
+ */
+void
+err_sys(const char *fmt, ...)
+{
+    va_list ap;
+
+    va_start(ap, fmt);
+    err_doit(1, errno, fmt, ap);
+    va_end(ap);
+    exit(1);
+}
+
+
+/*
+ * Fatal error unrelated to a system call.
+ * Error code passed as explict parameter.
+ * Print a message and terminate.
+ */
+void
+err_exit(int error, const char *fmt, ...)
+{
+    va_list ap;
+
+    va_start(ap, fmt);
+    err_doit(1, error, fmt, ap);
+    va_end(ap);
+    exit(1);
+}
+
+
+/*
+ * Fatal error related to a system call.
+ * Print a message, dump core, and terminate.
+ */
+void
+err_dump(const char *fmt, ...)
+{
+    va_list ap;
+
+    va_start(ap, fmt);
+    err_doit(1, errno, fmt, ap);
+    va_end(ap);
+    abort(); /* dump core and terminate */
+    exit(1); /* shouldn't get here */
+}
+
+
+/*
+ * Nonfatal error unrelated to a system call.
+ * Print a message and return.
+ */
+void
+err_msg(const char *fmt, ...)
+{
+    va_list ap;
+
+    va_start(ap, fmt);
+    err_doit(0, 0, fmt, ap);
+    va_end(ap);
+}
+
+
+/*
+ * Fatal error unrelated to a system call.
+ * Print a message and terminate.
+ */
+void
+err_quit(const char *fmt, ...)
+{
+    va_list ap;
+
+    va_start(ap, fmt);
+    err_doit(0, 0, fmt, ap);
+    va_end(ap);
+    exit(1);
+}
+
+
+/*
+ * Print a message and return to caller.
+ * Caller specifies "errnoflag".
+ */
+static void
+err_doit(int errnoflag, int error, const char *fmt, va_list ap)
+{
+    char buf[MAXLINE];
+    vsnprintf(buf, MAXLINE, fmt, ap);
+    if (errnoflag)
+        snprintf(buf+strlen(buf), MAXLINE-strlen(buf), ": %s",
+                 strerror(error));
+    strcat(buf, "\n");
+    fflush(stdout); /* in case stdout and stderr are the same */
+    fputs(buf, stderr);
+    fflush(NULL); /* flushes all stdio output streams */
+}
+
+#endif //CUNIX_MY_ERR_H
+
+```
+
