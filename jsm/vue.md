@@ -2448,7 +2448,85 @@ export default {
 
 ```
 
+#### el-upload上传文件
 
+对于el-upload来说，是对于文件解析之后，向后端传递一个post请求，官方文档[Upload | Element Plus (element-plus.org)](http://element-plus.org/en-US/component/upload.html#basic-usage)，参考的代码如下
+
+```vue
+<template>
+  <div>
+    <div>upload</div>
+    <el-upload :action="targetUrl"
+               :auto-upload="true"
+               :on-success="uploadSuccess">
+      <el-button size="small" type="primary">点击选择图片</el-button>
+    </el-upload>
+    <div>
+      <el-upload
+          class="upload-demo"
+          drag
+          :action="targetUrl"
+          multiple
+      >
+
+        <div class="el-upload__text">
+          Drop file here or <em>click to upload</em>
+        </div>
+        <template #tip>
+          <div class="el-upload__tip">
+            图图放这里捏
+          </div>
+        </template>
+      </el-upload>
+    </div>
+  </div>
+
+</template>
+
+<script lang="ts">
+import {defineComponent} from "vue";
+
+export default defineComponent({
+  name: "UploadPic",
+  setup() {
+    const targetUrl = "http://127.0.0.1:8000";
+    const uploadSuccess = () => {
+      alert('uploadSuccess')
+    }
+    return {
+      targetUrl,
+      uploadSuccess
+    }
+  }
+})
+</script>
+```
+
+这里展示了单个文件上传以及多个文件上传的简易形式。如果使用django框架，参考的代码如下所示：
+
+```python
+@csrf_exempt
+def upload_pic(request):
+    if request.method == "POST":
+        fileDict = request.FILES.items()
+        # 获取上传的文件，如果没有文件，则默认为None
+        if not fileDict:
+            return JsonResponse({'msg': 'no file upload'})
+        for (k, v) in fileDict:
+            print("dic[%s]=%s" % (k, v))
+            fileData = request.FILES.getlist(k)
+            for file in fileData:
+                fileName = file._get_name()
+                filePath = os.path.join(os.getcwd(), 'tmp', fileName)
+                print('filepath = [%s]' % filePath)
+                try:
+                    writeFile(filePath, file)
+                except:
+                    return JsonResponse({'msg': 'file write failed'})
+        return JsonResponse({'msg': 'success'})
+```
+
+注意django的csrf机制，如果没有在headers中携带token，就需要加上装饰器`@csrf_exempt`。
 
 ---
 
