@@ -281,7 +281,37 @@ fn main() {
 
 在切片中，0和`s2.len()`都可以省略，这里的切片坐标是左闭右开的。实际上，字符串字面值就是切片。并且，对于函数的参数来说，建议使用字符串切片来当作参数，即`&str`。如果是字符串，就转化为切片的形式使用。
 
+### rust的模块化编程
 
+[了解下Rust 模块使用方式 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/474899358)
+
+可以在src下构建一个文件夹，例如utils，并且在文件夹里面创建文件mod.rs，类似于JavaScript的index.js。参考
+
+```rust
+pub fn get_add(a: isize, b: isize) -> isize {
+    return a + b;
+}
+```
+
+需要在main中使用`mod`关键字引用，再使用`use`关键字使用这个函数：
+
+```rust
+mod utils;
+
+use utils::get_add;
+
+fn main() {
+    let a: isize = 63;
+    let b: isize = 3;
+    let ans = get_add(a, b);
+    println!("ans is {}", ans);
+}
+
+```
+
+编译执行后：
+
+![image-20221108183408624](WASM.assets/image-20221108183408624.png)
 
 ---
 
