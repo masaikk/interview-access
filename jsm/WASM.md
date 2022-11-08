@@ -315,6 +315,8 @@ fn main() {
 
 ### rust命令行参数
 
+如果想用不具名的命令行参数，直接使用env包即可。
+
 如果想使用有名字的命令行参数，可以使用clap库，使用命令`cargo add clap --features derive`安装。
 
 如果需要cargo换源，参考[更换cargo源_LittleTan24的博客-CSDN博客_cargo换源](https://blog.csdn.net/tanshiqian/article/details/121963284)
@@ -365,7 +367,15 @@ fn main() {
 
 ![image-20221108235806718](WASM.assets/image-20221108235806718.png)
 
-在使用的时候可以使用`./rustuni --name masaikk`来使用。并且对于编译命令来说，使用
+在使用的时候可以使用`./rustuni --name masaikk`来使用。并且对于编译命令来说，使用`--`可以连接build时候的命令行参数，如下所示：
+
+```shell
+cargo run --package rustuni --bin rustuni -- --name masaikk --count 2
+```
+
+![image-20221109000054797](WASM.assets/image-20221109000054797.png)
+
+`--`后面的值都变成了build之后运行的参数。
 
 ---
 
