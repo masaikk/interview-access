@@ -313,6 +313,60 @@ fn main() {
 
 ![image-20221108183408624](WASM.assets/image-20221108183408624.png)
 
+### rust命令行参数
+
+如果想使用有名字的命令行参数，可以使用clap库，使用命令`cargo add clap --features derive`安装。
+
+如果需要cargo换源，参考[更换cargo源_LittleTan24的博客-CSDN博客_cargo换源](https://blog.csdn.net/tanshiqian/article/details/121963284)
+
+Cargo.toml类似于
+
+```toml
+[package]
+name = "rustuni"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "4.0.22", features = ["derive"] }
+
+```
+
+在使用clap的时候，参考代码
+
+```rust
+use clap::Parser;
+
+/// Simple program to greet a person
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    /// Name of the person to greet
+    #[arg(short, long)]
+    name: String,
+
+    /// Number of times to greet
+    #[arg(short, long, default_value_t = 1)]
+    count: u8,
+}
+
+fn main() {
+    let args = Args::parse();
+
+    for _ in 0..args.count {
+        println!("Hello {}!", args.name)
+    }
+}
+```
+
+在编译之后，还可以使用`-h`命令
+
+![image-20221108235806718](WASM.assets/image-20221108235806718.png)
+
+在使用的时候可以使用`./rustuni --name masaikk`来使用。并且对于编译命令来说，使用
+
 ---
 
 ## rust构建WASM
