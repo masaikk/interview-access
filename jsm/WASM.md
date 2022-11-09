@@ -410,7 +410,7 @@ fn calculate_sum(r: &Rectangle) -> u32 {
 }
 ```
 
-如果想在没定义fmt方法的情况下还想打印全部信息，可以加上注释`#[derive(Debug)]`
+如果想在没定义fmt方法的情况下还想打印全部信息，可以加上注释`#[derive(Debug)]`，并且使用`println!("{:?}", rec);`打印：
 
 ```rust
 #[derive(Debug)]
@@ -434,7 +434,50 @@ fn calculate_sum(r: &Rectangle) -> u32 {
 }
 ```
 
+![image-20221109182952054](WASM.assets/image-20221109182952054.png)
 
+使用`impl`关键字定义方法，并且第一个参数使用自己的引用`&self`
+
+```rust
+impl Rectangle {
+    fn calculate_me(&self) -> u32 {
+        self.height * self.width
+    }
+}
+```
+
+使用实例的加方法名运行`rec.calculate_me()`，并且这里rust会自动为调用方法的实例取借用，所以等价于`(&rec).calculate_me()`
+
+类似与CPP的静态方法，在rust里面叫做关联函数。与实例方法的区别在于在调用的使用使用`::`，例如：
+
+```rust
+#[derive(Debug)]
+struct Rectangle {
+    height: u32,
+    width: u32,
+}
+
+fn main() {
+    let r = Rectangle::rec_as(10);
+    println!("{}", r.calculate_me());
+}
+
+impl Rectangle {
+    fn calculate_me(&self) -> u32 {
+        self.height * self.width
+    }
+
+    fn rec_as(length: u32) -> Rectangle {
+        Rectangle {
+            height: length,
+            width: length,
+        }
+    }
+}
+
+```
+
+其中`Rectangle::rec_as(10);`就是关联函数。
 
 ---
 
