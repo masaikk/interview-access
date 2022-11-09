@@ -377,6 +377,65 @@ cargo run --package rustuni --bin rustuni -- --name masaikk --count 2
 
 `--`后面的值都变成了build之后运行的参数。
 
+### 结构体
+
+使用`struct`创建结构体，例如
+
+```rust
+struct Rectangle {
+    height: u32,
+    width: u32,
+}
+```
+
+在使用的时候，可以使用借用的方法
+
+```rust
+struct Rectangle {
+    height: u32,
+    width: u32,
+}
+
+fn main() {
+    let rec = Rectangle {
+        height: 3,
+        width: 4,
+    };
+    println!("{}",calculate_sum(&rec));
+}
+
+fn calculate_sum(r: &Rectangle) -> u32 {
+    let sum = r.height * r.width ;
+    return sum;
+}
+```
+
+如果想在没定义fmt方法的情况下还想打印全部信息，可以加上注释`#[derive(Debug)]`
+
+```rust
+#[derive(Debug)]
+struct Rectangle {
+    height: u32,
+    width: u32,
+}
+
+fn main() {
+    let rec = Rectangle {
+        height: 3,
+        width: 4,
+    };
+    println!("{:?}", rec);
+    println!("{}", calculate_sum(&rec));
+}
+
+fn calculate_sum(r: &Rectangle) -> u32 {
+    let sum = r.height * r.width;
+    return sum;
+}
+```
+
+
+
 ---
 
 ## rust构建WASM
