@@ -315,7 +315,7 @@ fn main() {
 
 ### rust命令行参数
 
-如果想用不具名的命令行参数，直接使用env包即可。
+如果想用不具名的命令行参数，直接使用std::env包读取到vector即可，类似于`let args: Vec<String> = env::args().collect();`。
 
 如果想使用有名字的命令行参数，可以使用clap库，使用命令`cargo add clap --features derive`安装。
 
@@ -479,13 +479,58 @@ impl Rectangle {
 
 其中`Rectangle::rec_as(10);`就是关联函数。
 
+### 包管理
+
+package是包，crate是单元包。
+
+![image-20221109185331646](WASM.assets/image-20221109185331646.png)
+
+cargo有一些惯例：
+
+![image-20221109191106273](WASM.assets/image-20221109191106273.png)
+
+一个package可以有多个二进制crate，可以放在src/bin下面。
+
+对于module来说，可以对于代码进行分块。使用`mod`关键字，并且可以嵌套。
+
+### 文件读取
+
+使用标准库的fs读取文本文件
+
+```rust
+use std::env;
+use std::fs;
+
+fn main() {
+    let args: Vec<String> = env::args().collect();
+    let query = &args[1];
+    let filename = &args[2];
+
+    // println!("search for {}", query);
+    // println!("In file {}", filename);
+
+    let contents = fs::read_to_string(filename).expect("read error");
+    println!("{}", contents);
+}
+```
+
+使用命令`cargo run --package rustuni --bin rustuni -- udtix poem.txt`
+
+这里的第一个参数设置为字符串udtix ，第二个参数为文件名字，并且与Cargo.toml齐平：
+
+![image-20221109193808926](WASM.assets/image-20221109193808926.png)
+
+可以读取文件内容：
+
+![image-20221109193924021](WASM.assets/image-20221109193924021.png)
+
 ---
 
 ## rust构建WASM
 
 可以参考[WebAssembly 与 Rust 编程系列05 Rust编写wasm模块_austindev的博客-CSDN博客_rust wasm](https://blog.csdn.net/austindev/article/details/107093013#:~:text=我们需要把rust代码编译成wasm目标模块%2C必须安装 rust WebAssembly 对应的target,我们可以通过 rustup 的target命令%2C 了解可用的target 以及是否安装)
 
-首先初始化项目
+首先初始化项目：
 
 ```shell
 cargo new --lib hello-wasm
