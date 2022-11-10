@@ -109,5 +109,80 @@ export class U1Controller {
 
 ![image-20221101182936970](node.assets/image-20221101182936970.png)
 
+### 创建Api版本号
+
+对于一个api来说，它的内部实现以及返回可能会变，所以可以添加版本号来标识api的不同。比如一开始的[127.0.0.1:3000/user](http://127.0.0.1:3000/user)可以变为[127.0.0.1:3000/v1/user](http://127.0.0.1:3000/v1/user)。
+
+首先在main.ts中导入版本库
+
+```typescript
+import { VersioningType } from "@nestjs/common";
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "./app.module";
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  app.enableVersioning({
+    type: VersioningType.URI,
+  });
+
+  await app.listen(3000);
+}
+
+bootstrap();
+
+```
+
+然后对于controller的方法，添加version装饰器
+
+```typescript
+  @Get()
+  @Version("1")
+  findAll() {
+    return this.userService.findAll();
+  }
+```
+
+使用[127.0.0.1:3000/v1/user](http://127.0.0.1:3000/v1/user)访问得到：
+
+![image-20221110201209800](node.assets/image-20221110201209800.png)
+
+如果想创建更多不同version的api，需要修改mian.ts的配置，比如说添加v1以及v2版本的api如下：
+
+```typescript
+import { VERSION_NEUTRAL, VersioningType } from "@nestjs/common";
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "./app.module";
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: [VERSION_NEUTRAL, "1", "2"],
+  });
+
+  await app.listen(3000);
+}
+
+bootstrap();
+
+```
+
+添加controller的第二个findAll方法
+
+```typescript
+  @Get()
+  @Version("2")
+  findAll2() {
+    return "version 2 find all";
+  }
+```
+
+使用[127.0.0.1:3000/v2/user](http://127.0.0.1:3000/v2/user)获取：
+
+![image-20221110203948386](node.assets/image-20221110203948386.png)
+
 
 
