@@ -2067,7 +2067,37 @@ const { condition } = storeToRefs(store);
 
 #### 持久化
 
-因为每次刷新页面都会导致状态更新，所以可以使用一个插件让状态保存下来。
+因为每次刷新页面都会导致状态更新，所以可以使用一个插件让状态保存下来。使用插件`pinia-plugin-persistedstate`
+
+需要在main.ts里面导入，并且在创建pinia中做为pinia的插件使用：
+
+```typescript
+import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
+const pinia = createPinia();
+pinia.use(piniaPluginPersistedstate);
+
+createApp(App).use(router).use(pinia).use(ElementPlus).mount("#app");
+```
+
+在store中设置存储方式
+
+```typescript
+import { defineStore } from "pinia";
+
+const mainStore = defineStore("mainStore", {
+  persist: true,
+  state: () => {
+    return {
+      condition: "star",
+    };
+  },
+  actions: {},
+});
+
+export { mainStore };
+```
+
+默认是存储在localStorage里面的。**但是值得注意的是，需要改变了一次store之后才能存储。**
 
 ---
 
