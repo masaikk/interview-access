@@ -2022,6 +2022,53 @@ export default {
 
 VueX推荐只使用一个``$store`` 
 
+### Pinia
+
+#### 基本使用
+
+pinia是对于VueX的新一代的状态管理库，官网地址[Home | Pinia (vuejs.org)](https://pinia.vuejs.org/)。
+
+与VueX不同的是，pinia鼓励创建多个store来分开管理状态，并且有着比VueX更好的对于typescript的支持和对hooks的支持。要使用pinia首先需要在main.ts中注册。
+
+```typescript
+import { createPinia } from "pinia";
+const pinia = createPinia();
+createApp(App).use(router).use(pinia)
+```
+
+在store/index中使用store
+
+```typescript
+import { defineStore } from "pinia";
+
+const mainStore = defineStore("mainStore", {
+  state: () => {
+    return {
+      condition: "star",
+    };
+  },
+  actions: {},
+});
+
+export { mainStore };
+```
+
+在使用上与VueX最大的不同在于无论是异步的请求还是同步的请求都可以写在actions里面。
+
+在组件中使用store实例的时候，导入并且创建store对象，并且可以使用官方的`storeToRefs`使这些状态转化成响应式的。
+
+```typescript
+import { storeToRefs } from "pinia";
+import { mainStore } from "../store";
+
+const store = mainStore();
+const { condition } = storeToRefs(store);
+```
+
+#### 持久化
+
+因为每次刷新页面都会导致状态更新，所以可以使用一个插件让状态保存下来。
+
 ---
 
 ### Axios封装
