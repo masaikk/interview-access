@@ -77,3 +77,15 @@ def get_target(reward, next_state, over):
 ## 时间序列预测
 
 参考视频[【时间序列预测】只需半天就能搞定 LSTM+Informer时间序列预测源码解读+时间序列airma模型—pandas/机器学习实战（python+opencv_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1Me4y1e7Jf/?vd_source=36542d6c49bf487d8a18d22be404b8d2)
+
+对于一个长的序列来说，如果使用滑动窗口进行预测的话，在预测进入到后期，用来进行预测的值都是之前预测出来的值，可信度降低。如果是使用之前全部的值用来预测的话，最早的值又有可能因为距离太远而对后面被预测的值产生负面影响。
+
+![image-20221113125521546](basicKnow.assets/image-20221113125521546.png)
+
+以为如上的问题，提出了一种叫做informer的方法，它应该要做到：
+
+1. attention系数计算得要快。
+2. Decoder需要一次性输出全部的输出。
+3. 堆叠encoder的速度也要快。
+
+ 
