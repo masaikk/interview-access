@@ -1849,6 +1849,18 @@ router.addRoute('father',{
 })
 ```
 
+#### 404页面
+
+类似于react-router，在router添加最下层的路由，绑定到404界面：
+
+```typescript
+  {
+    path: "/:w+",
+    name: "404",
+    component: () => import("@/pages/404.vue"),
+  },
+```
+
 ---
 
 ### VueX
@@ -2678,7 +2690,7 @@ interface ImportMeta {
 
 ---
 
-### Vue3 SSR
+## Vue3 SSR
 
 ssr操作是前端的发展趋势，在此记录学习笔记。参考代码：
 
@@ -2777,7 +2789,7 @@ const vite = require('vite');
 
 ---
 
-### 微前端-qiankun
+## 微前端-qiankun
 
 参考官网[qiankun - qiankun (umijs.org)](https://qiankun.umijs.org/)。微前端--组合各个前端项目并且使用同一个路由。
 
@@ -3686,6 +3698,8 @@ export default {
 
 ---
 
+## 源码学习
+
 ### vue2的数据劫持
 
 首先安装webpack等依赖，新建webpack.config.js的文件，内容参考
@@ -3991,6 +4005,12 @@ console.log(vm.myObj);
 ![image-20220825151840063](vue.assets/image-20220825151840063.png)
 
 以上情况只针对于对象的情况，下面讨论数组的处理方式，这里需要对数组的方法进行重写：
+
+---
+
+## 桌面应用开发
+
+背景：自从我通过vite开始，到现在，vite这个构建工具已经变得很成熟了。几个月前，vite3也发布了，并且正式成为了vue官方推荐的工具。使用vite和electron可以以很快的速度打包一个桌面应用，所以开新坑。基本内容来自掘金小册[Electron + Vue 3 桌面应用开发 - 刘晓伦liulun - 掘金课程 (juejin.cn)](https://juejin.cn/book/7152717638173966349/section/7151743530770120740)。
 
 
 
