@@ -14,7 +14,7 @@
 
 ### DQN
 
-参考[Simple_Reinforcement_Learning/2.双模型_平衡车.ipynb at main · lansinuote/Simple_Reinforcement_Learning · GitHub](https://github.com/lansinuote/Simple_Reinforcement_Learning/blob/main/6.DQN算法/2.双模型_平衡车.ipynb)就是建立一个Q网络，并且使用一个深度神经网络来根据state来计算action。注意，在以上实例代码中使用了model和next_model两个模型用来延迟更新。
+参考[Simple_Reinforcement_Learning/2.双模型_平衡车.ipynb at main · lansinuote/Simple_Reinforcement_Learning · GitHub](https://github.com/lansinuote/Simple_Reinforcement_Learning/blob/main/6.DQN算法/2.双模型_平衡车.ipynb)就是建立一个Q网络，并且使用一个深度神经网络来根据state来计算action。注意，在以上实例代码中使用了model和next_model两个模型用来延迟更新，它们分别是动作模型和经验模型。
 
 ```python
 def get_value(state, action):
@@ -68,7 +68,12 @@ def get_target(reward, next_state, over):
 
 ```
 
-以上函数用来计算真实的action，就是使用了next_model。
+以上函数用来计算真实的action，就是使用了next_model。`target = target.max(dim=1)[0]`是取所有动作当中分数最大的那个，即走过了深度神经网络层之后最有可能选择的那个动作表示当前应该选择的动作。注意这里要区分reward和分数的区别，reward是根据当前环境给出的，作为当前state选择action的反馈。
+
+以上平衡车的action空间是离散的，如果要考虑到连续的动作空间，可以参考[Simple_Reinforcement_Learning/3.双模型_倒立摆.ipynb at main · lansinuote/Simple_Reinforcement_Learning · GitHub](https://github.com/lansinuote/Simple_Reinforcement_Learning/blob/main/6.DQN算法/3.双模型_倒立摆.ipynb)因为DQN是不适合玩连续型的动作空间的，所以必须给动作空间离散化。
 
 ---
 
+## 时间序列预测
+
+参考视频[【时间序列预测】只需半天就能搞定 LSTM+Informer时间序列预测源码解读+时间序列airma模型—pandas/机器学习实战（python+opencv_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1Me4y1e7Jf/?vd_source=36542d6c49bf487d8a18d22be404b8d2)
