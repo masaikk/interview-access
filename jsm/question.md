@@ -314,7 +314,7 @@
 
     参考视频[链接](https://www.bilibili.com/video/BV1mf4y1Q7mg?spm_id_from=333.337.search-card.all.click&vd_source=36542d6c49bf487d8a18d22be404b8d2)
 
-    
+    主要是使用`Object.defineProperty`
 
 22. 讨论一下vue3中的数据劫持实现原理？
 
@@ -462,6 +462,10 @@
 30. nodejs中的path.resolve和path.join区别
 
     对于`path.resolve()`来说，是直接返回绝对路径的，并且如果参数中有'../'或者'./'开头的，就也会做拼接。而`path.join()`是直接做字符串的拼接。参考链接http://once-and-only.com/programing/javascript/path-resolve%E3%81%AE%E4%BD%BF%E3%81%84%E6%96%B9/。
+    
+30. 路由的两种实现方式？
+
+    主要是hash模式和history模式，参考[面试官为啥总是喜欢问前端路由实现方式？ - 掘金 (juejin.cn)](https://juejin.cn/post/7127143415879303204)
     
 30. 
 
