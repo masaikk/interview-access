@@ -111,11 +111,9 @@ def get_target(reward, next_state, over):
 3. 选取差异最大的Q才去计算attention。
 4. 对于那些没有更新的Q，就直接用96个Q的V的平均值代替（因为这些Q被视为和均匀分布相差不大，所以直接用均匀分布的平均数当作它的值）。
 
-有Self-attention Distilling算法。
-
 ![image-20221116115536226](basicKnow.assets/image-20221116115536226.png)
 
-
+有Self-attention Distilling算法，实质上是一个下采样操作，对于做了一次attention操作之后，使用1D的maxpoll操作减小序列的长度（论文中长度96变成长度48），然后送入下一次attention操作。操作逐层递减（这里的含义是逐层选拔），在堆叠多次之后，就是informer的decoder部分的操作。
 
 
 
