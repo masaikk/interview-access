@@ -92,7 +92,7 @@ def get_target(reward, next_state, over):
 
 #### attention问题
 
-结合transformer里面的K和V的理解[transformer中的Q,K,V到底是什么？ - 知乎 (zhihu.com)](https://www.zhihu.com/question/427629601)
+结合transformer里面的K和V的理解[transformer中的Q,K,V到底是什么？ - 知乎 (zhihu.com)](https://www.zhihu.com/question/427629601)以及[深度学习attention机制中的Q,K,V分别是从哪来的？ - 知乎 (zhihu.com)](https://www.zhihu.com/question/325839123/answer/2473804749)
 
 ![image-20221116104607531](basicKnow.assets/image-20221116104607531.png)
 
@@ -100,6 +100,21 @@ def get_target(reward, next_state, over):
 
 ![image-20221116110834987](basicKnow.assets/image-20221116110834987.png)
 
-并且，在informer论文中提到，计算每个Q的分布的时候，没必要去计算这个Q与全部的Key的分布，可以先对Key进行采样，减少计算量。这个算法在论文中叫做
+并且，在informer论文中提到，计算每个Q的分布的时候，没必要去计算这个Q与全部的Key的分布，可以先对Key进行（随机）采样，减少计算量。这个算法在论文中叫做ProbAttention。在论文中，是假设一个序列有96个token，那么对于正常来说，就有96个Q和96个K。论文中随机采样了25个K。所以计算到每个Q有25个（内积）值，论文中为了选取Q并且加速，直接对于每个Q来说选这些值中的最大值与均匀分布之间的差异。最后选择出差异最大的25个Q进入之后的操作。
+
+![image-20221116113558593](basicKnow.assets/image-20221116113558593.png)
+
+所以ProbAttention的贡献点在于：
+
+1. 对于K的采样。
+2. 使用最大值和平均值求差异。
+3. 选取差异最大的Q才去计算attention。
+4. 对于那些没有更新的Q，就直接用96个Q的V的平均值代替（因为这些Q被视为和均匀分布相差不大，所以直接用均匀分布的平均数当作它的值）。
+
+有Self-attention Distilling算法。
+
+
+
+
 
  
