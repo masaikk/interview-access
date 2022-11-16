@@ -113,6 +113,10 @@ def get_target(reward, next_state, over):
 
 有Self-attention Distilling算法。
 
+![image-20221116115536226](basicKnow.assets/image-20221116115536226.png)
+
+
+
 
 
 
