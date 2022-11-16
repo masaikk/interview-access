@@ -115,6 +115,16 @@ def get_target(reward, next_state, over):
 
 有Self-attention Distilling算法，实质上是一个下采样操作，对于做了一次attention操作之后，使用1D的maxpoll操作减小序列的长度（论文中长度96变成长度48），然后送入下一次attention操作。操作逐层递减（这里的含义是逐层选拔），在堆叠多次之后，就是informer的decoder部分的操作。
 
+#### decoder
+
+![image-20221116131150281](basicKnow.assets/image-20221116131150281.png)
+
+和transformer一样加入了mask机制，以保证某个时间节点的预测是只会参考之前的序列，而不会参考到后面的序列的。
+
+在位置编码上，除了序列中的绝对位置编码，还包括了对于时间相关的编码。论文中给出了日期的编码，与绝对位置编码叠加在一起。
+
+<img src="basicKnow.assets/image-20221116131628888.png" alt="image-20221116131628888" style="zoom:75%;" />
+
 
 
 
