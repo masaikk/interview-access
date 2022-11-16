@@ -76,7 +76,9 @@ def get_target(reward, next_state, over):
 
 ## 时间序列预测
 
-参考视频[【时间序列预测】只需半天就能搞定 LSTM+Informer时间序列预测源码解读+时间序列airma模型—pandas/机器学习实战（python+opencv_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1Me4y1e7Jf/?vd_source=36542d6c49bf487d8a18d22be404b8d2)
+### informer模型
+
+参考视频[【时间序列预测】只需半天就能搞定 LSTM+Informer时间序列预测源码解读+时间序列airma模型—pandas/机器学习实战（python+opencv_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1Me4y1e7Jf/?vd_source=36542d6c49bf487d8a18d22be404b8d2)原始论文[[2012.07436\] Informer: Beyond Efficient Transformer for Long Sequence Time-Series Forecasting (arxiv.org)](https://arxiv.org/abs/2012.07436)
 
 对于一个长的序列来说，如果使用滑动窗口进行预测的话，在预测进入到后期，用来进行预测的值都是之前预测出来的值，可信度降低。如果是使用之前全部的值用来预测的话，最早的值又有可能因为距离太远而对后面被预测的值产生负面影响。
 
@@ -87,5 +89,17 @@ def get_target(reward, next_state, over):
 1. attention系数计算得要快。
 2. Decoder需要一次性输出全部的输出。
 3. 堆叠encoder的速度也要快。
+
+#### attention问题
+
+结合transformer里面的K和V的理解[transformer中的Q,K,V到底是什么？ - 知乎 (zhihu.com)](https://www.zhihu.com/question/427629601)
+
+![image-20221116104607531](basicKnow.assets/image-20221116104607531.png)
+
+对于有些Q来说，他对于每个key的分配都是差不多一样的，这样的话这些Q在计算注意力机制的时候，是没有什么用的，可以剔除的。所以对于原始的句子，可以做采样。是可以通过计算每一个Q与均匀分布的差异，来看出哪个Q是没有贡献的Q。
+
+![image-20221116110834987](basicKnow.assets/image-20221116110834987.png)
+
+并且，在informer论文中提到，计算每个Q的分布的时候，没必要去计算这个Q与全部的Key的分布，可以先对Key进行采样，减少计算量。这个算法在论文中叫做
 
  
