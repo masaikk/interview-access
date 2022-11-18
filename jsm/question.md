@@ -467,6 +467,10 @@
 
     主要是hash模式和history模式，参考[面试官为啥总是喜欢问前端路由实现方式？ - 掘金 (juejin.cn)](https://juejin.cn/post/7127143415879303204)
     
+30. react与vue在fiber上的区别？
+
+    [阿里三面：灵魂拷问——有react fiber，为什么不需要vue fiber？_frontend_frank的博客-CSDN博客](https://blog.csdn.net/frontend_frank/article/details/123700502)
+    
 30. 
 
     
