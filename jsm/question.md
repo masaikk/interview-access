@@ -473,7 +473,88 @@
     
 30. 装饰器如何实现？
 
-    参考[第三章（前置知识-装饰器）_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1NG41187Bs?p=3&vd_source=36542d6c49bf487d8a18d22be404b8d2)
+    参考[第三章（前置知识-装饰器）_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1NG41187Bs?p=3&vd_source=36542d6c49bf487d8a18d22be404b8d2)，类似于Java中的注解，JavaScript的装饰器是如何实现的？
+    
+    需要分别讨论类装饰器，属性装饰器等。并且需要注意的是，装饰器实际上就是一个函数的语法糖表示。
+    
+    需要注意的是，如果要使用typescript的装饰器，需要打开tsconfig的设置`"experimentalDecorators": true`。
+    
+    + 类构造器
+    
+      使用`ClassDecorator`，可以在参数中获取到所装饰类的构造函数。
+    
+      如下所示，可以打印出这里的实例化的类
+    
+      ```typescript
+      const doc: ClassDecorator = (target: any) => {
+          console.log(target);
+      }
+      
+      @doc
+      class Masaikk {
+          constructor() {
+          }
+      }
+      
+      let me = new Masaikk();
+      
+      ```
+    
+      同时，也可以通过原型链给这个类添加属性。
+    
+      ```typescript
+      const doc: ClassDecorator = (target: any) => {
+          console.log(target);
+          target.prototype.name = 'masaikk';
+      }
+      
+      @doc
+      class Masaikk {
+          constructor() {
+          }
+      }
+      
+      let me: any = new Masaikk();
+      
+      console.log(me.name);
+      
+      ```
+    
+      ![image-20221120000926384](question.assets/image-20221120000926384.png)
+    
+    + 属性装饰器
+    
+      使用类型`PropertyDecorator`，接受两个参数，分别是target和key。`declare type PropertyDecorator = (target: Object, propertyKey: string | symbol) => void;`此时的target是指向原型对象的，而key是指向所装饰的属性的名字。比如如下所示：
+    
+      ```typescript
+      const doc: PropertyDecorator = (target: any, key: string | symbol) => {
+          console.log(target);
+          console.log()
+      }
+      
+      
+      class Masaikk {
+          @doc
+          public name:string;
+      
+          constructor() {
+              this.name = 'masaikk'
+          }
+      }
+      
+      let me: any = new Masaikk();
+      
+      console.log(me.name);
+      
+      ```
+    
+      ![image-20221120001614195](question.assets/image-20221120001614195.png)
+    
+    + 方法装饰器
+    
+      使用`MethodDecorator`，并且如果想要实现装饰器传参的用法，需要借助函数柯里化的知识。
+    
+    
     
 30. 
 
