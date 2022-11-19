@@ -471,6 +471,12 @@
 
     [阿里三面：灵魂拷问——有react fiber，为什么不需要vue fiber？_frontend_frank的博客-CSDN博客](https://blog.csdn.net/frontend_frank/article/details/123700502)
     
+30. 装饰器如何实现？
+
+    参考[第三章（前置知识-装饰器）_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1NG41187Bs?p=3&vd_source=36542d6c49bf487d8a18d22be404b8d2)
+    
+30. 
+
 30. 
 
     
