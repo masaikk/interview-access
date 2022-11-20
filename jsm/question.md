@@ -552,7 +552,69 @@
     
     + 方法装饰器
     
-      使用`MethodDecorator`，并且如果想要实现装饰器传参的用法，需要借助函数柯里化的知识。
+      使用`MethodDecorator`，并且如果想要实现装饰器传参的用法，需要借助函数柯里化的知识。函数签名`declare type MethodDecorator = <T>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => TypedPropertyDescriptor<T> | void;`第三个参数为描述符。
+      
+      ```typescript
+      const doc: MethodDecorator = (target: any, key: string | symbol, descriptor: any) => {
+          console.log(target);
+          console.log(key);
+          console.log(descriptor);
+      }
+      
+      
+      class Masaikk {
+          public name: string;
+          constructor() {
+              this.name = 'masaikk';
+          }
+      
+          @doc
+          saySomething() {
+              console.log("你好" + this.name);
+          }
+      }
+      
+      let me: any = new Masaikk();
+      
+      ```
+      
+      ![image-20221120113320525](question.assets/image-20221120113320525.png)
+      
+      如果想要实现装饰器传参，就要使用装饰器工厂的概念，也就是函数柯里化。类似与
+      
+      ```typescript
+      const dl: any = (mess: string) => {
+          return (target: any, key: string | symbol, descriptor: any) => {
+              let fc = descriptor.value;
+              fc(mess);
+          }
+      }
+      
+      class Masaikk {
+          public name: string;
+      
+          constructor() {
+              this.name = 'masaikk';
+          }
+      
+          @doc
+          saySomething() {
+              console.log("你好" + this.name);
+          }
+      
+          @dl('masakk')
+          say(mess: string) {
+              console.log("dl 装饰器 " + mess);
+          }
+      }
+      
+      let me: any = new Masaikk();
+      
+      ```
+      
+      通过描述符的value获取到函数，再调用它。
+      
+      ![image-20221120114802981](question.assets/image-20221120114802981.png)
     
     
     
