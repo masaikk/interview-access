@@ -94,6 +94,28 @@ export class U1Controller {
 
 ![image-20221101182231234](node.assets/image-20221101182231234.png)
 
+也可以添加Get装饰器，添加一个新的路由
+
+```typescript
+import { Controller, Get } from "@nestjs/common";
+
+@Controller("u1")
+export class U1Controller {
+  @Get()
+  getHello(): string {
+    return "hello u1";
+  }
+
+  @Get("another")
+  getAnother(): string {
+    return "another greet";
+  }
+}
+
+```
+
+![image-20221120191040655](node.assets/image-20221120191040655.png)
+
 ### 建立CURD
 
 可以使用如下命令创建一个CURD：`nest g resource user `，打开[127.0.0.1:3000/user](http://127.0.0.1:3000/user)，对应到这里
@@ -108,6 +130,25 @@ export class U1Controller {
 展示：
 
 ![image-20221101182936970](node.assets/image-20221101182936970.png)
+
+需要注意的是，创建单独的controller以及CRUD应用，在app.module里面的注册是不同的，参考以上的两个的注册为一个在imports中一个在controllers中。
+
+```typescript
+import { Module } from '@nestjs/common';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { U1Controller } from './u1/u1.controller';
+import { UserModule } from './user/user.module';
+
+@Module({
+  imports: [UserModule],
+  controllers: [AppController, U1Controller],
+  providers: [AppService],
+})
+export class AppModule {}
+```
+
+
 
 ### 创建Api版本号
 
