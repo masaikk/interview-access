@@ -777,6 +777,143 @@ export default {
 
 参考[【vue3 ＜script setup＞ props 使用与讲解】defineProps、withDefaults 类型限制、默认值设置_普通网友的博客-CSDN博客](https://blog.csdn.net/m0_67401228/article/details/123304831)
 
+### setup语法糖
+
+在setup语法糖中使用hook的形式使用props，emits和expose，参考[Vue3.2中的setup语法糖（强烈推荐） - 掘金 (juejin.cn)](https://juejin.cn/post/7036389587991658533)
+
+#### defineProps
+
+父组件
+
+```vue
+<template>
+  <div class="die">
+    <h3>我是父组件</h3>
+    <hello :name="name"></hello>
+  </div>
+</template>
+
+<script setup>
+  import Hello from './Hello'
+  
+  import {ref} from 'vue'
+  let name = ref('masaikk========')
+</script>
+```
+
+子组件
+
+```vue
+<template>
+  <div>
+    我是子组件{{name}} // 赵小磊========
+  </div>
+</template>
+
+<script setup>
+  import {defineProps} from 'vue'
+
+  defineProps({
+   name:{
+     type:String,
+     default:'我是默认值'
+   }
+ })
+</script>
+```
+
+#### defineEmits
+
+子组件
+
+```vue
+<template>
+  <div>
+    我是子组件{{name}}
+    <button @click="ziupdata">按钮</button>
+  </div>
+</template>
+
+<script setup>
+  import {defineEmits} from 'vue'
+
+  //自定义函数，父组件可以触发
+  const em=defineEmits(['updata'])
+  const ziupdata=()=>{
+    em("updata",'我是子组件的值')
+  }
+
+</script>
+```
+
+父组件
+
+```vue
+<template>
+  <div class="die">
+    <h3>我是父组件</h3>
+    <hello @updata="updata"></hello>
+  </div>
+</template>
+
+<script setup>
+  import Hello from './Hello'
+  
+  const updata = (data) => {
+    console.log(data); //我是子组件的值
+  }
+</script>
+```
+
+#### defineExpose
+
+由于暴露自身属性给父组件拿到。
+
+子组件
+
+```vue
+<template>
+  <div>
+    我是子组件
+  </div>
+</template>
+
+<script setup>
+  import {defineExpose,reactive,ref} from 'vue'
+  let ziage=ref(22)
+  let ziname=reactive({
+    name:'masaikk'
+  })
+  //暴露出去的变量
+  defineExpose({
+    ziage,
+    ziname
+  })
+</script>
+```
+
+父组件通过ref的方式拿到暴露的两个值。
+
+```vue
+<template>
+  <div class="die">
+    <h3 @click="isclick">我是父组件</h3>
+    <zi-hello ref="zihello"></zi-hello>
+  </div>
+</template>
+
+<script setup>
+  import ziHello from './ziHello'
+  import {ref} from 'vue'
+  const zihello = ref()
+
+  const isclick = () => {
+    console.log('接收ref暴漏出来的值',zihello.value.ziage)
+    console.log('接收reactive暴漏出来的值',zihello.value.ziname.name)
+  }
+</script>
+```
+
 ---
 
 ### provide和inject
