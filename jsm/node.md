@@ -118,7 +118,7 @@ export class U1Controller {
 
 ### 建立CURD
 
-可以使用如下命令创建一个CURD：`nest g resource user `，打开[127.0.0.1:3000/user](http://127.0.0.1:3000/user)，对应到这里
+可以使用如下命令创建一个CURD：`nest g resource user `，选择RESTful类型的，这个情况是使用请求的方式来判断具体的操作的，打开[127.0.0.1:3000/user](http://127.0.0.1:3000/user)，对应到这里
 
 ```typescript
 @Get()

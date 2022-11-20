@@ -615,8 +615,41 @@
       通过描述符的value获取到函数，再调用它。
       
       ![image-20221120114802981](question.assets/image-20221120114802981.png)
+      
+    + 参数装饰器
     
+      使用`ParameterDecorator`函数签名是`declare type ParameterDecorator = (target: Object, propertyKey: string | symbol, parameterIndex: number) => void;`
     
+      在这里的第三个参数是index，是参数的位置
+    
+      ```typescript
+      const docPara: ParameterDecorator = (target: any, key: string | symbol, index: any) => {
+          console.log(target);
+          console.log(key);
+          console.log(index);
+      }
+      
+      class Masaikk {
+          public name: string;
+      
+          constructor() {
+              this.name = 'masaikk';
+          }
+          
+          saySomething() {
+              console.log("你好" + this.name);
+          }
+          
+          say(@docPara mess: string) {
+              console.log("dl 装饰器 " + mess);
+          }
+      }
+      
+      let me: any = new Masaikk();
+      
+      ```
+    
+      ![image-20221120200845859](question.assets/image-20221120200845859.png)
     
 30. 
 
