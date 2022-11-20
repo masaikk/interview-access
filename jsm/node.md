@@ -116,6 +116,8 @@ export class U1Controller {
 
 ![image-20221120191040655](node.assets/image-20221120191040655.png)
 
+或者直接使用`@Body()`装饰器来获取body。
+
 ### 建立CURD
 
 可以使用如下命令创建一个CURD：`nest g resource user `，选择RESTful类型的，这个情况是使用请求的方式来判断具体的操作的，打开[127.0.0.1:3000/user](http://127.0.0.1:3000/user)，对应到这里
@@ -148,7 +150,38 @@ import { UserModule } from './user/user.module';
 export class AppModule {}
 ```
 
+对于一个controller来说，可以在参数中使用@Request或者@Query装饰器来获取request或者query，例如
 
+```typescript
+  @Get()
+  @Version("3")
+  fundAll3(@Query() query) {
+    console.log(query);
+    return {
+      code: 200,
+      message: query.name,
+    };
+  }
+```
+
+![image-20221121000311929](node.assets/image-20221121000311929.png)
+
+可以通过query对象来获取到message的值。注意它们是针对get请求来说的。
+
+针对于post请求，可以使用requset.body的形式。类似于：
+
+```typescript
+  @Post()
+  @Version("2")
+  create2(@Request() req) {
+    console.log(req.body);
+    return {
+      code: 200,
+    };
+  }
+```
+
+![image-20221121001232713](node.assets/image-20221121001232713.png)
 
 ### 创建Api版本号
 
