@@ -269,5 +269,103 @@ bootstrap();
 
 ![image-20221110203948386](node.assets/image-20221110203948386.png)
 
+### RxJs
 
+在nestjs中使用rxjs来处理异步队列，它的设计也有着“观察者模式”
+
+```typescript
+import { Observable } from "rxjs";
+
+const observable = new Observable<any>((subscriber) => {
+  subscriber.next(1);
+  subscriber.next(2);
+  subscriber.next(3);
+  setTimeout(() => {
+    subscriber.next(4);
+    subscriber.complete();
+  }, 3000);
+});
+
+observable.subscribe({
+  next: (num) => {
+    console.log(num);
+  },
+});
+```
+
+如上所示，定义可观测对象observable，它的参数订阅者`subscriber`可以通过`next()`来获取到消息，如上所示，对订阅者发送了四条消息。再对其进行订阅，并且打印这些消息。
+
+![image-20221121161204131](node.assets/image-20221121161204131.png)
+
+类似与如下代码，可以输出序列
+
+```typescript
+import { Observable, interval, take } from "rxjs";
+
+interval(500)
+  .pipe(take(5))
+  .subscribe((e) => {
+    console.log(e);
+  });
+
+```
+
+这里`interval(500)`表示为每500毫秒开始从0开始输出一个数字，`take(5)`表示截断到5，所以输出为
+
+![image-20221121161637307](node.assets/image-20221121161637307.png)
+
+
+
+如果将take换成map，就可以进行更多的操作`map((n) => ({ num: n }))`把n转换成对象。但是没有take就不会停。
+
+```typescript
+import { Observable, interval, take } from "rxjs";
+import { map } from "rxjs/operators";
+
+interval(500)
+  .pipe(map((n) => ({ num: n })))
+  .subscribe((e) => {
+    console.log(e);
+  });
+```
+
+![image-20221121162329833](node.assets/image-20221121162329833.png)
+
+同时也可以设计条件暂停订阅
+
+```typescript
+import { Observable, interval, take } from "rxjs";
+import { map } from "rxjs/operators";
+
+const subs = interval(500)
+  .pipe(map((n) => ({ num: n })))
+  .subscribe((e) => {
+    console.log(e);
+    if (e.num == 10) {
+      subs.unsubscribe();
+    }
+  });
+
+```
+
+![image-20221121162655558](node.assets/image-20221121162655558.png)
+
+对于传入的队列，也可以使用of来指定
+
+```typescript
+import { of, Observable, interval, take } from "rxjs";
+import { map } from "rxjs/operators";
+
+const subs = of(1, 1, 4, 5, 1, 4)
+  .pipe(map((n) => ({ num: n })))
+  .subscribe((e) => {
+    console.log(e);
+    if (e.num == 10) {
+      subs.unsubscribe();
+    }
+  });
+
+```
+
+![image-20221121163315203](node.assets/image-20221121163315203.png)
 
