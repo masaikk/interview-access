@@ -453,3 +453,57 @@ bootstrap();
 
 参考[第十七章（nestjs 异常拦截器）_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1NG41187Bs?p=17&vd_source=36542d6c49bf487d8a18d22be404b8d2)
 
+### swagger
+
+如果想使用swagger接口文档，需要安装依赖`npm install @nestjs/swagger swagger-ui-express -S`
+
+首先在main.ts导入`import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";`，再创建配置
+
+```typescript
+const options = new DocumentBuilder()
+  .setTitle("MyNest 文档")
+  .setVersion("1")
+  .build();
+```
+
+再生成文档和挂载
+
+```typescript
+  const document = SwaggerModule.createDocument(app, options);
+  SwaggerModule.setup("/api-docs", app, document);
+```
+
+最终main.ts的代码如下
+
+```typescript
+import { VERSION_NEUTRAL, VersioningType } from "@nestjs/common";
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "./app.module";
+import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: [VERSION_NEUTRAL, "1", "2", "3"],
+  });
+  const options = new DocumentBuilder()
+    .setTitle("MyNest 文档")
+    .setVersion("1")
+    .build();
+  const document = SwaggerModule.createDocument(app, options);
+  SwaggerModule.setup("/api-docs", app, document);
+
+  await app.listen(3000);
+}
+
+bootstrap();
+
+```
+
+可以访问[Swagger UI](http://localhost:3000/api-docs#/)得到。
+
+![image-20221121213000882](node.assets/image-20221121213000882.png)
+
+配置具体情况参考[第二十三章（nestjs swagger接口文档）_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1NG41187Bs?p=23&vd_source=36542d6c49bf487d8a18d22be404b8d2)
