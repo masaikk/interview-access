@@ -369,3 +369,87 @@ const subs = of(1, 1, 4, 5, 1, 4)
 
 ![image-20221121163315203](node.assets/image-20221121163315203.png)
 
+### 拦截器
+
+#### 响应拦截器
+
+对于响应来说，需要规范响应返回的数据，例如如下类型
+
+```typescript
+{
+          data,
+          status: 200,
+          message: "",
+          success: true,
+        };
+```
+
+因此，可以建立如下的响应拦截器
+
+```typescript
+import {
+  Injectable,
+  NestInterceptor,
+  CallHandler,
+  ExecutionContext,
+} from "@nestjs/common";
+import { map } from "rxjs/operators";
+import { Observable } from "rxjs";
+
+interface Data<T> {
+  data: T;
+}
+
+@Injectable()
+export class Response<T> implements NestInterceptor {
+  intercept(
+    context: ExecutionContext,
+    next: CallHandler<any>,
+  ): Observable<Data<T>> {
+    return next.handle().pipe(
+      map((data) => {
+        return {
+          data,
+          status: 200,
+          message: "这是一个返回，data字符串长度" + data.length,
+          success: true,
+        };
+      }),
+    );
+  }
+}
+
+```
+
+这里定义为了有类型提示，加入了接口Data，结合上一节中介绍了RxJs的导管的特点。注意加上装饰器`@Injectable()`，即可在main.ts中注入。
+
+```typescript
+import { VERSION_NEUTRAL, VersioningType } from "@nestjs/common";
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "./app.module";
+import { Response } from "./common/response";
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: [VERSION_NEUTRAL, "1", "2", "3"],
+  });
+  app.useGlobalInterceptors(new Response());
+
+  await app.listen(3000);
+}
+
+bootstrap();
+
+```
+
+之后的响应都被拦截器拦截下来并且都是返回希望的格式了，例如http://127.0.0.1:3000/v1/user得到
+
+![image-20221121211448049](node.assets/image-20221121211448049.png)
+
+#### 请求拦截器
+
+参考[第十七章（nestjs 异常拦截器）_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1NG41187Bs?p=17&vd_source=36542d6c49bf487d8a18d22be404b8d2)
+
