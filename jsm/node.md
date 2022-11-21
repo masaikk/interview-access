@@ -507,3 +507,7 @@ bootstrap();
 ![image-20221121213000882](node.assets/image-20221121213000882.png)
 
 配置具体情况参考[第二十三章（nestjs swagger接口文档）_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1NG41187Bs?p=23&vd_source=36542d6c49bf487d8a18d22be404b8d2)
+
+### typeORM
+
+使用typeORM连接数据库，安装依赖`npm install --save @nestjs/typeorm typeorm mysql2`
