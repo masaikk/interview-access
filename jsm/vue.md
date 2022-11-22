@@ -34,7 +34,7 @@ P10中详细介绍了webpack在vue-cli-service的源码解读，之后需要可�
 
 #### 基本概念
 
-vite会将js打包成ES Module的形式，比webpack更快，并且不需要loader就可以加载css文件。利用浏览器的es module特性，vite将import改为了网络请求的格式获取，而不是像webpack预先打包。对于vite打包的时候，是调用了rullup进行打包，在此之前
+vite会将js打包成ES Module的形式，比webpack更快，并且不需要loader就可以加载css文件。利用浏览器的es module特性，vite将import改为了网络请求的格式获取，而不是像webpack预先打包。对于vite打包的时候，在dev阶段为了追求速度，是使用了esbuild进行打包。在build阶段，是调用了rullup进行打包。
 
 不同于webapck搭建的本地服务器使用的express服务器，vite1是使用了koa服务器，而vite2是使用的connect服务器。
 
@@ -51,7 +51,7 @@ vite会将js打包成ES Module的形式，比webpack更快，并且不需要load
 使用类似于vue-cli的vite脚手架@vitejs/create-app
 
 ```shell
-create-app
+npm install @vitejs/create-app -g
 ```
 
 #### vite的加载问题
