@@ -34,7 +34,18 @@ P10中详细介绍了webpack在vue-cli-service的源码解读，之后需要可�
 
 #### 基本概念
 
-vite会将js打包成ES Module的形式，比webpack更快，并且不需要loader就可以加载css文件。利用浏览器的es module特性，vite将import改为了网络请求的格式获取，而不是像webpack预先打包。对于vite打包的时候，在dev阶段为了追求速度，是使用了esbuild进行打包。在build阶段，是调用了rullup进行打包。
+vite会将js打包成ES Module的形式，比webpack更快，并且不需要loader就可以加载css文件。利用浏览器的es module特性，vite将import改为了网络请求的格式获取，而不是像webpack预先打包。对于vite打包的时候，在dev阶段为了追求速度，是使用了esbuild进行打包。esbuild虽然快，但是还是有缺点的。
+
+- 不支持降级到 `ES5` 的代码。这意味着在低端浏览器代码会跑不起来。
+- 不支持 `const enum` 等语法。这意味着单独使用这些语法在 esbuild 中会直接抛错。
+- 不提供操作打包产物的接口，像 Rollup 中灵活处理打包产物的能力(如`renderChunk`钩子)在 Esbuild 当中完全没有。
+- 不支持自定义 Code Splitting 策略。传统的 Webpack 和 Rollup都提供了自定义拆包策略的 API，而 Esbuild 并未提供，从而降级了拆包优化的灵活性。
+
+因此在build阶段，是调用了rullup进行打包。但是在生产环境的打包过程中，使用了esbuild进行了代码压缩。
+
+![image.png](vue.assets/b9f3cba1416b4d778af6d62ca4430c44tplv-k3u1fbpfcp-zoom-in-crop-mark3024000.awebp)
+
+从架构图中可以看到，在生产环境中 Esbuild 压缩器通过插件的形式融入到了 Rollup 的打包流程中。
 
 不同于webapck搭建的本地服务器使用的express服务器，vite1是使用了koa服务器，而vite2是使用的connect服务器。
 
