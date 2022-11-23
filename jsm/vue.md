@@ -4158,7 +4158,27 @@ console.log(vm.myObj);
 
 ## 桌面应用开发
 
-背景：自从我通过vite开始，到现在，vite这个构建工具已经变得很成熟了。几个月前，vite3也发布了，并且正式成为了vue官方推荐的工具。使用vite和electron可以以很快的速度打包一个桌面应用，所以开新坑。基本内容来自掘金小册[Electron + Vue 3 桌面应用开发 - 刘晓伦liulun - 掘金课程 (juejin.cn)](https://juejin.cn/book/7152717638173966349/section/7151743530770120740)。
+背景：自从我通过vite开始，到现在，vite这个构建工具已经变得很成熟了。几个月前，vite3也发布了，并且正式成为了vue官方推荐的工具。使用vite和electron可以以很快的速度打包一个桌面应用，所以开新坑。基本内容来自掘金小册[Electron + Vue 3 桌面应用开发 - 刘晓伦liulun - 掘金课程 (juejin.cn)](https://juejin.cn/book/7152717638173966349/section/7151743530770120740)。我的代码链接[electron-jue-jin: 使用vue3+ts+electron构建桌面应用。 (gitee.com)](https://gitee.com/masaikk/electron-jue-jin)。
+
+### 建立项目
+
+为了有更好的对于应用的把握性，所以手动建立新项目，首先创建vue项目`npm create vite@latest electron-jue-jin -- --template vue-ts`再手动添加electron。
+
+创建项目的入口文件
+
+```typescript
+//src\main\mainEntry.ts
+import { app, BrowserWindow } from "electron";
+
+let mainWindow: BrowserWindow;
+
+app.whenReady().then(() => {
+  mainWindow = new BrowserWindow({});
+  mainWindow.loadURL(process.argv[2]);
+});
+```
+
+
 
 
 
