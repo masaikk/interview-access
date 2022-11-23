@@ -269,6 +269,14 @@ bootstrap();
 
 ![image-20221110203948386](node.assets/image-20221110203948386.png)
 
+### 守卫
+
+守卫有一个单独的责任。它们根据运行时出现的某些条件（例如权限，角色，访问控制列表等）来确定给定的请求是否由路由处理程序处理。这通常称为授权。在传统的 Express 应用程序中，通常由中间件处理授权(以及认证)。中间件是身份验证的良好选择，因为诸如 token 验证或添加属性到 request 对象上与特定路由(及其元数据)没有强关联。
+
+*守卫在每个中间件之后执行，但在任何拦截器或管道之前执行。*
+
+[小满nestjs（第二十一章 nestjs 守卫）_小满zs的博客-CSDN博客_nestjs 守卫](https://blog.csdn.net/qq1195566313/article/details/127175529?ops_request_misc=%7B%22request%5Fid%22%3A%22166916857616782425124866%22%2C%22scm%22%3A%2220140713.130102334.pc%5Fall.%22%7D&request_id=166916857616782425124866&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-1-127175529-null-null.142^v66^pc_rank_34_queryrelevant25,201^v3^add_ask,213^v2^t3_esquery_v1&utm_term=小满nestjs 守卫&spm=1018.2226.3001.4187)
+
 ### RxJs
 
 在nestjs中使用rxjs来处理异步队列，它的设计也有着“观察者模式”
