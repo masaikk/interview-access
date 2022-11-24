@@ -718,3 +718,71 @@ void set_fl(int fd, int flags) {
 ### 4-3 lstat读取文件类型信息
 
 ![image-20221124102553056](c.assets/image-20221124102553056.png)
+
+### 11-4 创建线程并且打印线程tid
+
+```c
+#include <stdio.h>
+#include <pthread.h>
+#include "apue.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include "include/my_err.h"
+
+
+pthread_t ntid;
+
+void
+printids(const char *s) {
+    pid_t pid;
+    pthread_t tid;
+
+    pid = getpid();
+    tid = pthread_self();
+    printf("%s pid %lu tid %lu (0x%lx)\n", s, (unsigned long) pid,
+           (unsigned long) tid, (unsigned long) tid);
+}
+
+void *
+thr_fn(void *arg) {
+    printids("new thread: ");
+    return ((void *) 0);
+}
+
+int
+main(void) {
+    int err;
+
+    err = pthread_create(&ntid, NULL, thr_fn, NULL);
+    if (err != 0)
+        err_exit(err, "can't create thread");
+    printids("main thread:");
+    sleep(1);
+    exit(0);
+}
+
+
+```
+
+需要注意的是，在这个出现里面，是不会自动链接`#include <pthread.h>`需要手动配置CMAKE
+
+```cmake
+cmake_minimum_required(VERSION 3.18)
+project(cunix C)
+
+set(CMAKE_C_STANDARD 99)
+
+find_package(Threads REQUIRED)
+
+
+add_executable(cunix main.c include/my_err.h)
+target_link_libraries(cunix PRIVATE ${CMAKE_THREAD_LIBS_INIT})
+```
+
+这里的`pthread_create(&ntid, NULL, thr_fn, NULL);`表示创建一个线程，返回0就是表示正常。并且第三个函数为要执行的函数，第四个参数为一个结构体，用于当作参数输入到第三个作为创建的线程执行的参数中。并且，因为如果主线程停止了，整个进程也会停止，所以要sleep一下。
+
+最终的输入如下，分别表示了主线程与新建的线程:
+
+![image-20221124211100129](c.assets/image-20221124211100129.png)
+
