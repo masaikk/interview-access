@@ -489,7 +489,7 @@ n 数据段是指进程执行时用到的数据，若进程的子程序是非共
 
 ## 代码
 
-### 3-2
+### 3-2 文件空洞
 
 创建一个空洞文件
 
@@ -664,5 +664,54 @@ err_doit(int errnoflag, int error, const char *fmt, va_list ap)
 
 #endif //CUNIX_MY_ERR_H
 
+```
+
+### 3-9 I/O效率 读入写出
+
+```c
+#include <stdio.h>
+#include "apue.h"
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include "include/my_err.h"
+
+#define BUFFSIZE 4096
+
+int
+main(void) {
+    int n;
+    char buf[BUFFSIZE];
+    while ((n = read(STDIN_FILENO, buf, BUFFSIZE)) > 0) {
+        if (write(STDOUT_FILENO, buf, n) != n) {
+            err_sys("write error");
+        }
+    }
+    if (n < 0) {
+        err_sys("read error");
+    }
+    exit(0);
+}
+
+```
+
+根据文件重定向符来操作需要读入的文件以及写出的文件，每次读一个BUFFSIZE。
+
+![image-20221124095318075](c.assets/image-20221124095318075.png)
+
+### 3-14 获取与修改文件状态标志
+
+```c
+void set_fl(int fd, int flags) {
+    int val;
+    if((val=fcntl(fd,F_GETFL,0))<0){
+        err_sys("fcntl failed");
+    }
+    val |=flags;
+    if(fcntl(fd,F_SETFL,0)<0){
+        err_sys("fcntl failed");
+    }
+}
 ```
 
