@@ -715,3 +715,6 @@ void set_fl(int fd, int flags) {
 }
 ```
 
+### 4-3 lstat读取文件类型信息
+
+![image-20221124102553056](c.assets/image-20221124102553056.png)
