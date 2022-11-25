@@ -2757,3 +2757,75 @@ export default factories.createCoreController('api::mydata.mydata',({strapi})=>{
 
 ![image-20221025101820647](react.assets/image-20221025101820647.png)
 
+---
+
+## @react-three/fiber
+
+[minecraft-react: 使用react-three-fiber库构建一个类minecraft游戏 (gitee.com)](https://gitee.com/masaikk/minecraft-react)
+
+---
+
+创建了项目之后，添加sky。
+
+```jsx
+import { Canvas } from "@react-three/fiber";
+import { Sky } from "@react-three/drei";
+
+function App() {
+  return (
+    <>
+      <Canvas>
+        <Sky sunPosition={[100, 100, 20]}></Sky>
+      </Canvas>
+    </>
+  );
+}
+
+export default App;
+
+```
+
+创建textures.js导入材质
+
+```javascript
+import { TextureLoader } from "three";
+import { dirtImg, grassImg, glassImg, woodImg, logImg } from "./images";
+
+const dirtTexture = new TextureLoader(dirtImg);
+const logTexture = new TextureLoader(logImg);
+const grassTexture = new TextureLoader(grassImg);
+const glassTexture = new TextureLoader(glassImg);
+const woodTexture = new TextureLoader(woodImg);
+const groundTexture = new TextureLoader(grassImg);
+
+export {
+  dirtTexture,
+  logTexture,
+  grassTexture,
+  glassTexture,
+  woodTexture,
+  groundTexture,
+};
+
+```
+
+创建Ground.jsx
+
+```jsx
+import { usePlane } from "@react-three/cannon";
+import { groundTexture } from "../images/textures";
+
+export const Ground = () => {
+  const [ref] = usePlane(() => ({
+    rotation: [0, 0, 0],
+    position: [0, 0, 0],
+  }));
+  return (
+    <mesh ref={ref}>
+      <planeBufferGeometry attach="geometry" args={[100, 100]} />
+      <meshStandardMaterial attach="material" map={groundTexture} />
+    </mesh>
+  );
+};
+
+```
