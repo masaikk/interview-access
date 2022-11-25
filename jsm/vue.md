@@ -670,7 +670,7 @@ export default function vitePluginTemplate(): PluginOption {
 
 ### vite-electron项目构建
 
-`npm create electron-vite`适用官方的项目。参考[GitHub - electron-vite/electron-vite-vue: 🥳 Really simple Electron + Vite + Vue boilerplate.](https://github.com/electron-vite/electron-vite-vue)
+`npm create electron-vite`适用官方的项目。参考[GitHub - electron-vite/electron-vite-vue: 🥳 Really simple Electron + Vite + Vue boilerplate.](https://github.com/electron-vite/electron-vite-vue)。我记录的内容位于本文件之后的“桌面应用开发”。
 
 ---
 
@@ -4177,6 +4177,47 @@ app.whenReady().then(() => {
   mainWindow.loadURL(process.argv[2]);
 });
 ```
+
+这里的`mainWindow`为一个全局变量。在这里需要定义一个vite插件来加载electron。
+
+```typescript
+import WebSocket_2, {ViteDevServer} from "vite";
+import type {PluginOption} from 'vite';
+
+
+export let devPlugin = (): PluginOption => {
+    return {
+        name: "dev-plugin",
+        configureServer(server: ViteDevServer) {
+            require("esbuild").buildSync({
+                entryPoints: ["./src/main/mainEntry.ts"],
+                bundle: true,
+                platform: "node",
+                outfile: "./dist/mainEntry.js",
+                external: ["electron"],
+            });
+            server.httpServer?.once("listening", () => {
+                let {spawn} = require("child_process");
+                let addressInfo: any = server.httpServer?.address();
+                let httpAddress = `http://${addressInfo?.address as string}:${addressInfo?.port}`;
+                let electronProcess = spawn(require("electron").toString(), ["./dist/mainEntry.js", httpAddress], {
+                    cwd: process.cwd(),
+                    stdio: "inherit",
+                });
+                electronProcess.on("close", () => {
+                    server.close();
+                    process.exit();
+                });
+            });
+        },
+    };
+};
+
+```
+
+**当 Vite 为我们启动 Http 服务的时候，`configureServer`钩子会被执行**。它的定义为`configureServer?: ObjectHook<ServerHook>;`。
+
+如果已经成功启动了，那么就启动 Electron 应用，并给它传递两个命令行参数，第一个参数是主进程代码编译后的文件路径，第二个参数是 Vue 页面的 http 地址，这里就是 `http://127.0.0.1:5173/`。
 
 
 
