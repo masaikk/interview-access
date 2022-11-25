@@ -29,9 +29,11 @@
 })
 ```
 
-这里还使用了nest实现的Logger类来记录日志`private logger: Logger = new Logger('ChatGateway');`
+这里还使用了nest实现的Logger类来记录日志`private logger: Logger = new Logger('ChatGateway');`。
 
-因为继承了三个基类，所以实现了三个方法
+在这里使用user保存了已经连接的客户端`private users: any = {}`实质上就是socket的id以及user的名字。根据这个id号，也可以给指定的连接发送信息。
+
+因为继承了三个基类，所以实现了三个方法：
 
 ```typescript
   private logger: Logger = new Logger('ChatGateway');
@@ -69,7 +71,7 @@
   }
 ```
 
-在连接过程中打印这个socket的id
+在连接过程中打印这个socket的id：
 
 ```typescript
 this.logger.log('add user... socket id'+client.id)
