@@ -4217,7 +4217,40 @@ export let devPlugin = (): PluginOption => {
 
 **当 Vite 为我们启动 Http 服务的时候，`configureServer`钩子会被执行**。它的定义为`configureServer?: ObjectHook<ServerHook>;`。
 
-如果已经成功启动了，那么就启动 Electron 应用，并给它传递两个命令行参数，第一个参数是主进程代码编译后的文件路径，第二个参数是 Vue 页面的 http 地址，这里就是 `http://127.0.0.1:5173/`。
+如果已经成功启动了，那么就启动 Electron 应用，并给它传递两个命令行参数，第一个参数是主进程代码编译后的文件路径，第二个参数是 Vue 页面的 http 地址，这里就是 `http://127.0.0.1:5173/`。需要在vite.config.js中导入这个插件，就可以运行了。
+
+```typescript
+export default defineConfig({
+    plugins: [devPlugin(), vue()]
+})
+```
+
+对于主函数，可以添加设置
+
+```typescript
+import { app, BrowserWindow } from "electron";
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = "true";
+let mainWindow: BrowserWindow;
+
+app.whenReady().then(() => {
+  let config = {
+    webPreferences: {
+      nodeIntegration: true,
+      webSecurity: false,
+      allowRunningInsecureContent: true,
+      contextIsolation: false,
+      webviewTag: true,
+      spellcheck: false,
+      disableHtmlFullscreenWindowResize: true,
+    },
+  };
+  mainWindow = new BrowserWindow(config);
+  mainWindow.webContents.openDevTools({ mode: "undocked" });
+  mainWindow.loadURL(process.argv[2]);
+});
+```
+
+
 
 
 
