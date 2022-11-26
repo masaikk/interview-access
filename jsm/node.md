@@ -519,3 +519,64 @@ bootstrap();
 ### typeORM
 
 使用typeORM连接数据库，安装依赖`npm install --save @nestjs/typeorm typeorm mysql2`
+
+在app.module的imports中导入配置
+
+```typescript
+TypeOrmModule.forRoot({
+      type: "mysql", //数据库类型
+      username: "", //账号
+      password: "", //密码
+      host: "", //host
+      port: 3306, //
+      database: "nest", //库名
+      // entities: [__dirname + "/**/*.entity{.ts,.js}"], //实体文件
+      synchronize: true, //synchronize字段代表是否自动将实体类同步到数据库
+      retryDelay: 500, //重试连接数据库间隔
+      retryAttempts: 10, //重试连接数据库的次数
+      autoLoadEntities: true, //如果为true,将自动加载实体 forFeature()方法注册的每个实体都将自动添加到配置对象的实体数组中
+    }),
+```
+
+关于实体，需要写在各resource的entities里面。在定义一个实体类的时候，需要用到typeorm的装饰器，参考[SQL (TypeORM) | NestJS - A progressive Node.js framework](https://docs.nestjs.com/recipes/sql-typeorm)。例如：
+
+```typescript
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+
+@Entity()
+export class Orm {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  name: string;
+}
+
+```
+
+之后，需要在mudule中注册。在imports中用到`TypeOrmModule`的方法。
+
+```typescript
+import { Module } from "@nestjs/common";
+import { OrmService } from "./orm.service";
+import { OrmController } from "./orm.controller";
+import { Orm } from "./entities/orm.entity";
+import { TypeOrmModule } from "@nestjs/typeorm";
+
+@Module({
+  imports: [TypeOrmModule.forFeature([Orm])],
+  controllers: [OrmController],
+  providers: [OrmService],
+})
+export class OrmModule {}
+
+```
+
+重启nest，就可以自动创建表，上述示例的表为：
+
+![image-20221126105051037](node.assets/image-20221126105051037.png)
+
+
+
+
+
