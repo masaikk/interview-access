@@ -576,7 +576,16 @@ export class OrmModule {}
 
 ![image-20221126105051037](node.assets/image-20221126105051037.png)
 
+如果需要修改数据库，就修改实体类再重启数据库就可以了。
 
+```typescript
+@PrimaryGeneratedColumn("uuid")
+  id: number;
+```
+
+![image-20221126110304316](node.assets/image-20221126110304316.png)
+
+对于它的crud操作，参考[小满nestjs（第二十六章 nestjs 第一个CURD）_小满zs的博客-CSDN博客](https://xiaoman.blog.csdn.net/article/details/127590610#comments_24296950)。
 
 
 
