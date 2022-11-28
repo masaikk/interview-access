@@ -43,7 +43,19 @@ ssh-keygen
 ssh-copy-id -i ~/.ssh/id_rsa.pub 用户@ip
 ```
 
-即可以在服务器端的~/.ssh/authorized_keys看到，此时已经可以登录。
+即可以在服务器端的~/.ssh/authorized_keys看到上传的公钥，此时已经可以登录`ssh user@ip`。
+
+如果一个服务器有多个登录公钥存在的话，在该文件上换行可以存放多个。
+
+同时，可以指定登录的别名，就不需要每次都输入用户名的ip。在~/.ssh下创建config文件
+
+```shell
+Host 别名
+  HostName Ip
+  User 名字
+```
+
+之后如果放置了公钥，就可以直接使用`ssh 别名`来登录。
 
 ---
 

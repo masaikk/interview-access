@@ -786,3 +786,15 @@ target_link_libraries(cunix PRIVATE ${CMAKE_THREAD_LIBS_INIT})
 
 ![image-20221124211100129](c.assets/image-20221124211100129.png)
 
+### 11-5 线程终止
+
+如果某个进程中的任意线程调用了`exit()` 或者`_Exit()`或者`_exit()`（注意它们之间的区别），那样整个进程都会停止。如果需要单独中止线程，可以：
+
+1. 从启动例程中返回，返回值是线程的退出码
+2. 被同一进程中的其他线程取消
+3. 线程调用`pthread_exit(void *rval_ptr)`
+
+进程中的其他线程可以通过`pthred_join(pthread_t thread, void ** rval_ptr)`来获取某个线程的退出状态。
+
+
+
