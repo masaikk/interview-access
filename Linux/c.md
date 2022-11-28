@@ -796,5 +796,76 @@ target_link_libraries(cunix PRIVATE ${CMAKE_THREAD_LIBS_INIT})
 
 进程中的其他线程可以通过`pthred_join(pthread_t thread, void ** rval_ptr)`来获取某个线程的退出状态。
 
+参考如下的代码
 
+```c
+#include <stdio.h>
+#include <pthread.h>
+#include "apue.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include "include/my_err.h"
+
+
+struct foo {
+    int a, b, c, d;
+};
+
+void
+printfoo(const char *s, const struct foo *fp)
+{
+    printf("%s", s);
+    printf("  structure at 0x%lx\n", (unsigned long)fp);
+    printf("  foo.a = %d\n", fp->a);
+    printf("  foo.b = %d\n", fp->b);
+    printf("  foo.c = %d\n", fp->c);
+    printf("  foo.d = %d\n", fp->d);
+}
+
+void *
+thr_fn1(void *arg)
+{
+    struct foo	foo = {1, 2, 3, 4};
+
+    printfoo("thread 1:\n", &foo);
+    pthread_exit((void *)&foo);
+}
+
+void *
+thr_fn2(void *arg)
+{
+    printf("thread 2: ID is %lu\n", (unsigned long)pthread_self());
+    pthread_exit((void *)0);
+}
+
+int
+main(void)
+{
+    int			err;
+    pthread_t	tid1, tid2;
+    struct foo	*fp;
+
+    err = pthread_create(&tid1, NULL, thr_fn1, NULL);
+    if (err != 0)
+        err_exit(err, "can't create thread 1");
+    err = pthread_join(tid1, (void *)&fp);
+    if (err != 0)
+        err_exit(err, "can't join with thread 1");
+    sleep(1);
+    printf("parent starting second thread\n");
+    err = pthread_create(&tid2, NULL, thr_fn2, NULL);
+    if (err != 0)
+        err_exit(err, "can't create thread 2");
+    sleep(1);
+    printfoo("parent:\n", fp);
+    exit(0);
+}
+```
+
+这里打印的情况为：
+
+![image-20221128153130818](c.assets/image-20221128153130818.png)
+
+可以看出，这里是不安全的，在调用了第二个线程之后，foo的值被改变了。
 
