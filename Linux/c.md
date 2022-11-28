@@ -719,6 +719,49 @@ void set_fl(int fd, int flags) {
 
 ![image-20221124102553056](c.assets/image-20221124102553056.png)
 
+### 7-3 exit
+
+区别三个exit函数的区别。并且，对于`exit()`在mian函数里面，return等价于`exit(0)`。
+
+使用`int atexit(void (*func)()void)`来注册不大于32个函数以便在`exit(0)`的时候逆序调用，若成功，就返回0。例如：
+
+```c
+#include <stdio.h>
+#include <pthread.h>
+#include "apue.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include "include/my_err.h"
+
+static void my_exit1(void);
+static void my_exit2(void);
+
+int main(void){
+    if(atexit(my_exit2)!=0)
+        err_sys("error");
+    if(atexit(my_exit1)!=0)
+        err_sys("error");
+    if(atexit(my_exit1)!=0)
+        err_sys("error");
+
+    printf("main call\n");
+    return 0;
+}
+
+static void my_exit1(void){
+    printf("my_exit1 called\n");
+}
+
+static void my_exit2(void){
+    printf("my_exit2 called\n");
+}
+```
+
+打印结果如下，注意它是逆序执行的：
+
+![image-20221128160936412](c.assets/image-20221128160936412.png)
+
 ### 11-4 创建线程并且打印线程tid
 
 ```c
@@ -788,7 +831,7 @@ target_link_libraries(cunix PRIVATE ${CMAKE_THREAD_LIBS_INIT})
 
 ### 11-5 线程终止
 
-如果某个进程中的任意线程调用了`exit()` 或者`_Exit()`或者`_exit()`（注意它们之间的区别），那样整个进程都会停止。如果需要单独中止线程，可以：
+如果某个进程中的任意线程调用了`exit()` 或者`_Exit()`或者`_exit()`（注意它们之间的区别,`exit()`函数是对于所有的打开流都调用`fclose()`函数），那样整个进程都会停止。如果需要单独中止线程，可以：
 
 1. 从启动例程中返回，返回值是线程的退出码
 2. 被同一进程中的其他线程取消
