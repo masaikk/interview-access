@@ -1,6 +1,6 @@
 # Vue3
 
-学习vue3及其相关组件的笔记。代码位于[myvue: vue前端学习 (gitee.com)](https://gitee.com/masaikk/myvue)的vue3分支。笔记源文件位于[jsm/vue.md · masaikk/interviewAccess - 码云 - 开源中国 (gitee.com)](https://gitee.com/masaikk/interview-access/blob/master/jsm/vue.md)
+学习vue3及其相关组件的笔记。代码位于[myvue: vue前端学习 (gitee.com)](https://gitee.com/masaikk/myvue)的vue3分支。笔记源文件位于[jsm/vue.md · masaikk/interviewAccess - 码云 - 开源中国 (gitee.com)](https://gitee.com/masaikk/interview-access/blob/master/jsm/vue.md)。其中包括了vue3的语法知识，vite的知识以及electron知识。
 
 ---
 
@@ -467,7 +467,119 @@ import path from 'path';
 }
 ```
 
+#### vite的现代css支持
 
+首先创建一个vite+react的项目
+
+![image-20221128191532101](vue.assets/image-20221128191532101.png)
+
+vite有对于scss以及less等现代css技术有开箱即用的支持。安装scss依赖`pnpm i sass -D`。
+
+创建Header组件以及它的scss，可以正常展示
+
+```tsx
+// index.tsx
+import './index.scss';
+export function Header() {
+    return <p className="header">This is Header</p>
+};
+
+```
+
+```scss
+// index.scss
+.header {
+  color: red;
+}
+
+```
+
+![image-20221128192311238](vue.assets/image-20221128192311238.png)
+
+在app.tsx中导入即可使用，如下：
+
+![image-20221128192342542](vue.assets/image-20221128192342542.png)
+
+但是这样对于每个组件的css修改都需要单独修改scss文件中的数据，过于繁琐。我们可以考虑创建scss变量。在scss中，变量的开头是由`$`开始的，例如` $theme-color: red;`。
+
+即可在Header的index.scss中导入
+
+```scss
+@import "../../variable";
+
+.header {
+  color: $theme-color;
+}
+```
+
+即可得到与之前一致的效果。如果不想在每个scss文件的开头导入，就可以配置vite文件，指定全局的scss文件
+
+```typescript
+import { defineConfig, normalizePath } from "vite";
+
+import path from "path";
+
+// 全局 scss 文件的路径
+// 用 normalizePath 解决 window 下的路径问题
+const variablePath = normalizePath(path.resolve("./src/variable.scss"));
+
+import react from "@vitejs/plugin-react";
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  // css 相关的配置
+  css: {
+    preprocessorOptions: {
+      scss: {
+        // additionalData 的内容会在每个 scss 文件的开头自动注入
+        additionalData: `@import "${variablePath}";`,
+      },
+    },
+      
+  },
+});
+
+```
+
+因为各家浏览器稍微有点不同，可以使用`import autoprefixer from 'autoprefixer';`自动导入postcss，例如：
+
+```typescript
+import { defineConfig, normalizePath } from "vite";
+import autoprefixer from "autoprefixer";
+
+import path from "path";
+
+// 全局 scss 文件的路径
+// 用 normalizePath 解决 window 下的路径问题
+const variablePath = normalizePath(path.resolve("./src/variable.scss"));
+
+import react from "@vitejs/plugin-react";
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  // css 相关的配置
+  css: {
+    preprocessorOptions: {
+      scss: {
+        // additionalData 的内容会在每个 scss 文件的开头自动注入
+        additionalData: `@import "${variablePath}";`,
+      },
+    },
+    // 进行 PostCSS 配置
+    postcss: {
+      plugins: [
+        autoprefixer({
+          // 指定目标浏览器
+          overrideBrowserslist: ["Chrome > 40", "ff > 31", "ie 11"],
+        }),
+      ],
+    },
+  },
+});
+
+```
 
 ---
 
