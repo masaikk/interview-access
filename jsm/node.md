@@ -538,6 +538,8 @@ TypeOrmModule.forRoot({
     }),
 ```
 
+*需要注意的是，在生产环境，需要将`synchronize`设置为false，否则会丢失数据。*
+
 关于实体，需要写在各resource的entities里面。在定义一个实体类的时候，需要用到typeorm的装饰器，参考[SQL (TypeORM) | NestJS - A progressive Node.js framework](https://docs.nestjs.com/recipes/sql-typeorm)。例如：
 
 ```typescript
@@ -545,11 +547,14 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Orm {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn("uuid")
   id: number;
 
   @Column()
   name: string;
+
+  @Column({ default: true })
+  isActive: boolean;
 }
 
 ```
@@ -586,6 +591,70 @@ export class OrmModule {}
 ![image-20221126110304316](node.assets/image-20221126110304316.png)
 
 对于它的crud操作，参考[小满nestjs（第二十六章 nestjs 第一个CURD）_小满zs的博客-CSDN博客](https://xiaoman.blog.csdn.net/article/details/127590610#comments_24296950)。
+
+例如创建操作，首先在dto层定义在请求中的数据，比如这里只有一个name
+
+```typescript
+export class CreateOrmDto {
+  name: string;
+}
+
+```
+
+在service层的构造函数先创建数据仓库`constructor(@InjectRepository(Orm) private ormRepository: Repository<Orm>) {}`。
+
+更改create函数，有点像django。
+
+```typescript
+  create(createOrmDto: CreateOrmDto) {
+    const data: Orm = new Orm();
+    data.name = createOrmDto.name;
+    return this.ormRepository.save(data);
+  }
+```
+
+整体service层代码参考
+
+```typescript
+import { Injectable } from "@nestjs/common";
+import { CreateOrmDto } from "./dto/create-orm.dto";
+import { UpdateOrmDto } from "./dto/update-orm.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Orm } from "./entities/orm.entity";
+import { Repository } from "typeorm";
+
+@Injectable()
+export class OrmService {
+  constructor(@InjectRepository(Orm) private ormRepository: Repository<Orm>) {}
+
+  create(createOrmDto: CreateOrmDto) {
+    const data: Orm = new Orm();
+    data.name = createOrmDto.name;
+    return this.ormRepository.save(data);
+  }
+
+  findAll() {
+    return this.ormRepository.find();
+  }
+
+  findOne(id: number) {
+    return `This action returns a #${id} orm`;
+  }
+
+  update(id: number, updateOrmDto: UpdateOrmDto) {
+    return `This action updates a #${id} orm`;
+  }
+
+  remove(id: number) {
+    return `This action removes a #${id} orm`;
+  }
+}
+
+```
+
+在发送了几次post请求后，检查数据库，数据已经添加
+
+![image-20221128205224900](node.assets/image-20221128205224900.png)
 
 
 
