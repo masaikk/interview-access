@@ -540,7 +540,7 @@ TypeOrmModule.forRoot({
 
 *需要注意的是，在生产环境，需要将`synchronize`设置为false，否则会丢失数据。*
 
-关于实体，需要写在各resource的entities里面。在定义一个实体类的时候，需要用到typeorm的装饰器，参考[SQL (TypeORM) | NestJS - A progressive Node.js framework](https://docs.nestjs.com/recipes/sql-typeorm)。例如：
+关于实体，需要写在各resource的entities里面。在定义一个实体类的时候，需要用到typeorm的装饰器，参考[SQL (TypeORM) | NestJS - A progressive Node.js framework](https://docs.nestjs.com/recipes/sql-typeorm)以及[装饰器参考 | TypeORM 中文文档 | TypeORM 中文网 (bootcss.com)](https://typeorm.bootcss.com/decorator-reference)。例如：
 
 ```typescript
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
@@ -600,6 +600,21 @@ export class CreateOrmDto {
 }
 
 ```
+
+在dto层中也可以定义swagger的配置，以便在swagger页面中展示需要的参数，例如
+
+```typescript
+import { ApiProperty } from "@nestjs/swagger";
+
+export class CreateOrmDto {
+  @ApiProperty({ example: "ormName" })
+  name: string;
+}
+```
+
+在swagger中的展示如下：
+
+![image-20221129152022618](node.assets/image-20221129152022618.png)
 
 在service层的构造函数先创建数据仓库`constructor(@InjectRepository(Orm) private ormRepository: Repository<Orm>) {}`。
 

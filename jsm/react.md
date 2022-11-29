@@ -2763,6 +2763,10 @@ export default factories.createCoreController('api::mydata.mydata',({strapi})=>{
 
 [minecraft-react: 使用react-three-fiber库构建一个类minecraft游戏 (gitee.com)](https://gitee.com/masaikk/minecraft-react)
 
+对于一个fiber的架构，可以参考如下图片
+
+<img src="react.assets/202009072107529.png" alt="202009072107529" style="zoom:75%;" />
+
 ---
 
 创建了项目之后，添加sky。
