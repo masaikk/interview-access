@@ -1,5 +1,7 @@
 # 杂项知识
 
+## 乱七八糟的杂项知识
+
 ### pytorch的unsqueeze和squeeze方法
 
 pytorch的unsqueeze和squeeze方法，分别对张量进行升维和降维，链接如：
@@ -737,7 +739,18 @@ with torchsnooper.snoop():
         train(epoch)
 ```
 
-
-
 ---
 
+## pandas操作
+
+### merge
+
+合并两个表[Pandas merge合并操作 (biancheng.net)](http://c.biancheng.net/pandas/merge.html)。
+
+### apply
+
+输入一个lamda函数，对于每一行都进行操作。[pandas apply() 函数用法 - 简书 (jianshu.com)](https://www.jianshu.com/p/4fdd6eee1b06)。
+
+### diff
+
+计算两个行之间的不同值。
