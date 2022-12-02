@@ -479,6 +479,40 @@ impl Rectangle {
 
 其中`Rectangle::rec_as(10);`就是关联函数。
 
+### 枚举
+
+对于rust中的枚举，可以以ip为例子
+
+```rust
+enum IpAddrKind {
+    V4,
+    V6,
+}
+
+fn main() {
+    let four = IpAddrKind::V4;
+    let six = IpAddrKind::V6;
+}
+```
+
+在rust中，可以将数据附加到枚举变体中，表示关联某种类型的数据，比如
+
+```rust
+enum IpAddrKind {
+    V4(u8, u8, u8, u8),
+    V6(String),
+}
+```
+
+这样可以指定它们分别的类型（这里的类型也可以是struct）。在实例化的时候，使用例子：
+
+```rust
+fn main() {
+    let four = IpAddrKind::V4(127, 0, 0, 1);
+    let six = IpAddrKind::V6(String::from("::1"));
+}
+```
+
 ### 包管理
 
 package是包，crate是单元包。
