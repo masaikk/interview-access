@@ -60,7 +60,14 @@ ENV base_path "st/*"
 COPY ${base_path} ${path_nginx}
 ```
 
+### 相关记录
 
+对于docker来说，默认安装之后需要使用sudo，如果是非root用户，需要将自己加入docker用户组，参考如下文章[docker使用遇到问题Got permission denied while trying to connect to the Docker daemon socket - 腾讯云开发者社区-腾讯云 (tencent.com)](https://cloud.tencent.com/developer/article/1912506)
+
+```shell
+ sudo gpasswd -a $USER docker 
+ newgrp docker
+```
 
 ---
 
@@ -136,8 +143,6 @@ COPY ${base_path} ${path_nginx}
           # proxy_redirect default;
       }
   ```
-  
-  
   
 + nodered/node-red
 
