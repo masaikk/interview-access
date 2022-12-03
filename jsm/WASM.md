@@ -513,6 +513,41 @@ fn main() {
 }
 ```
 
+同样，对于一个枚举来说，也可以使用`impl`关键字定义方法。
+
+### Option枚举
+
+在rust中没有null，如果需要使用它，就应该使用Option枚举，它的定义如下：
+
+```rust
+enum Option<T> {
+    Some(T),
+    None,
+}
+```
+
+可以使用Some来直接定义一个变量，这样的话它就会被推断是Option类型的。
+
+```rust
+fn main() {
+    let a1 = Some(6);
+    let a2 = Some(String::from("111"));
+
+    let an: Option<isize> = None;
+}
+```
+
+如果需要使用Option的值，需要将它unwrap到普通类型
+
+```rust
+fn main() {
+    let a1 = Some(6);
+    let an: Option<i32> = Some(8);
+    let ans = a1.unwrap() + an.unwrap();
+    println!("{}", ans);
+}
+```
+
 ### 包管理
 
 package是包，crate是单元包。
