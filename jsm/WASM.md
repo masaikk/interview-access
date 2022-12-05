@@ -515,6 +515,86 @@ fn main() {
 
 同样，对于一个枚举来说，也可以使用`impl`关键字定义方法。
 
+### 模式匹配
+
+使用`match`关键字匹配枚举值。
+
+```rust
+enum Coin {
+    Penny,
+    Nickel,
+    Dime,
+    Quarter,
+}
+
+fn main() {
+    let c: Coin = Coin::Dime;
+    println!("{}", get_value(c));
+}
+
+fn get_value(coin: Coin) -> u8 {
+    match coin {
+        Coin::Penny => 1,
+        Coin::Nickel => 5,
+        Coin::Dime => 10,
+        Coin::Quarter => 25,
+    }
+}
+
+```
+
+对于匹配的分支，可以绑定到对象的部分值。
+
+```rust
+#[derive(Debug)]
+enum UsState {
+    State1,
+    State2,
+}
+
+enum Coin {
+    Penny,
+    Nickel,
+    Dime,
+    Quarter(UsState),
+}
+
+fn main() {
+    let c: Coin = Coin::Dime;
+    println!("{}", get_value(c));
+}
+
+fn get_value(coin: Coin) -> u8 {
+    match coin {
+        Coin::Penny => 1,
+        Coin::Nickel => 5,
+        Coin::Dime => 10,
+        Coin::Quarter(state) => {
+            match state {
+                UsState::State1 => 20,
+                UsState::State2 => 30
+            }
+        }
+    }
+}
+
+```
+
+比如上面的第四个分支
+
+```rust
+Coin::Quarter(state) => {
+            match state {
+                UsState::State1 => 20,
+                UsState::State2 => 30
+            }
+        }
+```
+
+这里的state就可以绑定到匹配到的分支（如果匹配上了），在这个里面可以做更多的操作。
+
+![image-20221205234601962](WASM.assets/image-20221205234601962.png)
+
 ### Option枚举
 
 在rust中没有null，如果需要使用它，就应该使用Option枚举，它的定义如下：
