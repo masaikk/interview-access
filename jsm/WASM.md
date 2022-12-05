@@ -515,6 +515,39 @@ fn main() {
 
 同样，对于一个枚举来说，也可以使用`impl`关键字定义方法。
 
+### Option枚举
+
+在rust中没有null，如果需要使用它，就应该使用Option枚举，它的定义如下：
+
+```rust
+enum Option<T> {
+    Some(T),
+    None,
+}
+```
+
+可以使用Some来直接定义一个变量，这样的话它就会被推断是Option类型的。
+
+```rust
+fn main() {
+    let a1 = Some(6);
+    let a2 = Some(String::from("111"));
+
+    let an: Option<isize> = None;
+}
+```
+
+如果需要使用Option的值，需要将它unwrap到普通类型
+
+```rust
+fn main() {
+    let a1 = Some(6);
+    let an: Option<i32> = Some(8);
+    let ans = a1.unwrap() + an.unwrap();
+    println!("{}", ans);
+}
+```
+
 ### 模式匹配
 
 使用`match`关键字匹配枚举值。
@@ -542,6 +575,8 @@ fn get_value(coin: Coin) -> u8 {
 }
 
 ```
+
+匹配必须覆盖全部分支，默认的分支可以是`_`
 
 对于匹配的分支，可以绑定到对象的部分值。
 
@@ -595,37 +630,81 @@ Coin::Quarter(state) => {
 
 ![image-20221205234601962](WASM.assets/image-20221205234601962.png)
 
-### Option枚举
-
-在rust中没有null，如果需要使用它，就应该使用Option枚举，它的定义如下：
-
-```rust
-enum Option<T> {
-    Some(T),
-    None,
-}
-```
-
-可以使用Some来直接定义一个变量，这样的话它就会被推断是Option类型的。
+匹配Option枚举也要处理两个分支
 
 ```rust
 fn main() {
-    let a1 = Some(6);
-    let a2 = Some(String::from("111"));
+    let five = Some(5);
+    let six = plus_one(five);
+    let none = plus_one(None);
+}
 
-    let an: Option<isize> = None;
+fn plus_one(x: Option<i32>) -> Option<i32> {
+    match x {
+        None => None,
+        Some(i) => {
+            println!("{}", i);
+            Some(i + 1)
+        }
+    }
 }
 ```
 
-如果需要使用Option的值，需要将它unwrap到普通类型
+### if let
+
+这个写法是用来匹配一个分支，其他分支不管
 
 ```rust
-fn main() {
-    let a1 = Some(6);
-    let an: Option<i32> = Some(8);
-    let ans = a1.unwrap() + an.unwrap();
-    println!("{}", ans);
+enum Coin {
+    Penny,
+    Nickel,
+    Dime,
+    Quarter,
 }
+
+fn main() {
+    let c: Coin = Coin::Dime;
+    if let Coin::Dime = c {
+        println!("Yes");
+    }
+    println!("{}", get_value(c));
+}
+
+fn get_value(coin: Coin) -> u8 {
+    match coin {
+        Coin::Penny => 1,
+        Coin::Nickel => 5,
+        Coin::Dime => 10,
+        Coin::Quarter => 25,
+    }
+}
+
+```
+
+比如上面的代码，只关心`Coin::Dime`分支。
+
+![image-20221205235835501](WASM.assets/image-20221205235835501.png)
+
+并且，它还能搭配`else`关键字来匹配剩下的全部情况。
+
+```rust
+enum Coin {
+    Penny,
+    Nickel,
+    Dime,
+    Quarter,
+}
+
+fn main() {
+    let c: Coin = Coin::Quarter;
+    if let Coin::Dime = c {
+        println!("Yes");
+    }else {
+        println!("Not Dime")
+    }
+
+}
+
 ```
 
 ### 包管理
