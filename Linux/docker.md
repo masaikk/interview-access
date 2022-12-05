@@ -62,12 +62,28 @@ COPY ${base_path} ${path_nginx}
 
 ### 相关记录
 
+#### docker的权限
+
 对于docker来说，默认安装之后需要使用sudo，如果是非root用户，需要将自己加入docker用户组，参考如下文章[docker使用遇到问题Got permission denied while trying to connect to the Docker daemon socket - 腾讯云开发者社区-腾讯云 (tencent.com)](https://cloud.tencent.com/developer/article/1912506)
 
 ```shell
  sudo gpasswd -a $USER docker 
  newgrp docker
 ```
+
+#### docker的后台运行
+
+对于一个docker容器来说，如果需要在后台持续运行某个进程，但是deattach之后，进程就被终止了，所以提供两个让docker在后台运行的方法。
+
+##### ctrl p q
+
+在运行了某个进程之后快捷键`ctrl p`+`ctrl q`即可。但是这样的问题是需要先attach容器才能进行这个操作。再下次attach这个容器之后，返回上一个进程。
+
+##### tail -f /dev/null
+
+对于一些一次性指令的容器，使用这种方法容后台一直运行。用`tail -f /dev/null`替代容器本身的一次性RUN指令。
+
+tail -f可以一直读一个文件并且输出，/dev/null是个空输出，所以tail -f /dev/null就挂着不会死，相当于一个持久进程了。
 
 ---
 
@@ -182,7 +198,8 @@ COPY ${base_path} ${path_nginx}
 ## 常用命令行参数
 
 + ``-d``表示的是允许容器后台运行，对于MySQL这种容器很重要
-+ ``-it``表示允许容器开启一个可以调用的终端
++ ``-i``交互性输入
++ `-t`获取容器输出
 + ``-P``随机一个端口映射
 + ``-link``连接数据卷容器
 + ``-v``挂载目录。``-v 宿主机目录:容器目录`` 这里的容器目录会自动创建，并且容器目录不可以为相对路径。
