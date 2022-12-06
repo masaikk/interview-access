@@ -132,6 +132,36 @@ fn add(a:usize, b:usize) -> usize {
 }
 ```
 
+对于rust中的字符串String来说，由于一个字符簇可能占用不止一个字节，所以不提供遍历的方式。
+
+如果想遍历标量值，可以使用`chars()`。
+
+```rust
+fn main() {
+    let mut s=String::from("你好rust");
+    for w in s.chars(){
+        println!("{}",w)
+    }
+}
+
+```
+
+![image-20221206164954796](WASM.assets/image-20221206164954796.png)
+
+如果想用字节遍历，就可以考虑使用`bytes()`
+
+```rust
+fn main() {
+    let mut s=String::from("你好rust");
+    for w in s.bytes(){
+        println!("{}",w)
+    }
+}
+
+```
+
+![image-20221206165115915](WASM.assets/image-20221206165115915.png)
+
 ### rust的所有权$\bigstar$
 
 rust的所有权使得rust无需GC，也能保证内存安全，是一个很重要的特性。
@@ -751,6 +781,16 @@ fn main() {
 可以读取文件内容：
 
 ![image-20221109193924021](WASM.assets/image-20221109193924021.png)
+
+### HashMap
+
+在构建HashMap的时候，需要为其指定类型。例如`let mut m: HashMap<String, i32> = HashMap::new();`
+
+在获取HashMap中存放值的时候，需要使用`get()`方法。不过需要注意的是，它返回了一个Option枚举。
+
+![image-20221206171400537](WASM.assets/image-20221206171400537.png)
+
+
 
 ---
 
