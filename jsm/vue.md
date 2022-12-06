@@ -4362,7 +4362,161 @@ app.whenReady().then(() => {
 });
 ```
 
+对于现在的项目来说，vite并不能直接打包electron以及nodejs的方法。这里需要添加插件`npm install vite-plugin-optimizer -D`。**vite-plugin-optimizer 插件会为你创建一个临时目录：node_modules.vite-plugin-optimizer**。
 
+然后把类似 `const fs = require('fs'); export { fs as default }` 这样的代码写入这个目录下的 fs.js 文件中。
+
+```typescript
+// vite.config.ts
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+import { devPlugin, getReplacer } from "./plugins/devPlugin";
+import optimizer from "vite-plugin-optimizer";
+
+export default defineConfig({
+  plugins: [optimizer(getReplacer()), devPlugin(), vue()],
+});
+```
+
+定义一个插件
+
+```typescript
+// plugins\devPlugin.ts
+export let getReplacer = () => {
+  let externalModels = ["os", "fs", "path", "events", "child_process", "crypto", "http", "buffer", "url", "better-sqlite3", "knex"];
+  let result = {};
+  for (let item of externalModels) {
+    result[item] = () => ({
+      find: new RegExp(`^${item}$`),
+      code: `const ${item} = require('${item}');export { ${item} as default }`,
+    });
+  }
+  result["electron"] = () => {
+    let electronModules = ["clipboard", "ipcRenderer", "nativeImage", "shell", "webFrame"].join(",");
+    return {
+      find: new RegExp(`^electron$`),
+      code: `const {${electronModules}} = require('electron');export {${electronModules}}`,
+    };
+  };
+  return result;
+};
+```
+
+就可以使用node的方法，打印一个fs模块进行测试，可以成功打印。
+
+```vue
+<script setup lang="ts">
+import fs from "fs";
+import { ipcRenderer } from "electron";
+import { onMounted } from "vue";
+onMounted(() => {
+  console.log(fs.writeFileSync);
+  console.log(ipcRenderer);
+});
+</script>
+```
+
+![image-20221206203919296](vue.assets/image-20221206203919296.png)
+
+**构建build环境**
+
+在vite打包之后，需要将这些打包之后的js文件让electron打包。使用rollup插件。
+
+```typescript
+//plugins\buildPlugin.ts
+import path from "path";
+import fs from "fs";
+
+class BuildObj {
+    //编译主进程代码
+    buildMain() {
+        require("esbuild").buildSync({
+            entryPoints: ["./src/main/mainEntry.ts"],
+            bundle: true,
+            platform: "node",
+            minify: true,
+            outfile: "./dist/mainEntry.js",
+            external: ["electron"],
+        });
+    }
+    //为生产环境准备package.json
+    preparePackageJson() {
+        let pkgJsonPath = path.join(process.cwd(), "package.json");
+        let localPkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, "utf-8"));
+        let electronConfig = localPkgJson.devDependencies.electron.replace("^", "");
+        localPkgJson.main = "mainEntry.js";
+        delete localPkgJson.scripts;
+        delete localPkgJson.devDependencies;
+        localPkgJson.devDependencies = { electron: electronConfig };
+        let tarJsonPath = path.join(process.cwd(), "dist", "package.json");
+        fs.writeFileSync(tarJsonPath, JSON.stringify(localPkgJson));
+        fs.mkdirSync(path.join(process.cwd(), "dist/node_modules"));
+    }
+    //使用electron-builder制成安装包
+    buildInstaller() {
+        let options = {
+            config: {
+                directories: {
+                    output: path.join(process.cwd(), "release"),
+                    app: path.join(process.cwd(), "dist"),
+                },
+                files: ["**"],
+                extends: null,
+                productName: "JueJin",
+                appId: "com.juejin.desktop",
+                asar: true,
+                nsis: {
+                    oneClick: true,
+                    perMachine: true,
+                    allowToChangeInstallationDirectory: false,
+                    createDesktopShortcut: true,
+                    createStartMenuShortcut: true,
+                    shortcutName: "juejinDesktop",
+                },
+                publish: [{ provider: "generic", url: "http://localhost:5500/" }],
+            },
+            project: process.cwd(),
+        };
+        return require("electron-builder").build(options);
+    }
+}
+
+export let buildPlugin = () => {
+    return {
+        name: "build-plugin",
+        closeBundle: () => {
+            let buildObj = new BuildObj();
+            buildObj.buildMain();
+            buildObj.preparePackageJson();
+            buildObj.buildInstaller();
+        },
+    };
+};
+```
+
+再引用它
+
+```typescript
+import {defineConfig} from 'vite'
+import vue from '@vitejs/plugin-vue'
+// @ts-ignore
+import { buildPlugin } from "./src/plugins/buildPlugin";
+
+// @ts-ignore
+import { devPlugin, getReplacer } from "./src/plugins/devPlugin";
+import optimizer from "vite-plugin-optimizer";
+
+// https://vitejs.dev/config/
+export default defineConfig({
+    plugins: [optimizer(getReplacer()), devPlugin(), vue()],
+    build: {
+        rollupOptions: {
+            plugins: [buildPlugin()],
+        },
+    },
+});
+
+```
 
 
 
