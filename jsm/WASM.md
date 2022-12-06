@@ -790,7 +790,19 @@ fn main() {
 
 ![image-20221206171400537](WASM.assets/image-20221206171400537.png)
 
+```rust
+use std::collections::HashMap;
 
+fn main() {
+    let mut m: HashMap<String, i32> = HashMap::new();
+    m.insert(String::from("aKey"), 10);
+    let out_value = m.get("aKey");
+    match out_value {
+        Some(value) => println!("{}", value),
+        None => println!("No value")
+    }
+}
+```
 
 ---
 
