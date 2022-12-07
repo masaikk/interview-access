@@ -399,7 +399,9 @@ class InputComponent extends React.Component {
 3. 为input添加ref属性，值为`msgRef`
 4. 在按钮的事件处理程序中，通过`msgRef.current`即可拿到input对应的dom元素，而其中`msgRef.current.value`拿到的就是文本框的值。
 
-##### 使用hook`useRef`
+##### 使用hook
+
+##### `useRef`
 
 `useRef()`可以以hook的形式来获取Dom里面的组件。
 
