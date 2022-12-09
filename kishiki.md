@@ -1321,3 +1321,37 @@ var nextPermutation = function(nums) {
 
 ```
 
+### [33. 搜索旋转排序数组 - 力扣（LeetCode）](https://leetcode.cn/problems/search-in-rotated-sorted-array/)
+
+我的想法是先算出这个旋转的坐标，再构造一个有序的列表，最后再使用`indexOf()`方法，但是这样的事件复杂度是log(N)，超时了。
+
+```javascript
+/**
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number}
+ */
+var search = function (nums, target) {
+    let revIndex = 0;
+    for (; revIndex < nums.length - 1; revIndex++) {
+        if (nums[revIndex] < nums[revIndex = 1]) {
+            break
+        }
+    }
+    revIndex++;
+    let max_length = nums.length;
+    for (let i = 0; i <= revIndex; i++) {
+        nums.push(nums[i]);
+    }
+    let newArr = nums.slice(revIndex + 1,);
+    let index = newArr.indexOf(target);
+    if (index === -1) {
+        return -1
+    } else {
+        return (index + revIndex + 1) % max_length;
+    }
+};
+```
+
+
+
