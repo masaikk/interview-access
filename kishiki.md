@@ -1353,5 +1353,49 @@ var search = function (nums, target) {
 };
 ```
 
+参考的正确解答
+
+```javascript
+/**
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number}
+ */
+var search = function (nums, target) {
+    let lower = 0;
+    let higher = nums.length - 1;
+    while (lower <= higher) {
+        let mid = lower + Math.floor((higher - lower) / 2);
+        if (nums[mid] === target) {
+            return mid;
+        }
+        // 先根据 nums[0] 与 target 的关系判断目标值是在左半段还是右半段
+        if (target >= nums[0]) {
+            // 目标值在左半段时，若 mid 在右半段，则将 mid 索引的值改成 inf
+            if (nums[mid] < nums[0]) {
+                nums[mid] = Infinity;
+            }
+        } else {
+            // 目标值在右半段时，若 mid 在左半段，则将 mid 索引的值改成 -inf
+            if (nums[mid] >= nums[0]) {
+                nums[mid] = -Infinity;
+            }
+        }
+
+        if (nums[mid] < target) {
+            lower = mid + 1;
+        } else {
+            higher = mid - 1;
+        }
+    }
+    return -1;
+
+};
+
+
+let arr = [5, 6, 7, 1, 2, 3]
+console.log(search(arr, 7));
+```
+
 
 
