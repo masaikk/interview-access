@@ -269,6 +269,18 @@ bootstrap();
 
 ![image-20221110203948386](node.assets/image-20221110203948386.png)
 
+### cors
+
+[CORS | NestJS - A progressive Node.js framework](https://docs.nestjs.com/security/cors)
+
+对于app调用开启cors的函数即可。
+
+```typescript
+const app = await NestFactory.create(AppModule);
+app.enableCors();
+await app.listen(3000);
+```
+
 ### 守卫
 
 守卫有一个单独的责任。它们根据运行时出现的某些条件（例如权限，角色，访问控制列表等）来确定给定的请求是否由路由处理程序处理。这通常称为授权。在传统的 Express 应用程序中，通常由中间件处理授权(以及认证)。中间件是身份验证的良好选择，因为诸如 token 验证或添加属性到 request 对象上与特定路由(及其元数据)没有强关联。
