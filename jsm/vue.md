@@ -467,6 +467,62 @@ import path from 'path';
 }
 ```
 
+#### 别名
+
+以一个react工程为例，需要分别在typescript配置文件以及vite配置文件中设置。
+
+```typescript
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "paths": {
+      "@": [
+        "./src"
+      ],
+      "@/*": [
+        "./src/*"
+      ]
+    }
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
+
+```
+
+vite也需要写好同样的配置，不然打包的时候会报错。
+
+```typescript
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import * as path from "path";
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  plugins: [react()],
+});
+
+```
+
 #### vite的现代css支持
 
 首先创建一个vite+react的项目
