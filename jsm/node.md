@@ -1,6 +1,6 @@
 # node
 
-这里是node底层的学习笔记，包括v8引擎以及node服务端的知识
+这里是node底层的学习笔记，包括v8引擎以及node服务端的知识。内容参考一个掘金小册[深入剖析 Node.js 底层原理 - theanarkh - 掘金小册 (juejin.cn)](https://juejin.cn/book/7171733571638738952)
 
 ## v8引擎
 
@@ -31,10 +31,6 @@ webkit调用v8的结构
 ---
 
 ### v8的promise
-
----
-
-## webkit
 
 ## NestJS
 
