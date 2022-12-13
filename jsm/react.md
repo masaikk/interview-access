@@ -778,6 +778,8 @@ useEffect(() => {
 
 如果第二个参数为空数组，那就只会在这个组件渲染的第一次执行第一个参数的回调函数。
 
+对于传入``useEffect``的回调函数来说，它也可以设置一个return的值，return的值可以是一个函数，这个函数在每次执行``useEffect``的回调函数之后会执行一次。这就意味着，在``useEffect``的回调函数中设置定时器之类的对象，可以在它的回调函数中销毁它。
+
 ##### useContext
 
 参考[React Hooks 系列之3 useContext - 掘金 (juejin.cn)](https://juejin.cn/post/6844904153584500749)
