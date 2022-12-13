@@ -1397,5 +1397,35 @@ let arr = [5, 6, 7, 1, 2, 3]
 console.log(search(arr, 7));
 ```
 
+[35. 搜索插入位置 - 力扣（LeetCode）](https://leetcode.cn/problems/search-insert-position/)
+
+对于这个题目直接二分查找，并且需要注意的是停止的条件以及如果没有找到确切值，需要判断。
+
+```javascript
+/**
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number}
+ */
+var searchInsert = function (nums, target) {
+  let left = 0;
+  let right = nums.length;
+  let mid = left;
+  while (left < right - 1) {
+    mid = left + Math.floor((right - left) / 2);
+    if (nums[mid] === target) {
+      return mid;
+    } else {
+      if (nums[mid] > target) {
+        right = mid;
+      } else {
+        left = mid;
+      }
+    }
+  }
+  return nums[left] >= target ? left : left + 1;
+};
+```
+
 
 

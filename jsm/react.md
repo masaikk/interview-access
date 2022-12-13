@@ -855,6 +855,28 @@ export default About
 
 ![image-20220520000631672](react.assets/image-20220520000631672.png)
 
+对于根节点`<BrowserRouter>`来说，它也可以写在main.tsx中。
+
+```tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import "./index.css";
+import "antd/dist/reset.css";
+import { BrowserRouter } from "react-router-dom";
+
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </React.StrictMode>
+);
+
+```
+
+
+
 #### 两种router
 
 有``HashRouter``和``BrowserRouter``两种形式，分别对应与hash模式与history模式的两种路由。
