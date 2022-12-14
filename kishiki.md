@@ -1427,5 +1427,37 @@ var searchInsert = function (nums, target) {
 };
 ```
 
+[36. 有效的数独 - 力扣（LeetCode）](https://leetcode.cn/problems/valid-sudoku/)
+
+对于找个题目，就新建行，列，九宫格的矩阵表示是否重复。并且由于数独的大小是确定的，所以时间复杂度和空间复杂度都是O(1)。
+
+```javascript
+/**
+ * @param {character[][]} board
+ * @return {boolean}
+ */
+var isValidSudoku = function(board) {
+    const rows = new Array(9).fill(0).map(() => new Array(9).fill(0));
+    const columns = new Array(9).fill(0).map(() => new Array(9).fill(0));
+    const subboxes = new Array(3).fill(0).map(() => new Array(3).fill(0).map(() => new Array(9).fill(0)));
+    for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
+            const c = board[i][j];
+            if (c !== '.') {
+                const index = c.charCodeAt() - '0'.charCodeAt() - 1;
+                rows[i][index]++;
+                columns[j][index]++;
+                subboxes[Math.floor(i / 3)][Math.floor(j / 3)][index]++;
+                if (rows[i][index] > 1 || columns[j][index] > 1 || subboxes[Math.floor(i / 3)][Math.floor(j / 3)][index] > 1) {
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+};
+
+```
+
 
 
