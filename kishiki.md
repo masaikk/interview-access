@@ -1557,5 +1557,22 @@ var canJump = function (nums) {
 };
 ```
 
+删除dp列表，实际上，对于一个位置来说，可以到这个位置表示左边的全部位置都可以达到。使用变量k表示能够达到的最大位置。
+
+```javascript
+/**
+ * @param {number[]} nums
+ * @return {boolean}
+ */
+var canJump = function (nums) {
+  let k = 0;
+  for (let i = 0; i < nums.length; i++) {
+    if (i > k) return false;
+    k = Math.max(k, i + nums[i]);
+  }
+  return true;
+};
+```
+
 
 
