@@ -1397,7 +1397,7 @@ let arr = [5, 6, 7, 1, 2, 3]
 console.log(search(arr, 7));
 ```
 
-[35. 搜索插入位置 - 力扣（LeetCode）](https://leetcode.cn/problems/search-insert-position/)
+### [35. 搜索插入位置 - 力扣（LeetCode）](https://leetcode.cn/problems/search-insert-position/)
 
 对于这个题目直接二分查找，并且需要注意的是停止的条件以及如果没有找到确切值，需要判断。
 
@@ -1427,7 +1427,7 @@ var searchInsert = function (nums, target) {
 };
 ```
 
-[36. 有效的数独 - 力扣（LeetCode）](https://leetcode.cn/problems/valid-sudoku/)
+### [36. 有效的数独 - 力扣（LeetCode）](https://leetcode.cn/problems/valid-sudoku/)
 
 对于找个题目，就新建行，列，九宫格的矩阵表示是否重复。并且由于数独的大小是确定的，所以时间复杂度和空间复杂度都是O(1)。
 
@@ -1457,6 +1457,104 @@ var isValidSudoku = function(board) {
     return true;
 };
 
+```
+
+### [42. 接雨水 - 力扣（LeetCode）](https://leetcode.cn/problems/trapping-rain-water/)
+
+对于这道题来说，最简的方法就是遍历每一列，看着这一列是否能够接水，接水的条件是分别向左边和右边遍历，得到最高列，这两个最高列中的较低的那个减去这列的高度，就是这列可以接水的大小了。最后将每一列都统计起来。
+
+```javascript
+/**
+ * @param {number[]} height
+ * @return {number}
+ */
+var trap = function (height) {
+  let max_left = 0;
+  for (max_left = 0; max_left < height.length; max_left++) {
+    if (height[max_left] > 0) break;
+  }
+  let max_right = 0;
+  for (max_right = height.length - 1; max_right > 0; max_right--) {
+    if (height[max_right] > 0) break;
+  }
+  let total = 0;
+  if (max_left >= max_right - 1) {
+    return total;
+  } else {
+    for (let i = max_left + 1; i < max_right; i++) {
+      let this_max_left_height = 0;
+      //找出左边最高
+      for (let j = i - 1; j >= max_left; j--) {
+        if (height[j] > this_max_left_height) {
+          this_max_left_height = height[j];
+        }
+      }
+      let this_max_right_height = 0;
+      //找出右边最高
+      for (let j = i + 1; j <= max_right; j++) {
+        if (height[j] > this_max_right_height) {
+          this_max_right_height = height[j];
+        }
+      }
+      //找出两端较小的
+      let min_height = Math.min(this_max_left_height, this_max_right_height);
+      //只有较小的一段大于当前列的高度才会有水，其他情况不会有水
+      if (min_height > height[i]) {
+        total = total + (min_height - height[i]);
+      }
+    }
+    return total;
+  }
+};
+```
+
+很显然，上述做法在遍历每一列的时候都需要向左和向右遍历两次，很费时间。可以使用两个数组来分别表示第i个列的左右最高的墙。max_left_height [i] = Max(max_left_height [i-1],height[i-1])。它前边的墙的左边的最高高度和它前边的墙的高度选一个较大的，就是当前列左边最高的墙了。
+
+```java
+public int trap(int[] height) {
+    int sum = 0;
+    int[] max_left = new int[height.length];
+    int[] max_right = new int[height.length];
+    
+    for (int i = 1; i < height.length - 1; i++) {
+        max_left[i] = Math.max(max_left[i - 1], height[i - 1]);
+    }
+    for (int i = height.length - 2; i >= 0; i--) {
+        max_right[i] = Math.max(max_right[i + 1], height[i + 1]);
+    }
+    for (int i = 1; i < height.length - 1; i++) {
+        int min = Math.min(max_left[i], max_right[i]);
+        if (min > height[i]) {
+            sum = sum + (min - height[i]);
+        }
+    }
+    return sum;
+}
+
+```
+
+### [55. 跳跃游戏 - 力扣（LeetCode）](https://leetcode.cn/problems/jump-game/)
+
+对于这道题来说，我的做法是生成一个dp数组，dp数组出来第一个之外全部为false（即一开始达不到），遍历nums数组，再根据遍历的结果按照上面的步长范围内给dp数组附上true。但是，这样消耗有点大。
+
+```javascript
+/**
+ * @param {number[]} nums
+ * @return {boolean}
+ */
+var canJump = function (nums) {
+  const max_length = nums.length;
+  let dp = new Array(max_length).fill(false);
+  dp[0] = true;
+  for (let i = 0; i < max_length; i++) {
+    if (dp[i]) {
+      for (let step = 1; step <= nums[i]; step++) {
+        dp[i + step] = true;
+      }
+    }
+  }
+  return dp[max_length - 1];
+};
 ```
 
 
