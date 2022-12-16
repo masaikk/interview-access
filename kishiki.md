@@ -1574,5 +1574,58 @@ var canJump = function (nums) {
 };
 ```
 
+### [198. 打家劫舍 - 力扣（LeetCode）](https://leetcode.cn/problems/house-robber/)
 
+很像之前做过的一道题目，我在这里的做法就是新建一个dp数组表示打劫到第i家的最大收益是多少。然后讨论一下边缘状态长度等于1，2，3。最后遍历每一个点，得到完整的dp数组，最后输出dp数组的最后一项。
+
+```javascript
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var rob = function (nums) {
+  const maxLength = nums.length;
+  let dp = new Array(maxLength).fill(0);
+  if (maxLength === 1) {
+    return nums[0];
+  } else if (maxLength === 2) {
+    return Math.max(nums[0], nums[1]);
+  } else if (maxLength === 3) {
+    return Math.max(nums[0] + nums[2], nums[1]);
+  } else {
+    dp[0] = nums[0];
+    dp[1] = Math.max(dp[0], nums[1]);
+    dp[2] = Math.max(nums[1], nums[0] + nums[2]);
+    for (let i = 3; i < maxLength; i++) {
+      dp[i] = Math.max(nums[i] + dp[i - 2], dp[i - 1], nums[i] + dp[i - 3]);
+    }
+    return dp[maxLength - 1];
+  }
+};
+```
+
+并且，只讨论边缘情况长度等于1，2也是可以的。
+
+```javascript
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var rob = function (nums) {
+  const maxLength = nums.length;
+  let dp = new Array(maxLength).fill(0);
+  if (maxLength === 1) {
+    return nums[0];
+  } else if (maxLength === 2) {
+    return Math.max(nums[0], nums[1]);
+  } else {
+    dp[0] = nums[0];
+    dp[1] = Math.max(dp[0], nums[1]);
+    for (let i = 2; i < maxLength; i++) {
+      dp[i] = Math.max(nums[i] + dp[i - 2], dp[i - 1]);
+    }
+    return dp[maxLength - 1];
+  }
+};
+```
 
