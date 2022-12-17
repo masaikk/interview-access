@@ -3218,4 +3218,58 @@ export default App;
 
 管理状态
 
-在这个项目中，使用zustand来管理状态。并且将它封装成一个钩子。
+在这个项目中，使用zustand来管理状态。并且将它封装成一个钩子。代码如下
+
+```javascript
+//useStore.js
+
+import create from 'zustand'
+import { nanoid } from 'nanoid'
+
+const getLocalStorage = (key) => JSON.parse(window.localStorage.getItem(key))
+const setLocalStorage = (key, value) => window.localStorage.setItem(key, JSON.stringify(value))
+
+
+export const useStore = create((set) => ({
+    texture: 'dirt',
+    cubes: getLocalStorage('cubes') || [],
+    addCube: (x, y, z) => {
+        set((prev) => ({
+            cubes: [
+                ...prev.cubes,
+                {
+                    key: nanoid(),
+                    pos: [x, y, z],
+                    texture: prev.texture
+                }
+            ]
+        }))
+    },
+    removeCube: (x, y, z) => {
+        set((prev) => ({
+            cubes: prev.cubes.filter(cube => {
+                const [X, Y, Z] = cube.pos
+                return X !== x || Y !== y || Z !== z
+            })
+
+        }))
+    },
+    setTexture: (texture) => {
+        set(() => ({
+            texture
+        }))
+    },
+    saveWorld: () => {
+        set((prev) => {
+            setLocalStorage('cubes', prev.cubes)
+        })
+    },
+    resetWorld: () => {
+        set(() => ({
+            cubes: []
+        }))
+    },
+}))
+```
+
+其中的`import { nanoid } from 'nanoid'`是由于生成一个uuid。
