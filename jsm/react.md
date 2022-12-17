@@ -2861,3 +2861,120 @@ export const Ground = () => {
 };
 
 ```
+
+---
+
+设置地面的图层并且使用three的repeat操作。在此之前还可以设置最近邻过滤器。
+
+```jsx
+import { usePlane } from "@react-three/cannon";
+import { groundTexture } from "../images/textures";
+import { NearestFilter, RepeatWrapping } from "three";
+
+export const Ground = () => {
+  const [ref] = usePlane(() => ({
+    rotation: [0, 0, 0],
+    position: [0, 0, 0],
+  }));
+  groundTexture.magFilter = NearestFilter;
+
+  groundTexture.wrapS = RepeatWrapping;
+  groundTexture.wrapT = RepeatWrapping;
+  groundTexture.repeat.set(100, 100);
+  return (
+    <mesh ref={ref}>
+      <planeBufferGeometry attach="geometry" args={[100, 100]} />
+      <meshStandardMaterial attach="material" map={groundTexture} />
+    </mesh>
+  );
+};
+
+```
+
+此时，就可以像这样的：
+
+![image-20221217140550345](react.assets/image-20221217140550345.png)
+
+之后，可以在`rotation: [0, 0, 0]`设置地面的旋转。不过需要注意的是，这里表示角度的，是用弧度。比如旋转$\frac{\pi}{4}$个弧度。`rotation: [-Math.PI / 4, 0, 0],`
+
+![image-20221217140935387](react.assets/image-20221217140935387.png)
+
+---
+
+创建玩家
+
+现在创建一个玩家，实际上就是一个摄像机。并且加入到app.jsx中。
+
+```jsx
+// src/components/Player.jsx
+
+import { useThree } from "@react-three/fiber";
+import { useSphere } from "@react-three/cannon";
+
+export const Player = () => {
+  const { camera } = useThree();
+  const [ref] = useSphere(() => ({
+    mass: 1,
+    type: "Dynamic",
+    position: [0, 0, 0],
+  }));
+
+  return <mesh ref={ref}></mesh>;
+};
+
+```
+
+需要给玩家设置一个position。`const pos = useRef([0, 0, 0]);`之后再订阅useSphere的api中的成员，绑定到pos上。对于camera，需要给自己逐帧绑定position。
+
+```jsx
+  const [ref, api] = useSphere(() => ({
+    mass: 1,
+    type: "Dynamic",
+    position: [0, 0, 0],
+  }));
+  const pos = useRef([0, 0, 0]);
+  useEffect(() => {
+    api.position.subscribe((p) => (pos.current = p));
+  },[api.position]);
+```
+
+现在就可以得到跳动的效果。
+
+![image-20221217150658982](react.assets/image-20221217150658982.png)
+
+此时的player.jsx代码如下
+
+```javas
+import { useFrame, useThree } from "@react-three/fiber";
+import { useSphere } from "@react-three/cannon";
+import { useRef, useEffect } from "react";
+import { Vector3 } from "three";
+
+export const Player = () => {
+  const { camera } = useThree();
+  const [ref, api] = useSphere(() => ({
+    mass: 1,
+    type: "Dynamic",
+    position: [0, 0, 0],
+  }));
+  const pos = useRef([0, 0, 0]);
+  useEffect(() => {
+    api.position.subscribe((p) => (pos.current = p));
+  }, [api.position]);
+  useFrame(() => {
+    camera.position.copy(
+      new Vector3(pos.current[0], pos.current[1], pos.current[2])
+    );
+  });
+
+  return <mesh ref={ref}></mesh>;
+};
+
+```
+
+并且，由于刚才的地面有旋转，所以camera会因为重力而掉出去。所以可以将地面的旋转角度改成$-\frac{\pi}{2}$让它不掉出去。
+
+![image-20221217151319639](react.assets/image-20221217151319639.png)
+
+
+
