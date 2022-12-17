@@ -788,6 +788,10 @@ useEffect(() => {
 
 参考[React Hooks 系列之5 useCallback - 掘金 (juejin.cn)](https://juejin.cn/post/6844904162040233997)
 
+它的作用是返回一个 memoized 回调函数。
+
+把内联回调函数及依赖项数组作为参数传入 `useCallback`，它将返回该回调函数的 memoized 版本，该回调函数仅在某个依赖项改变时才会更新。当你把回调函数传递给经过优化的并使用引用相等性去避免非必要渲染（例如 shouldComponentUpdate）的子组件时，它将非常有用。
+
 ##### useMemo
 
 参考[React Hooks 系列之6 useMemo - 掘金 (juejin.cn)](https://juejin.cn/post/6844904162304458760)
@@ -2972,9 +2976,136 @@ export const Player = () => {
 
 ```
 
-并且，由于刚才的地面有旋转，所以camera会因为重力而掉出去。所以可以将地面的旋转角度改成$-\frac{\pi}{2}$让它不掉出去。
+并且，由于刚才的地面有旋转，所以camera会因为重力而掉出去。所以可以将地面的旋转角度改成$-\frac{\pi}{2}$让camera不掉出去。
 
 ![image-20221217151319639](react.assets/image-20221217151319639.png)
+
+同样，可以设置初始的速度并且使用useEffect绑定。
+
+```javascript
+  const vel = useRef([0, 0, 0]);
+  useEffect(() => {
+    api.velocity.subscribe((v) => (vel.current = p));
+  }, [api.velocity]);
+```
+
+---
+
+绑定按键变化
+
+为了能够使得camera移动，就需要绑定按键变化。
+
+封装一个hook
+
+```javascript
+import { useEffect, useState } from "react";
+
+function actionByKey(key) {
+  const keyActionMap = {
+    KeyW: "moveForward",
+    KeyS: "moveBackward",
+    KeyA: "moveLeft",
+    KeyD: "moveRight",
+    Space: "jump",
+    Digit1: "dirt",
+    Digit2: "grass",
+    Digit3: "glass",
+    Digit4: "wood",
+    Digit5: "log",
+  };
+  return keyActionMap[key];
+}
+export const useKeyboard = () => {
+  const [actions, setActions] = useState({
+    moveForward: false,
+    moveBackward: false,
+    moveLeft: false,
+    moveRight: false,
+    jump: false,
+    texture1: false,
+    texture2: false,
+    texture3: false,
+    texture4: false,
+    texture5: false,
+  });
+
+  const handleKeyDown = useCallback((e) => {
+    const action = actionByKey(e.code);
+    if (action) {
+      setActions((prev) => {
+        return {
+          ...prev,
+          [action]: true,
+        };
+      });
+    }
+  }, []);
+
+  const handleKeyUp = useCallback((e) => {
+    const action = actionByKey(e.code);
+    if (action) {
+      setActions((prev) => {
+        return {
+          ...prev,
+          [action]: false,
+        };
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keyup", handleKeyUp);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keyup", handleKeyUp);
+    };
+  }, [handleKeyDown, handleKeyUp]);
+
+  return actions;
+};
+
+```
+
+在player中测试一下
+
+```javascript
+  const actions = useKeyboard();
+  console.log(
+    "action",
+    Object.entries(actions).filter(([k, v]) => v)
+  );
+```
+
+可以展示
+
+![image-20221217213900157](react.assets/image-20221217213900157.png)
+
+这样的话，就能在逐帧修改跳跃，同时需要注意的是，要保持之前的x轴和z轴的速度。
+
+```jsx
+const JUMP_FORCE = 3;
+
+useFrame(() => {
+    camera.position.copy(
+      new Vector3(pos.current[0], pos.current[1], pos.current[2])
+    );
+    // api.velocity.set(1, 1, 1);
+    if (actions.jump) {
+      api.velocity.set(vel.current[0], JUMP_FORCE, vel.current[2]);
+    }
+  });
+```
+
+值得注意的是，因为这里没有条件约束，所以camera可以无限跳跃。为了解决这个问题，可以设置当y轴的速度的绝对值小于一个值，并且按下了跳跃键的时候，才能跳跃。
+
+```jsx
+if (actions.jump && Math.abs(vel.current[1]) <= 0.05) {
+      api.velocity.set(vel.current[0], JUMP_FORCE, vel.current[2]);
+    }
+```
+
+
 
 
 
