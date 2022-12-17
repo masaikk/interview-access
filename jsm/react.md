@@ -3105,7 +3105,117 @@ if (actions.jump && Math.abs(vel.current[1]) <= 0.05) {
     }
 ```
 
+我们也能把刚才封装好的hook的actions拆开`const { moveBackward, moveForward, moveRight, moveLeft, jump } = useKeyboard();`
 
+对于前后左右的移动，需要注意的是这四个方向全部都是相对于camera朝向而言的。而且诸如左右键一起按下或者前后键一起按下，就会无效。这里很巧妙的用减法抵消了它们。
 
+```jsx
+    const frontVector = new Vector3(
+      0,
+      0,
+      (moveBackward ? 1 : 0) - (moveForward ? 1 : 0)
+    );
 
+    const sideVector = new Vector3(
+      (moveLeft ? 1 : 0) - (moveRight ? 1 : 0),
+      0,
+      0
+    );
+```
 
+为了camera的移动速度，定义了一个值。需要注意的是，这个速度应当是左右的速度和前后的速度之间的合速度。所以还应该按照camera的角度来计算。
+
+```jsx
+  useFrame(() => {
+    camera.position.copy(
+      new Vector3(pos.current[0], pos.current[1], pos.current[2])
+    );
+    const direction = new Vector3();
+
+    const frontVector = new Vector3(
+      0,
+      0,
+      (moveBackward ? 1 : 0) - (moveForward ? 1 : 0)
+    );
+
+    const sideVector = new Vector3(
+      (moveLeft ? 1 : 0) - (moveRight ? 1 : 0),
+      0,
+      0
+    );
+
+    direction
+      .subVectors(frontVector, sideVector)
+      .normalize()
+      .multiplyScalar(SPEED)
+      .applyEuler(camera.rotation);
+
+    api.velocity.set(direction.x, vel.current[1], direction.z);
+    if (jump && Math.abs(vel.current[1]) <= 0.05) {
+      api.velocity.set(vel.current[0], JUMP_FORCE, vel.current[2]);
+    }
+  });
+```
+
+此时，camera就可以直着脖子跳跃和前后左右走动。
+
+![image-20221217221459809](react.assets/image-20221217221459809.png)
+
+---
+
+第一人称的添加
+
+```jsx
+//FPV.jsx
+
+import { useThree } from "@react-three/fiber";
+import { PointerLockControls } from "@react-three/drei";
+
+export const FPV = () => {
+  const { camera, gl } = useThree();
+
+  return (
+    <PointerLockControls args={[camera, gl.domElement]}></PointerLockControls>
+  );
+};
+
+```
+
+在App.jsx中引入，再通过绝对的div路径加入一个加号表示瞄准线，就有了扭脖子动作了。
+
+```jsx
+import { Physics } from "@react-three/cannon";
+import { Canvas } from "@react-three/fiber";
+import { Sky } from "@react-three/drei";
+import { Ground } from "./components/Ground";
+import { Player } from "./components/Player";
+import { FPV } from "./components/FPV";
+
+function App() {
+  return (
+    <>
+      <Canvas>
+        <Sky sunPosition={[100, 100, 20]}></Sky>
+        <ambientLight intensity={0.5}></ambientLight>
+        <FPV></FPV>
+        <Physics>
+          <Player></Player>
+          <Ground></Ground>
+        </Physics>
+      </Canvas>
+      <div className="absolute centered cursor">+</div>
+    </>
+  );
+}
+
+export default App;
+
+```
+
+![image-20221217235037019](react.assets/image-20221217235037019.png)
+
+---
+
+管理状态
+
+在这个项目中，使用zustand来管理状态。并且将它封装成一个钩子。
