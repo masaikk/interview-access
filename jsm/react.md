@@ -3477,3 +3477,111 @@ export const Ground = () => {
 ![image-20221218194145675](react.assets/image-20221218194145675.png)
 
 对于一个cube来说，它看起来有六个面，但是在webGL中，几何体是由三角形构成的，所以一个cube实际上由12个三角形组成。
+
+给cube绑定一个点击事件
+
+```jsx
+import { useBox } from "@react-three/cannon";
+import * as textures from "../images/textures";
+
+export const Cube = ({ position, texture }) => {
+  const activeTexture = textures[texture + "Texture"];
+  // console.log(activeTexture);
+  activeTexture.repeat.set(0.5, 0.5);
+  const [ref] = useBox(() => {
+    return {
+      type: "Static",
+      position,
+    };
+  });
+  return (
+    <mesh
+      ref={ref}
+      onClick={(e) => {
+        e.stopPropagation();
+        const clickedFace = e.faceIndex;
+        console.log(clickedFace);
+      }}
+    >
+      <boxBufferGeometry attach="geometry" />
+      <meshStandardMaterial attach="material" map={activeTexture} />
+    </mesh>
+  );
+};
+
+```
+
+可以打印出点击的面。
+
+![image-20221218233513685](react.assets/image-20221218233513685.png)
+
+对此，我们只需要六个面，所以需要计算一下。`const clickedFace = Math.floor(e.faceIndex / 2);`
+
+之后，我们从useStore拿到创建方块和删除方块的方法。再根据e的落点（即cube的坐标），以及面的不同，确定需要添加cube的地方。
+
+```jsx
+import { useBox } from "@react-three/cannon";
+import * as textures from "../images/textures";
+import { useStore } from "../hooks/useStore";
+
+export const Cube = ({ position, texture }) => {
+  const activeTexture = textures[texture + "Texture"];
+  // console.log(activeTexture);
+  const [addCube, removeCube] = useStore((state) => [
+    state.addCube,
+    state.removeCube,
+  ]);
+  activeTexture.repeat.set(0.5, 0.5);
+  const [ref] = useBox(() => {
+    return {
+      type: "Static",
+      position,
+    };
+  });
+  return (
+    <mesh
+      ref={ref}
+      onClick={(e) => {
+        e.stopPropagation();
+        const clickedFace = Math.floor(e.faceIndex / 2);
+        const { x, y, z } = ref.current.position;
+        if (e.altKey) {
+          removeCube(x, y, z);
+          return;
+        } else if (clickedFace === 0) {
+          addCube(x + 1, y, z);
+          return;
+        } else if (clickedFace === 1) {
+          addCube(x - 1, y, z);
+          return;
+        } else if (clickedFace === 2) {
+          addCube(x, y + 1, z);
+          return;
+        } else if (clickedFace === 3) {
+          addCube(x, y - 1, z);
+          return;
+        } else if (clickedFace === 4) {
+          addCube(x, y, z + 1);
+          return;
+        } else if (clickedFace === 5) {
+          addCube(x, y, z - 1);
+          return;
+        }
+      }}
+    >
+      <boxGeometry attach="geometry" />
+      <meshStandardMaterial attach="material" map={activeTexture} />
+    </mesh>
+  );
+};
+
+```
+
+现在即可点击放置方块，并且在按住alt键的时候再点击cube会删除cube。
+
+![image-20221218235527975](react.assets/image-20221218235527975.png)
+
+---
+
+#### 方块选择器
+
