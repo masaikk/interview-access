@@ -2801,6 +2801,8 @@ export default factories.createCoreController('api::mydata.mydata',({strapi})=>{
 
 ---
 
+#### 创建环境
+
 创建了项目之后，添加sky。
 
 ```jsx
@@ -2868,6 +2870,8 @@ export const Ground = () => {
 
 ---
 
+#### 设置地面
+
 设置地面的图层并且使用three的repeat操作。在此之前还可以设置最近邻过滤器。
 
 ```jsx
@@ -2905,7 +2909,7 @@ export const Ground = () => {
 
 ---
 
-创建玩家
+#### 创建玩家
 
 现在创建一个玩家，实际上就是一个摄像机。并且加入到app.jsx中。
 
@@ -2991,7 +2995,7 @@ export const Player = () => {
 
 ---
 
-绑定按键变化
+#### 绑定按键变化
 
 为了能够使得camera移动，就需要绑定按键变化。
 
@@ -3163,7 +3167,7 @@ if (actions.jump && Math.abs(vel.current[1]) <= 0.05) {
 
 ---
 
-第一人称的添加
+#### 第一人称的添加
 
 ```jsx
 //FPV.jsx
@@ -3216,7 +3220,7 @@ export default App;
 
 ---
 
-管理状态
+#### 管理状态
 
 在这个项目中，使用zustand来管理状态。并且将它封装成一个钩子。代码如下
 
@@ -3291,7 +3295,7 @@ export const Cubes = () => {
 
 ---
 
-创建单个Cube
+#### 创建单个Cube
 
 对于一个Cube来说，它有三个属性，分别是key，位置，和材质。上述Cubes遍历整个Cube数组来渲染了全部的Cube，具体在每个Cube里面，可以如下所示
 
@@ -3432,7 +3436,7 @@ export {
 
 ---
 
-放置一个cube
+#### 放置单个cube
 
 在ground.jsx这里拿到state的方法`const [addCube] = useStore((state) => [state.addCube]);`
 
@@ -3471,3 +3475,5 @@ export const Ground = () => {
 这样可以添加方块了，但是问题在于方块不能叠加，并且坐标不是整型的。
 
 ![image-20221218194145675](react.assets/image-20221218194145675.png)
+
+对于一个cube来说，它看起来有六个面，但是在webGL中，几何体是由三角形构成的，所以一个cube实际上由12个三角形组成。
