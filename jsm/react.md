@@ -3274,7 +3274,7 @@ export const useStore = create((set) => ({
 
 其中的`import { nanoid } from 'nanoid'`是由于生成一个随机的key，只需要调用就可以了。
 
-创建一个Cubes.jsx用于渲染状态里面的Cube，这里是首先用了useStore拿到全局状态，再计算得到一个Cube列表。
+创建一个Cubes.jsx用于渲染状态里面的Cube，这里是首先用了useStore拿到全局状态，再计算得到一个Cube列表。对于列表中的每个Cube的三个属性，都给他绑定到一个`<Cube>`上。
 
 ```jsx
 import { useStore } from "../hooks/useStore";
@@ -3282,11 +3282,11 @@ import { Cube } from "./Cube";
 
 export const Cubes = () => {
   const [cubes] = useStore((state) => [state.cubes]);
-  console.log(cubes);
   return cubes.map(({ key, pos, texture }) => {
-    return <Cube key={key} position={pos}></Cube>;
+    return <Cube key={key} position={pos} texture={texture} />;
   });
 };
+
 ```
 
 ---
@@ -3365,4 +3365,31 @@ export const useStore = create((set) => ({
 
 ![image-20221218140839411](react.assets/image-20221218140839411.png)
 
-之后的操作就是给这些cube补上真实的texture。
+之后的操作就是给这些cube补上真实的texture。需要注意的是，设置了材质之后，就不能设置颜色了，否则会覆盖。
+
+```jsx
+import { useBox } from "@react-three/cannon";
+import * as textures from "../images/textures";
+
+export const Cube = ({ position, texture }) => {
+  const activeTexture = textures[texture + "Texture"];
+  console.log(activeTexture);
+  const [ref] = useBox(() => {
+    return {
+      type: "Static",
+      position,
+    };
+  });
+  return (
+    <mesh ref={ref}>
+      <boxBufferGeometry attach="geometry" />
+      <meshStandardMaterial attach="material" map={activeTexture} />
+    </mesh>
+  );
+};
+
+```
+
+使用`<meshStandardMaterial attach="material" map={activeTexture} />`的map绑定材质。如下所示：
+
+![image-20221218142050351](react.assets/image-20221218142050351.png)
