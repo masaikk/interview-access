@@ -3272,4 +3272,97 @@ export const useStore = create((set) => ({
 }))
 ```
 
-其中的`import { nanoid } from 'nanoid'`是由于生成一个uuid。
+其中的`import { nanoid } from 'nanoid'`是由于生成一个随机的key，只需要调用就可以了。
+
+创建一个Cubes.jsx用于渲染状态里面的Cube，这里是首先用了useStore拿到全局状态，再计算得到一个Cube列表。
+
+```jsx
+import { useStore } from "../hooks/useStore";
+import { Cube } from "./Cube";
+
+export const Cubes = () => {
+  const [cubes] = useStore((state) => [state.cubes]);
+  console.log(cubes);
+  return cubes.map(({ key, pos, texture }) => {
+    return <Cube key={key} position={pos}></Cube>;
+  });
+};
+```
+
+---
+
+创建单个Cube
+
+对于一个Cube来说，它有三个属性，分别是key，位置，和材质。上述Cubes遍历整个Cube数组来渲染了全部的Cube，具体在每个Cube里面，可以如下所示
+
+```jsx
+import { useBox } from "@react-three/cannon";
+
+export const Cube = ({ position, texture }) => {
+  const [ref] = useBox(() => {
+    return {
+      type: "Static",
+      position,
+    };
+  });
+  return (
+    <mesh ref={ref}>
+      <boxBufferGeometry attach="geometry" />
+      <meshStandardMaterial color="blue" attach="material" />
+    </mesh>
+  );
+};
+
+```
+
+把这些方块先设置成蓝色。
+
+为了测试，在store这里初始化两个方块。
+
+```javascript
+import create from "zustand";
+import { nanoid } from "nanoid";
+
+/*const getLocalStorage = (key) => JSON.parse(window.localStorage.getItem(key));
+const setLocalStorage = (key, value) =>
+  window.localStorage.setItem(key, JSON.stringify(value));*/
+
+export const useStore = create((set) => ({
+  texture: "dirt",
+  cubes: [
+    {
+      key: nanoid(),
+      pos: [1, 5, 1],
+      texture: "dirt",
+    },
+    {
+      key: nanoid(),
+      pos: [4, 6, 1],
+      texture: "dirt",
+    },
+  ],
+  addCube: (x, y, z) => {
+    set((prev) => ({
+      cubes: [
+        ...prev.cubes,
+        {
+          key: nanoid(),
+          pos: [x, y, z],
+          texture: prev.texture,
+        },
+      ],
+    }));
+  },
+}));
+
+```
+
+此时即可正常渲染出这两个方块，如下图所示：
+
+![image-20221218140657412](react.assets/image-20221218140657412.png)
+
+并且这两个方块是实体
+
+![image-20221218140839411](react.assets/image-20221218140839411.png)
+
+之后的操作就是给这些cube补上真实的texture。
