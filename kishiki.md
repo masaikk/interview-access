@@ -1629,3 +1629,49 @@ var rob = function (nums) {
 };
 ```
 
+### [121. 买卖股票的最佳时机 - 力扣（LeetCode）](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock/)
+
+动态规划 前i天的最大收益 = max{前i-1天的最大收益，第i天的价格-前i-1天中的最小价格}。构建一个dp数组表示到了第i天的最大收益。
+
+```javascript
+/**
+ * @param {number[]} prices
+ * @return {number}
+ */
+var maxProfit = function (prices) {
+  const maxLength = prices.length;
+  if (maxLength <= 1) {
+    return 0;
+  }
+  const dp = new Array(maxLength).fill(0);
+  let min = prices[0];
+  for (let i = 1; i < maxLength; i++) {
+    dp[i] = Math.max(dp[i - 1], prices[i] - min);
+    min = Math.min(min, prices[i]);
+  }
+  return dp[maxLength - 1];
+};
+```
+
+这里的dp数组实际上可以化简成一个数。
+
+```javascript
+/**
+ * @param {number[]} prices
+ * @return {number}
+ */
+var maxProfit = function (prices) {
+  const maxLength = prices.length;
+  if (maxLength <= 1) {
+    return 0;
+  }
+  let dp = 0
+  let min = prices[0];
+  for (let i = 1; i < maxLength; i++) {
+    dp = Math.max(dp, prices[i] - min);
+    min = Math.min(min, prices[i]);
+  }
+  return dp;
+};
+```
+
