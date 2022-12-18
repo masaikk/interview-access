@@ -3393,3 +3393,81 @@ export const Cube = ({ position, texture }) => {
 使用`<meshStandardMaterial attach="material" map={activeTexture} />`的map绑定材质。如下所示：
 
 ![image-20221218142050351](react.assets/image-20221218142050351.png)
+
+此时虽然绑定了材质，但是在map到cube上的时候还是模糊不清，所以需要像ground一样加入最近邻过滤器等操作。
+
+```javascript
+import { TextureLoader, NearestFilter, RepeatWrapping } from "three";
+import { dirtImg, grassImg, glassImg, woodImg, logImg } from "./images";
+
+const dirtTexture = new TextureLoader().load(dirtImg);
+const logTexture = new TextureLoader().load(logImg);
+const grassTexture = new TextureLoader().load(grassImg);
+const glassTexture = new TextureLoader().load(glassImg);
+const woodTexture = new TextureLoader().load(woodImg);
+const groundTexture = new TextureLoader().load(grassImg);
+
+dirtTexture.magFilter = NearestFilter;
+logTexture.magFilter = NearestFilter;
+grassTexture.magFilter = NearestFilter;
+glassTexture.magFilter = NearestFilter;
+woodTexture.magFilter = NearestFilter;
+groundTexture.magFilter = NearestFilter;
+
+groundTexture.wrapS = RepeatWrapping;
+groundTexture.wrapT = RepeatWrapping;
+
+export {
+  dirtTexture,
+  logTexture,
+  grassTexture,
+  glassTexture,
+  woodTexture,
+  groundTexture,
+};
+
+```
+
+![image-20221218193246065](react.assets/image-20221218193246065.png)
+
+---
+
+放置一个cube
+
+在ground.jsx这里拿到state的方法`const [addCube] = useStore((state) => [state.addCube]);`
+
+对于mesh来说，绑定一个onClick事件，这里入参e包括一个叫做pointer的属性，为三维坐标。类型为Vector3。
+
+```jsx
+import { usePlane } from "@react-three/cannon";
+import { groundTexture } from "../images/textures";
+import { useStore } from "../hooks/useStore";
+
+export const Ground = () => {
+  const [ref] = usePlane(() => ({
+    rotation: [-Math.PI / 2, 0, 0],
+    position: [0, 0, 0],
+  }));
+  const [addCube] = useStore((state) => [state.addCube]);
+
+  groundTexture.repeat.set(100, 100);
+  return (
+    <mesh
+      onClick={(e) => {
+        e.stopPropagation();
+        const [x, y, z] = Object.values(e.point);
+        addCube(x, y, z);
+      }}
+      ref={ref}
+    >
+      <planeBufferGeometry attach="geometry" args={[100, 100]} />
+      <meshStandardMaterial attach="material" map={groundTexture} />
+    </mesh>
+  );
+};
+
+```
+
+这样可以添加方块了，但是问题在于方块不能叠加，并且坐标不是整型的。
+
+![image-20221218194145675](react.assets/image-20221218194145675.png)
