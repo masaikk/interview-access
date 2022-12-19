@@ -1675,3 +1675,44 @@ var maxProfit = function (prices) {
 };
 ```
 
+### [739. 每日温度 - 力扣（LeetCode）](https://leetcode.cn/problems/daily-temperatures/)
+
+对于这道题来说，直接从第一天开始遍历，再遍历之后的每一天，可以做出来，但是这里的时间复杂度有$n(O^{2})$
+
+对此，可以从后往前遍历。首先最后一天一定是0，然后遍历到i天，需要判断如果i+1天更大，那么result[i]=1；否则，就需要考虑result[i+1]是否为空，依次找到比第i天大的单位即可。
+
+```javascript
+/**
+ * @param {number[]} temperatures
+ * @return {number[]}
+ */
+var dailyTemperatures = function (temperatures) {
+  const maxLength = temperatures.length;
+  if (maxLength <= 1) {
+    return maxLength === 1 ? [0] : [];
+  }
+  let results = new Array(maxLength).fill(0);
+  for (let i = maxLength - 2; i >= 0; i--) {
+    if (temperatures[i + 1] > temperatures[i]) {
+      results[i] = 1;
+    } else {
+      let tempHighTemperatureIndex = i + 1;
+      while (results[tempHighTemperatureIndex] !== 0) {
+        if (temperatures[tempHighTemperatureIndex] > temperatures[i]) {
+          results[i] = tempHighTemperatureIndex - i;
+          tempHighTemperatureIndex = i + 1;
+          break;
+        } else {
+          tempHighTemperatureIndex =
+            tempHighTemperatureIndex + results[tempHighTemperatureIndex];
+        }
+      }
+      if (temperatures[tempHighTemperatureIndex] > temperatures[i]) {
+        results[i] = tempHighTemperatureIndex - i;
+      }
+    }
+  }
+  return results;
+};
+```
+
