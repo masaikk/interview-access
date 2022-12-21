@@ -1716,3 +1716,27 @@ var dailyTemperatures = function (temperatures) {
 };
 ```
 
+### [461. 汉明距离 - 力扣（LeetCode）](https://leetcode.cn/problems/hamming-distance/)
+
+这道题是简单题，就是先算一个异或，再转二进制，再统计二进制字符串里面的1的个数就可以。
+
+```javascript
+/**
+ * @param {number} x
+ * @param {number} y
+ * @return {number}
+ */
+var hammingDistance = function (x, y) {
+  let res = x ^ y;
+  let binRes = (res >>> 0).toString(2);
+  let number = 0;
+  for (let char of binRes) {
+    // console.log(char);
+    if (char === "1") number++;
+  }
+  return number;
+};
+
+```
+
+可以学习的是，这里转二进制的方法`(res >>> 0).toString(2)`
