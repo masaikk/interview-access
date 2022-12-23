@@ -1780,3 +1780,77 @@ var hasCycle = function (head) {
 ```
 
 在这里，我使用了try-catch，省去了判断是否越界。只要快指针一越界，就不是环形链表。
+
+### [84. 柱状图中最大的矩形 - 力扣（LeetCode）](https://leetcode.cn/problems/largest-rectangle-in-histogram/)
+
+首先是暴力解法，遍历每一列，使用双指针法分别从左边和右边找出确界，计算面积，但是这里是超时的。
+
+```javascript
+/**
+ * @param {number[]} heights
+ * @return {number}
+ */
+var largestRectangleArea = function (heights) {
+  const maxLength = heights.length;
+  if (maxLength === 1) {
+    return heights[0];
+  }
+  let results = new Array(maxLength).fill(0);
+  for (let nowIndex = 0; nowIndex < maxLength; nowIndex++) {
+    let nowHeight = heights[nowIndex];
+    let left = nowIndex;
+    let right = nowIndex;
+    for (; left >= 0; left--) {
+      if (heights[left] < nowHeight) break;
+    }
+    for (; right <= maxLength - 1; right++) {
+      if (heights[right] < nowHeight) break;
+    }
+    left++;
+    right--;
+    results[nowIndex] = (right - left + 1) * nowHeight;
+  }
+  return Math.max(...results);
+};
+
+let nums = [2, 1, 5, 6, 2, 3];
+largestRectangleArea(nums);
+
+```
+
+使用单调栈的双指针法[柱状图中最大的矩形 - 柱状图中最大的矩形 - 力扣（LeetCode）](https://leetcode.cn/problems/largest-rectangle-in-histogram/solution/zhu-zhuang-tu-zhong-zui-da-de-ju-xing-by-leetcode-/)
+
+```javascript
+/**
+ * @param {number[]} heights
+ * @return {number}
+ */
+var largestRectangleArea = function (heights) {
+  const maxLength = heights.length;
+  const left = new Array(maxLength).fill(0);
+  const right = new Array(maxLength).fill(0);
+  let mono = [];
+  for (let i = 0; i < maxLength; i++) {
+    while (mono.length > 0 && heights[mono[mono.length - 1]] >= heights[i]) {
+      mono.pop();
+    }
+    left[i] = mono.length === 0 ? -1 : mono[mono.length - 1];
+    mono.push(i);
+  }
+  mono = [];
+  for (let i = maxLength - 1; i >= 0; i--) {
+    while (mono.length > 0 && heights[mono[mono.length - 1]] >= heights[i]) {
+      mono.pop();
+    }
+    right[i] = mono.length === 0 ? maxLength : mono[mono.length - 1];
+    mono.push(i);
+  }
+  let ans = 0;
+  for (let i = 0; i < maxLength; i++) {
+    ans = Math.max(ans, (right[i] - left[i] - 1) * heights[i]);
+  }
+  return ans;
+};
+
+```
+
