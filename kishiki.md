@@ -1740,3 +1740,43 @@ var hammingDistance = function (x, y) {
 ```
 
 可以学习的是，这里转二进制的方法`(res >>> 0).toString(2)`
+
+### [141. 环形链表 - 力扣（LeetCode）](https://leetcode.cn/problems/linked-list-cycle/)
+
+这道题需要考虑边界情况。比较好的解法在于使用两个指针，称为快慢指针法。它们从一个点开始出发，快指针一次移动两格，慢指针一次移动一格。如果在多次移动之后，快慢指针能够相遇，那就证明这个链表是有环的。
+
+```javascript
+function ListNode(val) {
+  this.val = val;
+  this.next = null;
+}
+
+/**
+ * @param {ListNode} head
+ * @return {boolean}
+ */
+var hasCycle = function (head) {
+  if (!head) {
+    return false;
+  }
+  if (head.next === head) {
+    return true;
+  }
+  let fast = head;
+  let slow = head;
+  do {
+    try {
+      fast = fast.next.next;
+      slow = slow.next;
+    } catch (e) {
+      return false;
+    }
+    if (fast === slow) {
+      return true;
+    }
+  } while (true);
+};
+
+```
+
+在这里，我使用了try-catch，省去了判断是否越界。只要快指针一越界，就不是环形链表。
