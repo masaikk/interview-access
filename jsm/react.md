@@ -792,9 +792,17 @@ useEffect(() => {
 
 把内联回调函数及依赖项数组作为参数传入 `useCallback`，它将返回该回调函数的 memoized 版本，该回调函数仅在某个依赖项改变时才会更新。当你把回调函数传递给经过优化的并使用引用相等性去避免非必要渲染（例如 shouldComponentUpdate）的子组件时，它将非常有用。
 
+比较于useState函数，返回的set函数一调用就会重新渲染组件，但是因为使用了useState，所以前面的值保存了下来，不会被初始化。但是函数组件里面声明的函数，就会被重新渲染了。为了节省不必要的开销，所以要把函数包装到useCallback里面保存。
+
+如果第二个函数里面传递一个空数组，那就意味着之后每次重新渲染组件，拿到的函数都是之前缓存的一成不变的函数（包括函数内部的state）。数组里面写定的依赖表示如果相关才会重新创建新的函数，不使用缓存。
+
 ##### useMemo
 
 参考[React Hooks 系列之6 useMemo - 掘金 (juejin.cn)](https://juejin.cn/post/6844904162304458760)
+
+与useCallback的不同之处在于useCallback不会执行第一个参数函数，而是将它返回。useMemo是会执行第一个函数并且将函数执行结果返回。
+
+因此，useCallback常用于记忆事件函数，生成及以后的事件函数并且返回使用。而useMemo用于计算得到一个确定的值（类似于vue的计算属性）。这里的计算可以使用组件的state。
 
 ### react-router
 
@@ -2801,7 +2809,7 @@ export default factories.createCoreController('api::mydata.mydata',({strapi})=>{
 
 ---
 
-#### 创建环境
+### 创建环境
 
 创建了项目之后，添加sky。
 
@@ -2870,7 +2878,7 @@ export const Ground = () => {
 
 ---
 
-#### 设置地面
+### 设置地面
 
 设置地面的图层并且使用three的repeat操作。在此之前还可以设置最近邻过滤器。
 
@@ -2909,7 +2917,7 @@ export const Ground = () => {
 
 ---
 
-#### 创建玩家
+### 创建玩家
 
 现在创建一个玩家，实际上就是一个摄像机。并且加入到app.jsx中。
 
@@ -2995,11 +3003,11 @@ export const Player = () => {
 
 ---
 
-#### 绑定按键变化
+### 绑定按键变化
 
 为了能够使得camera移动，就需要绑定按键变化。
 
-封装一个hook
+如下封装一个hook
 
 ```javascript
 import { useEffect, useState } from "react";
@@ -3167,7 +3175,7 @@ if (actions.jump && Math.abs(vel.current[1]) <= 0.05) {
 
 ---
 
-#### 第一人称的添加
+### 第一人称的添加
 
 ```jsx
 //FPV.jsx
@@ -3220,7 +3228,7 @@ export default App;
 
 ---
 
-#### 管理状态
+### 管理状态
 
 在这个项目中，使用zustand来管理状态。并且将它封装成一个钩子。代码如下
 
@@ -3295,7 +3303,7 @@ export const Cubes = () => {
 
 ---
 
-#### 创建单个Cube
+### 创建单个Cube
 
 对于一个Cube来说，它有三个属性，分别是key，位置，和材质。上述Cubes遍历整个Cube数组来渲染了全部的Cube，具体在每个Cube里面，可以如下所示
 
@@ -3436,7 +3444,7 @@ export {
 
 ---
 
-#### 放置单个cube
+### 放置单个cube
 
 在ground.jsx这里拿到state的方法`const [addCube] = useStore((state) => [state.addCube]);`
 
@@ -3583,5 +3591,5 @@ export const Cube = ({ position, texture }) => {
 
 ---
 
-#### 方块选择器
+### 方块选择器
 
