@@ -1854,3 +1854,26 @@ var largestRectangleArea = function (heights) {
 
 ```
 
+### [4. 寻找两个正序数组的中位数 - 力扣（LeetCode）](https://leetcode.cn/problems/median-of-two-sorted-arrays/?favorite=2cktkvj)
+
+有一个很慢的方法
+
+```javascript
+/**
+ * @param {number[]} nums1
+ * @param {number[]} nums2
+ * @return {number}
+ */
+var findMedianSortedArrays = function (nums1, nums2) {
+  let all = [...nums1, ...nums2];
+  all = all.sort((a, b) => a - b);
+  if (all.length % 2 === 1) {
+    return all[Math.floor(all.length / 2)];
+  } else {
+    return (all[all.length / 2] + all[all.length / 2 - 1]) / 2;
+  }
+};
+
+```
+
+虽然能够AC但是达不到题目要求。
