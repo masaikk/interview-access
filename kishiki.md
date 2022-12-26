@@ -1877,3 +1877,30 @@ var findMedianSortedArrays = function (nums1, nums2) {
 ```
 
 虽然能够AC但是达不到题目要求。
+
+### [139. 单词拆分 - 力扣（LeetCode）](https://leetcode.cn/problems/word-break/)
+
+对于这个题目来说，可以设置一个1维的动态规划。设置dp数组。其中dp[i]为true表示前i个字符是可以拆分成列表中的任意单词的。并且，规划的方法当且仅当至少存在一个j，使得dp[j]为true和substr(j,i)是属于列表的，那就可以推导出dp[i]为true。
+
+```javascript
+/**
+ * @param {string} s
+ * @param {string[]} wordDict
+ * @return {boolean}
+ */
+var wordBreak = function (s, wordDict) {
+  const maxLength = s.length;
+  let dp = new Array(maxLength + 1).fill(false);
+  dp[0] = true;
+  for (let i = 1; i <= maxLength; i++) {
+    for (let j = 0; j < i; j++) {
+      if (dp[j] && wordDict.includes(s.substring(j, i))) {
+        dp[i] = true;
+        break;
+      }
+    }
+  }
+  return dp[maxLength ];
+};
+```
+
