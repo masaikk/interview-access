@@ -125,6 +125,12 @@ def get_target(reward, next_state, over):
 
 <img src="basicKnow.assets/image-20221116131628888.png" alt="image-20221116131628888" style="zoom:75%;" />
 
+### 相关概念
+
+如果一个序列的变化幅度较大，不算平稳，可以尝试做一阶差分变化表。
+
+![image-20221226201216244](basicKnow.assets/image-20221226201216244.png)
+
 
 
 
