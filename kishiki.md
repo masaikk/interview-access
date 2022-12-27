@@ -1904,3 +1904,30 @@ var wordBreak = function (s, wordDict) {
 };
 ```
 
+### [283. 移动零 - 力扣（LeetCode）](https://leetcode.cn/problems/move-zeroes/)
+
+就是遍历0，再把0加回去。
+
+```javascript
+/**
+ * @param {number[]} nums
+ * @return {void} Do not return anything, modify nums in-place instead.
+ */
+var moveZeroes = function (nums) {
+  let allZeros = [];
+  let zerosIndex = [];
+  nums.forEach((value, index, array) => {
+    if (value === 0) {
+      allZeros.push(0);
+      zerosIndex.push(index);
+    }
+  });
+  let splitTimes = 0;
+  zerosIndex.forEach((item) => {
+    nums.splice(item - splitTimes, 1);
+    splitTimes++;
+  });
+  nums.push(...allZeros);
+};
+```
+
