@@ -651,7 +651,13 @@
     
       ![image-20221120200845859](question.assets/image-20221120200845859.png)
     
-30. 
+34. 解释一下前端HTML中的JavaScript加载问题？
+
+    参考链接[你不知道的 DOMContentLoaded - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/25876048)
+
+    解释一下，当 HTML 文档解析完成就会触发 DOMContentLoaded，而所有资源加载完成之后，load 事件才会被触发。
+
+    另外需要提一下的是，我们在 jQuery 中经常使用的 `(document).ready(function() { });` 其实监听的就是 DOMContentLoaded 事件，而 `(document).load(function() {});` 监听的是 load 事件。
 
 30. 
 
