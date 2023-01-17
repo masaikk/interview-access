@@ -2656,6 +2656,10 @@ const MyApp = (data: AppProps & ILayoutProps) => {
 };
 ```
 
+### Next13
+
+next13版本有部分变化，比如加入了app文件夹。可以参考[你好，Next.js 13 - 掘金 (juejin.cn)](https://juejin.cn/post/7160084572942630926)。
+
 ## strapi
 
 strapi是一个CMS框架，可以理解为一个后端框架，帮助操作数据库的。参考官网[Strapi - Open source Node.js Headless CMS 🚀](https://strapi.io/)
