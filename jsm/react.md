@@ -2138,6 +2138,20 @@ function Count(){
 export default Count;
 ```
 
+并且可以使用node的调试功能
+
+```javascript
+  "scripts": {
+    "dev": "next dev",
+    "debugger": "cross-env NODE_OPTIONS='--inspect' next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+```
+
+
+
 ### 动态路由设置
 
 在pages设置动态路由，示例如下：
@@ -2658,7 +2672,9 @@ const MyApp = (data: AppProps & ILayoutProps) => {
 
 ### Next13
 
-next13版本有部分变化，比如加入了app文件夹。可以参考[你好，Next.js 13 - 掘金 (juejin.cn)](https://juejin.cn/post/7160084572942630926)。
+next13版本有部分变化，比如加入了app文件夹。可以参考[你好，Next.js 13 - 掘金 (juejin.cn)](https://juejin.cn/post/7160084572942630926)和[Next13 新功能整理 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/597315593)
+
+比如区分服务器组件和客户端组件。渲染服务器组件实际上是一个 API 调用，以获取序列化的虚拟 DOM，然后在浏览器中实现它。 最重要的是，服务器组件用于呈现**非交互式内容**，因此没有**事件处理程序**、没有 **React 勾子**，也没有仅限**浏览器的 API**。 最显着的好处是可以**自由访问服务器组件中的任何后端资源和机密**。它更安全（数据不会泄漏）和更快（代码不会泄漏）。客户端组件是在客户端渲染的。 客户端组件也可以在服务器上预渲染，并在客户端进行水合化。 要使用客户端组件，在app中创建一个文件，并在文件的顶部（在任何导入之前）添加 `"use client"` 。 默认情况下app下的所有文件都属于服务器组件。
 
 ## strapi
 
