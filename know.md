@@ -741,6 +741,45 @@ with torchsnooper.snoop():
 
 ---
 
+### parser.add_argument
+
+使用这个包来获取命令行参数。可以参考[python之parser.add_argument()用法——命令行选项、参数和子命令解析器_夏普通的博客-CSDN博客_parser.add_argument](https://blog.csdn.net/qq_34243930/article/details/106517985)。
+
+在一个文件里面定义它并且设置默认值
+
+```python
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--config", type=str, default="defaultConfig", help="path to config which constructs model", )
+parser.add_argument("--share", action='store_true', help="use share=True for ...")
+cmd_opts = parser.parse_args()
+
+```
+
+大概有两种情况，当参数为bool值的时候可以使用action的参数，即有参数的时候就把它设置为一个bool值。
+
+在另一个包里面使用它，如下：
+
+```python
+from shared import cmd_opts
+
+if __name__ == '__main__':
+    print(cmd_opts.config)
+    print(cmd_opts.share)
+
+```
+
+默认的-h属性：
+
+![image-20230120180258079](know.assets/image-20230120180258079.png)
+
+传入参数之后，可以获取到这些参数的值：
+
+![image-20230120180359064](know.assets/image-20230120180359064.png)
+
+---
+
 ## pandas操作
 
 ### merge
