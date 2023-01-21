@@ -778,6 +778,96 @@ if __name__ == '__main__':
 
 ![image-20230120180359064](know.assets/image-20230120180359064.png)
 
+### fastapi
+
+可以用这个框架搭建http以及websocket服务。其中websocket的文档如[WebSockets - FastAPI (tiangolo.com)](https://fastapi.tiangolo.com/advanced/websockets/)
+
+有一个单播的实例，其中服务器端如下
+
+```python
+from fastapi import FastAPI
+from fastapi.websockets import WebSocket
+
+app = FastAPI()
+
+
+@app.websocket_route("/ws")
+async def websocket(websocket: WebSocket):
+    await websocket.accept()
+    # 需要异步的连接，否则会造成阻塞
+    r = 'hello'
+    while True:
+        msg = r
+        data = await websocket.receive_text()
+        await websocket.send_json({"msg": msg, "data": data})  # 发送到前端
+
+
+if __name__ == '__main__':
+    import uvicorn
+
+    uvicorn.run(
+        app='main:app',
+        host="127.0.0.1",
+        log_level="debug",
+        port=8899,
+        loop="asyncio",
+        # workers=4,
+    )
+
+```
+
+客户端为
+
+```html
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>websocket通信客户端</title>
+    <script type="text/javascript">
+        function WebSocketTest() {
+            if ("WebSocket" in window) {
+                // 打开一个 web socket
+                var ws = new WebSocket("ws://127.0.0.1:8899/ws"); // 和后端代码在一个机器启动
+
+                // 连接建立后的回调函数
+                ws.onopen = function () {
+                    console.log("已经建立websocket连接")
+                    ws.send('from browser')
+                };
+
+                // 接收到服务器消息后的回调函数
+                ws.onmessage = function (evt) {
+                    var received_msg = evt.data;
+                    console.log(received_msg)
+                };
+                // 连接关闭后的回调函数
+                ws.onclose = function () {
+                    // 关闭 websocket
+                    console.log("连接已关闭...");
+                };
+            } else {
+                // 浏览器不支持 WebSocket
+                console.log("您的浏览器不支持 WebSocket!");
+            }
+        }
+
+    </script>
+</head>
+
+<body onload="WebSocketTest()">
+
+</body>
+</html>
+
+```
+
+可以正常收发信息
+
+![image-20230121140410589](know.assets/image-20230121140410589.png)
+
+
+
 ---
 
 ## pandas操作
