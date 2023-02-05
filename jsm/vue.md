@@ -1701,6 +1701,39 @@ setup(){
 
 注意，获取的dom一定要在return中返回，才能进行渲染。
 
+### Jsx
+
+根据官方插件`@vitejs/plugin-vue-jsx`，也可以写jsx语法，具体可以参考[长文，Vue3+Vite 中 JSX 的使用方式 - 掘金 (juejin.cn)](https://juejin.cn/post/7174438569212116999)。对于事件的绑定需要使用`withModifiers`有点繁琐，这里是一个示例
+
+```tsx
+import { ref, withModifiers, defineComponent } from "vue";
+
+export default defineComponent({
+  setup() {
+    const myNum = ref<number>(1);
+    const clickHandler = () => {
+      myNum.value++;
+    };
+
+    return () => (
+      <>
+        <button
+          onClick={withModifiers(() => {
+            clickHandler();
+          }, ["self"])}
+        >
+          click me
+        </button>
+        <p>This is a jsx component with {myNum.value}</p>
+      </>
+    );
+  },
+});
+
+```
+
+
+
 ---
 
 ### Vue源码部分解读
