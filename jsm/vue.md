@@ -4479,6 +4479,8 @@ export default defineConfig({
 });
 ```
 
+### 使用插件进行导入
+
 定义一个插件
 
 ```typescript
@@ -4619,7 +4621,7 @@ export default defineConfig({
 
 ```
 
-**创建router**
+### **创建router**
 
 在renderer文件夹下面创建router.ts文件
 
@@ -4655,9 +4657,196 @@ export let router = VueRouter.createRouter({
 });
 ```
 
+以上操作类似于普通的electron项目。官方源代码位于[ElectronJueJin: 掘金小册源码仓储： https://juejin.cn/book/7152717638173966349 - Gitee.com](https://gitee.com/horsejs_admin/electron-jue-jin/tree/router)
 
+### 窗口构建
 
+对于vue项目来说，在进行了主进程的时候会直接渲染第一个渲染进程的窗口，这时js文件可能没有加载好（比如一些复杂的rander过程），就会出现白屏现象。对此，小册的做法是**显示窗口不能依赖`ready-to-show`事件，必须手动控制才好**。
 
+主窗口对象`mainWindow`初始化时，把配置属性`show`设置为`false`，就可以让主窗口初始化成功后处于隐藏状态。接下来再在合适的时机让渲染进程控制主窗口显示出来即可。这里我们在`WindowMain.vue`组件渲染完成之后来完成这项工作。例如
 
+```vue
+<template>
+  <div>
+    <div>
+      <h3>page1</h3>
+    </div>
+  </div>
+</template>
 
+<script lang="ts">
+import { ipcRenderer } from "electron";
+import { onMounted } from "vue";
+
+onMounted(() => {
+  ipcRenderer.invoke("showWindow");
+});
+</script>
+
+<style scoped></style>
+```
+
+这里就是在主窗口挂载之后使用`onMounted`钩子来发送`showWindow`信息告诉主进程，窗体内容已经渲染完成，可以展示了。主进程中的handler函数如下参考：
+
+```typescript
+import { BrowserWindow, ipcMain, app } from "electron";
+
+export class CommonWindowEvent {
+  private static getWin(event: any) {
+    return BrowserWindow.fromWebContents(event.sender);
+  }
+
+  public static listen() {
+    ipcMain.handle("minimizeWindow", (e) => {
+      this.getWin(e)?.minimize();
+    });
+
+    ipcMain.handle("maxmizeWindow", (e) => {
+      this.getWin(e)?.maximize();
+    });
+
+    ipcMain.handle("unmaximizeWindow", (e) => {
+      this.getWin(e)?.unmaximize();
+    });
+
+    ipcMain.handle("hideWindow", (e) => {
+      this.getWin(e)?.hide();
+    });
+
+    ipcMain.handle("showWindow", (e) => {
+      console.log("showWindow");
+      this.getWin(e)?.show();
+    });
+
+    ipcMain.handle("closeWindow", (e) => {
+      this.getWin(e)?.close();
+    });
+    ipcMain.handle("resizable", (e) => {
+      return this.getWin(e)?.isResizable();
+    });
+    ipcMain.handle("getPath", (e, name: any) => {
+      return app.getPath(name);
+    });
+  }
+
+  public static regWinEvent(win: BrowserWindow) {
+    win.on("maximize", () => {
+      win.webContents.send("windowMaximized");
+    });
+    win.on("unmaximize", () => {
+      win.webContents.send("windowUnmaximized");
+    });
+    //@ts-ignore
+    win.webContents.setWindowOpenHandler((param) => {
+      let config: any = {
+        frame: false,
+        show: true,
+        parent: null,
+        webPreferences: {
+          nodeIntegration: true,
+          webSecurity: false,
+          allowRunningInsecureContent: true,
+          contextIsolation: false,
+          webviewTag: true,
+          spellcheck: false,
+          disableHtmlFullscreenWindowResize: true,
+          nativeWindowOpen: true,
+        },
+      };
+      let features = JSON.parse(param.features);
+      for (let p in features) {
+        if (p === "webPreferences") {
+          for (let p2 in features.webPreferences) {
+            config.webPreferences[p2] = features.webPreferences[p2];
+          }
+        } else {
+          config[p] = features[p];
+        }
+      }
+      //@ts-ignore
+      if (config["modal"] === true) config.parent = win;
+      console.log(config);
+      return { action: "allow", overrideBrowserWindowOptions: config };
+    });
+  }
+}
+
+```
+
+此时主进程要注册这些事件
+
+```typescript
+import { app, autoUpdater, BrowserWindow } from "electron";
+import { CustomScheme } from "./CustomScheme";
+// @ts-ignore
+import { CommonWindowEvent } from "./CommonWindowEvent";
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = "true";
+app.on("browser-window-created", (e, win) => {
+  CommonWindowEvent.regWinEvent(win);
+});
+let mainWindow: BrowserWindow;
+app.whenReady().then(() => {
+  let config = {
+    frame: false,
+    show: false,
+    webPreferences: {
+      nodeIntegration: true,
+      webSecurity: false,
+      allowRunningInsecureContent: true,
+      contextIsolation: false,
+      webviewTag: true,
+      spellcheck: false,
+      disableHtmlFullscreenWindowResize: true,
+    },
+  };
+
+  mainWindow = new BrowserWindow(config);
+
+  mainWindow.webContents.openDevTools({ mode: "undocked" });
+
+  if (process.argv[2]) {
+    mainWindow.loadURL(process.argv[2]);
+  } else {
+    CustomScheme.registerScheme();
+    mainWindow.loadURL(`app://index.html`);
+    // Updater.check();
+  }
+  CommonWindowEvent.listen();
+});
+
+```
+
+要想自定义一个窗口的标题栏必须把窗口默认的标题栏取消掉才行。只要我们在初始化`mainWindow`对象时（主进程里的逻辑），把窗口配置对象的`frame`属性设置为`false`就可以使这个窗口成为无边框窗口了。
+
+---
+
+Electron 允许渲染进程通过`window.open`打开一个新窗口，但这需要做一些额外的设置。
+
+首先需要为主窗口的`webContents`注册`setWindowOpenHandler`方法。
+
+```typescript
+//src\main\CommonWindowEvent.ts
+mainWindow.webContents.setWindowOpenHandler((param) => {
+  return { action: "allow", overrideBrowserWindowOptions: yourWindowConfig };
+});
+```
+
+我们在上面的代码中使用`setWindowOpenHandler`方法的回调函数返回一个对象，这个对象中`action: "allow"`代表允许窗口打开，如果你想阻止窗口打开，那么只要返回`{action: "deny"}`即可。
+
+在本例子中，因为配置了`setWindowOpenHandler`方法，所以不能简单的打开一个子窗口，可以参考如下
+
+```typescript
+const openAWin = () => {
+  let config = {
+    modal: true,
+    width: 400,
+    webPreferences: { webviewTag: false },
+  };
+  window.open("/testSideDiv", "_blank", JSON.stringify(config));
+};
+```
+
+需要打开的子窗口需要在router中注册。效果如下
+
+![image-20230208165423476](vue.assets/image-20230208165423476.png)
 
