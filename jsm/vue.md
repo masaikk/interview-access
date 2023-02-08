@@ -4850,3 +4850,23 @@ const openAWin = () => {
 
 ![image-20230208165423476](vue.assets/image-20230208165423476.png)
 
+现在我们遇到了一个问题：不知道子窗口何时加载成功了，注意这里不能单纯地使用`window`对象的`onload`事件或者 document 对象的`DOMContentLoaded`事件来判断子窗口是否加载成功了。因为这个时候你的业务代码（比如从数据库异步读取数据的逻辑）可能尚未执行完成。
+
+对此，作者在信息传递上还封装了一个函数，它还能解除监听器。
+
+```typescript
+export let createDialog = (url: string, config: any): Promise<Window> => {
+  return new Promise((resolve, reject) => {
+    let windowProxy = window.open(url, "_blank", JSON.stringify(config));
+    let readyHandler = (e) => {
+      let msg = e.data;
+      if (msg["msgName"] === `__dialogReady`) {
+        window.removeEventListener("message", readyHandler);
+        resolve(windowProxy);
+      }
+    };
+    window.addEventListener("message", readyHandler);
+  });
+};
+```
+
