@@ -832,7 +832,9 @@ export default function vitePluginTemplate(): PluginOption {
 
 ![image-20220613181351730](vue.assets/image-20220613181351730.png)
 
+也可以参考
 
+![image-20230210211057785](vue.assets/image-20230210211057785.png)
 
 ---
 
