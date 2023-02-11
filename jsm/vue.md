@@ -4854,17 +4854,17 @@ const openAWin = () => {
 
 现在我们遇到了一个问题：不知道子窗口何时加载成功了，注意这里不能单纯地使用`window`对象的`onload`事件或者 document 对象的`DOMContentLoaded`事件来判断子窗口是否加载成功了。因为这个时候你的业务代码（比如从数据库异步读取数据的逻辑）可能尚未执行完成。
 
-对此，作者在信息传递上还封装了一个函数，它还能解除监听器。
+对此，作者在信息传递上还封装了一个函数，它还能根据子窗口传来的msg判断子窗口是否已经完事。
 
 ```typescript
 export let createDialog = (url: string, config: any): Promise<Window> => {
   return new Promise((resolve, reject) => {
     let windowProxy = window.open(url, "_blank", JSON.stringify(config));
-    let readyHandler = (e) => {
+    let readyHandler = (e: any) => {
       let msg = e.data;
       if (msg["msgName"] === `__dialogReady`) {
         window.removeEventListener("message", readyHandler);
-        resolve(windowProxy);
+        resolve(windowProxy as Window);
       }
     };
     window.addEventListener("message", readyHandler);
@@ -4872,3 +4872,48 @@ export let createDialog = (url: string, config: any): Promise<Window> => {
 };
 ```
 
+子窗口可以如下函数表示自己已经挂载好了，配合父进程的await
+
+```typescript
+export let dialogReady = () => {
+  let msg = { msgName: `__dialogReady` };
+  window.opener.postMessage(msg);
+};
+```
+
+### 父子窗口通信
+
+我们可以使用 `createDialog` 方法返回的对象向子窗口发送消息
+
+```typescript
+  let dialog = await createDialog("/testSideDiv", JSON.stringify(config));
+  dialog.postMessage({ msgName: "hello", value: "msg from your parent" });
+```
+
+子窗口可以使用listener来获取信息
+
+```typescript
+let msgHandler = (e: any) => {
+  alert(e.data.msgName);
+  window.opener.postMessage({ msgName: "hello", value: "I am your son." });
+};
+
+onMounted(() => {
+  console.log("ready", Date.now());
+  window.addEventListener("message", msgHandler);
+  dialogReady();
+});
+```
+
+需要注意的是，在子窗口中的stdout是子窗口的调试工具，不是父窗口的调试工具。
+
+而子窗口向父窗口可以使用这个函数传递信息。
+
+```typescript
+window.opener.postMessage({ msgName: "hello", value: "I am your son." });
+```
+
+相对于使用 ipcRender 和 ipcMain 的方式完成窗口间通信来说，使用这种方式完成跨窗口通信有以下几项优势：
+
+- 消息传递与接收效率都非常高，均为毫秒级；
+- 开发更加简单，代码逻辑清晰，无需跨进程中转消息。
