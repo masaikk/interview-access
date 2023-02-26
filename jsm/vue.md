@@ -1981,9 +1981,7 @@ Vue2中的实现：
 
 太难了之后回来再看。
 
-
-
-
+---
 
 #### Vue博客
 
@@ -2210,6 +2208,42 @@ router.addRoute('father',{
     name: "404",
     component: () => import("@/pages/404.vue"),
   },
+```
+
+#### 路由的方式
+
+路由分为hash模式和history模式，实现方式是面试点之一。
+
+在electron中建议使用hash模式，参考代码如下：
+
+```typescript
+import { createRouter, createWebHashHistory } from "vue-router";
+import type { RouteRecordRaw } from "vue-router";
+import HomePage from "../pages/HomePage/index.vue";
+import ChatPage from "../pages/ChatPage/index.vue";
+
+const routes: RouteRecordRaw[] = [
+  {
+    path: "/",
+    redirect: "/chat",
+  },
+  {
+    path: "/home",
+    name: "home",
+    component: HomePage,
+  },
+  {
+    path: "/chat",
+    name: "chat",
+    component: ChatPage,
+  },
+];
+
+export const router = createRouter({
+  history: createWebHashHistory(),
+  routes,
+});
+
 ```
 
 ---

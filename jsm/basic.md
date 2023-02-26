@@ -913,7 +913,7 @@ class UserAdmin(admin.ModelAdmin):
 
 ### fetch
 
-使用fetch来对于django发送post方法的话，需要注意参数的序列化。参考代码
+使用fetch来对于django发送post方法的话，需要注意参数的序列化。参考代码如下所示：
 
 ```typescript
 fetch(FULL_PATH, {
