@@ -98,6 +98,35 @@ const getForEachList=()=>{
 
 需要注意的是，对于遍历操作的回调函数，需要注意加上`return`。
 
+#### 渲染siwtch语句
+
+可以参考以下的代码：
+
+```jsx
+<div>
+  <span>适用平台：</span>
+  <span>{(() => {
+    switch (currentItems.usePlatform) {
+      case 0:
+        return '全平台可用'
+      case 1:
+        return '淘宝'
+      case 2:
+        return '美团'
+      case 3:
+        return '爱奇艺'
+      case 4:
+        return '腾讯'
+      default:
+        return null
+    }
+  }
+  )()}</span>
+</div>
+```
+
+
+
 #### 控制内联样式
 
 需要使用到两个大括号``{{}}``进行内联样式的控制，第一个括号表示使用了jsx，第二个括号表示style的对象。例如
