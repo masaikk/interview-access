@@ -1931,3 +1931,33 @@ var moveZeroes = function (nums) {
 };
 ```
 
+### [617. 合并二叉树 - 力扣（LeetCode）](https://leetcode.cn/problems/merge-two-binary-trees/)
+
+用到了递归的方法，实际上，合并两个树和合并两个子树是一样的操作，所以可以分别对于左树和右树分别调用合并的方法，如下所示：
+
+```javascript
+function TreeNode(val, left, right) {
+  this.val = val === undefined ? 0 : val;
+  this.left = left === undefined ? null : left;
+  this.right = right === undefined ? null : right;
+}
+
+/**
+ * @param {TreeNode} root1
+ * @param {TreeNode} root2
+ * @return {TreeNode}
+ */
+var mergeTrees = function (root1, root2) {
+  if (root1 === null) {
+    return root2;
+  }
+  if (root2 === null) {
+    return root1;
+  }
+  let root3 = new TreeNode(root1.val + root2.val, null, null);
+  root3.left = mergeTrees(root1.left, root2.left);
+  root3.right = mergeTrees(root1.right, root2.right);
+  return root3;
+};
+```
+
