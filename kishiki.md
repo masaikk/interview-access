@@ -1961,3 +1961,38 @@ var mergeTrees = function (root1, root2) {
 };
 ```
 
+### [543. 二叉树的直径 - 力扣（LeetCode）](https://leetcode.cn/problems/diameter-of-binary-tree/)
+
+对于这道题来说，计算直径应该遍历每一个节点。计算一个节点为顶点的直径为1+左子树最长长度（不是直径）+右子树长度（不是直径）。在这道题中，定义一个allDepth（起名不准确）变量计算最大直径结果，然后定义一个函数用于计算每个节点为顶点的时候深度最大为多少。
+
+```javascript
+function TreeNode(val, left, right) {
+  this.val = val === undefined ? 0 : val;
+  this.left = left === undefined ? null : left;
+  this.right = right === undefined ? null : right;
+}
+
+/**
+ * @param {TreeNode} root
+ * @return {number}
+ */
+var diameterOfBinaryTree = function (root) {
+  let allDepth = 1;
+  /**
+   *
+   * @param {TreeNode} root
+   * @return {number}
+   */
+  let calculateABinaryTreeDepth = function (root) {
+    if (root === null) return 0;
+    let leftDepth = calculateABinaryTreeDepth(root.left);
+    let rightDepth = calculateABinaryTreeDepth(root.right);
+    allDepth = Math.max(allDepth, leftDepth + rightDepth + 1);
+    return Math.max(leftDepth, rightDepth) + 1;
+  };
+  calculateABinaryTreeDepth(root);
+  return allDepth - 1;
+};
+
+```
+
